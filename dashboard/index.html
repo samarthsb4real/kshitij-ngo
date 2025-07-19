@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sponsorship Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h2>Student Sponsorship</h2>
+            </div>
+            <div class="nav-links">
+                <button class="nav-link active" data-page="home">Home</button>
+                <button class="nav-link" data-page="dashboard">Dashboard</button>
+                <button class="nav-link" data-page="students">Students</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="container">
+                <div class="hero-section">
+                    <h1>Student Sponsorship Program</h1>
+                    <p class="hero-subtitle">Supporting students from rural areas in their educational journey</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="card stats-card">
+                        <div class="card__body">
+                            <h3 class="stats-number" id="total-students">6</h3>
+                            <p class="stats-label">Total Students</p>
+                        </div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="card__body">
+                            <h3 class="stats-number" id="average-age">19</h3>
+                            <p class="stats-label">Average Age</p>
+                        </div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="card__body">
+                            <h3 class="stats-number" id="median-income">₹45,000</h3>
+                            <p class="stats-label">Median Income</p>
+                        </div>
+                    </div>
+                    <div class="card stats-card">
+                        <div class="card__body">
+                            <h3 class="stats-number" id="avg-expenses">₹29,833</h3>
+                            <p class="stats-label">Average Expenses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page">
+            <div class="container">
+                <h1>Analytics Dashboard</h1>
+                <div class="dashboard-grid">
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Age Distribution</h3>
+                            <div style="height: 300px;">
+                                <canvas id="ageChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Income Sources</h3>
+                            <div style="height: 300px;">
+                                <canvas id="incomeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Top Villages</h3>
+                            <div style="height: 300px;">
+                                <canvas id="villageChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Educational Expenses</h3>
+                            <div style="height: 300px;">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Page -->
+        <div id="students-page" class="page">
+            <div class="container">
+                <div class="students-header">
+                    <h1>Students List</h1>
+                    <div class="search-controls">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search students...">
+                        <select id="sort-select" class="form-control">
+                            <option value="name">Sort by Name</option>
+                            <option value="age">Sort by Age</option>
+                            <option value="income">Sort by Income</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="students-grid" id="students-grid">
+                    <!-- Students will be populated here -->
+                </div>
+                
+                <div class="pagination">
+                    <button class="btn btn--outline" id="prev-btn">Previous</button>
+                    <span id="page-info">Page 1 of 1</span>
+                    <button class="btn btn--outline" id="next-btn">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Profile Page -->
+        <div id="student-profile-page" class="page">
+            <div class="container">
+                <button class="btn btn--outline back-btn" id="back-btn">← Back to Students</button>
+                
+                <div class="profile-content" id="profile-content">
+                    <!-- Profile content will be populated here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
