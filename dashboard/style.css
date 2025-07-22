@@ -1,97 +1,138 @@
 :root {
-  /* Primitive Color Tokens */
+  /* Primitive Color Tokens - NGO Theme */
   --color-white: rgba(255, 255, 255, 1);
   --color-black: rgba(0, 0, 0, 1);
-  --color-cream-50: rgba(252, 252, 249, 1);
-  --color-cream-100: rgba(255, 255, 253, 1);
-  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-cream-50: rgba(254, 252, 249, 1);
+  --color-cream-100: rgba(255, 253, 250, 1);
+  --color-warm-50: rgba(254, 249, 242, 1);
+  --color-warm-100: rgba(253, 243, 232, 1);
+  --color-gray-200: rgba(248, 248, 248, 1);
   --color-gray-300: rgba(167, 169, 169, 1);
   --color-gray-400: rgba(119, 124, 124, 1);
   --color-slate-500: rgba(98, 108, 113, 1);
   --color-brown-600: rgba(94, 82, 64, 1);
   --color-charcoal-700: rgba(31, 33, 33, 1);
   --color-charcoal-800: rgba(38, 40, 40, 1);
-  --color-slate-900: rgba(19, 52, 59, 1);
-  --color-teal-300: rgba(50, 184, 198, 1);
-  --color-teal-400: rgba(45, 166, 178, 1);
-  --color-teal-500: rgba(33, 128, 141, 1);
-  --color-teal-600: rgba(29, 116, 128, 1);
-  --color-teal-700: rgba(26, 104, 115, 1);
-  --color-teal-800: rgba(41, 150, 161, 1);
-  --color-red-400: rgba(255, 84, 89, 1);
-  --color-red-500: rgba(192, 21, 47, 1);
-  --color-orange-400: rgba(230, 129, 97, 1);
-  --color-orange-500: rgba(168, 75, 47, 1);
+  --color-slate-900: rgba(31, 41, 55, 1);
+  
+  /* NGO Primary Colors - Warm and approachable */
+  --color-primary-50: rgba(254, 242, 242, 1);
+  --color-primary-100: rgba(254, 226, 226, 1);
+  --color-primary-200: rgba(252, 165, 165, 1);
+  --color-primary-300: rgba(248, 113, 113, 1);
+  --color-primary-400: rgba(239, 68, 68, 1);
+  --color-primary-500: rgba(220, 38, 38, 1);
+  --color-primary-600: rgba(185, 28, 28, 1);
+  --color-primary-700: rgba(153, 27, 27, 1);
+  --color-primary-800: rgba(127, 29, 29, 1);
+  
+  /* Secondary Colors - Education focused */
+  --color-secondary-50: rgba(239, 246, 255, 1);
+  --color-secondary-100: rgba(219, 234, 254, 1);
+  --color-secondary-200: rgba(191, 219, 254, 1);
+  --color-secondary-300: rgba(147, 197, 253, 1);
+  --color-secondary-400: rgba(96, 165, 250, 1);
+  --color-secondary-500: rgba(59, 130, 246, 1);
+  --color-secondary-600: rgba(37, 99, 235, 1);
+  --color-secondary-700: rgba(29, 78, 216, 1);
+  
+  /* Success - Green for progress */
+  --color-success-50: rgba(240, 253, 244, 1);
+  --color-success-100: rgba(220, 252, 231, 1);
+  --color-success-300: rgba(134, 239, 172, 1);
+  --color-success-500: rgba(34, 197, 94, 1);
+  --color-success-600: rgba(22, 163, 74, 1);
+  --color-success-700: rgba(21, 128, 61, 1);
+  
+  /* Warning - Amber for attention */
+  --color-warning-50: rgba(255, 251, 235, 1);
+  --color-warning-100: rgba(254, 243, 199, 1);
+  --color-warning-300: rgba(252, 211, 77, 1);
+  --color-warning-500: rgba(245, 158, 11, 1);
+  --color-warning-600: rgba(217, 119, 6, 1);
+  
+  /* Error - Red for alerts */
+  --color-error-400: rgba(248, 113, 113, 1);
+  --color-error-500: rgba(239, 68, 68, 1);
+  --color-error-600: rgba(220, 38, 38, 1);
 
   /* RGB versions for opacity control */
-  --color-brown-600-rgb: 94, 82, 64;
-  --color-teal-500-rgb: 33, 128, 141;
-  --color-slate-900-rgb: 19, 52, 59;
+  --color-primary-500-rgb: 220, 38, 38;
+  --color-secondary-500-rgb: 59, 130, 246;
+  --color-success-500-rgb: 34, 197, 94;
+  --color-warning-500-rgb: 245, 158, 11;
+  --color-error-500-rgb: 239, 68, 68;
+  --color-slate-900-rgb: 31, 41, 55;
   --color-slate-500-rgb: 98, 108, 113;
-  --color-red-500-rgb: 192, 21, 47;
-  --color-red-400-rgb: 255, 84, 89;
-  --color-orange-500-rgb: 168, 75, 47;
-  --color-orange-400-rgb: 230, 129, 97;
+  --color-gray-400-rgb: 119, 124, 124;
 
-  /* Semantic Color Tokens (Light Mode) */
+  /* Semantic Color Tokens (Light Mode) - NGO Theme */
   --color-background: var(--color-cream-50);
-  --color-surface: var(--color-cream-100);
+  --color-surface: var(--color-white);
+  --color-surface-elevated: var(--color-warm-50);
   --color-text: var(--color-slate-900);
   --color-text-secondary: var(--color-slate-500);
-  --color-primary: var(--color-teal-500);
-  --color-primary-hover: var(--color-teal-600);
-  --color-primary-active: var(--color-teal-700);
-  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
-  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
-  --color-btn-primary-text: var(--color-cream-50);
-  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
-  --color-error: var(--color-red-500);
-  --color-success: var(--color-teal-500);
-  --color-warning: var(--color-orange-500);
-  --color-info: var(--color-slate-500);
-  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-primary: var(--color-primary-500);
+  --color-primary-hover: var(--color-primary-600);
+  --color-primary-active: var(--color-primary-700);
+  --color-secondary: var(--color-secondary-100);
+  --color-secondary-hover: var(--color-secondary-200);
+  --color-secondary-active: var(--color-secondary-300);
+  --color-border: rgba(var(--color-gray-400-rgb), 0.2);
+  --color-border-light: rgba(var(--color-gray-400-rgb), 0.1);
+  --color-btn-primary-text: var(--color-white);
+  --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
+  --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.1);
+  --color-error: var(--color-error-500);
+  --color-success: var(--color-success-500);
+  --color-warning: var(--color-warning-500);
+  --color-info: var(--color-secondary-500);
+  --color-focus-ring: rgba(var(--color-primary-500-rgb), 0.3);
   --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
 
   /* Common style patterns */
   --focus-ring: 0 0 0 3px var(--color-focus-ring);
   --focus-outline: 2px solid var(--color-primary);
-  --status-bg-opacity: 0.15;
-  --status-border-opacity: 0.25;
-  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --status-bg-opacity: 0.1;
+  --status-border-opacity: 0.2;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231f2937' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
 
   /* RGB versions for opacity control */
-  --color-success-rgb: 33, 128, 141;
-  --color-error-rgb: 192, 21, 47;
-  --color-warning-rgb: 168, 75, 47;
-  --color-info-rgb: 98, 108, 113;
+  --color-success-rgb: var(--color-success-500-rgb);
+  --color-error-rgb: var(--color-error-500-rgb);
+  --color-warning-rgb: var(--color-warning-500-rgb);
+  --color-info-rgb: var(--color-secondary-500-rgb);
 
-  /* Typography */
-  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, monospace;
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-base: 14px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  --font-size-3xl: 24px;
-  --font-size-4xl: 30px;
+  /* Typography - More readable for NGO content */
+  --font-family-base: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --font-family-display: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --font-family-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
-  --font-weight-semibold: 550;
-  --font-weight-bold: 600;
-  --line-height-tight: 1.2;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
   --line-height-normal: 1.5;
-  --letter-spacing-tight: -0.01em;
+  --line-height-relaxed: 1.625;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
 
-  /* Spacing */
+  /* Spacing - Enhanced for better visual hierarchy */
   --space-0: 0;
   --space-1: 1px;
   --space-2: 2px;
@@ -104,23 +145,29 @@
   --space-20: 20px;
   --space-24: 24px;
   --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-56: 56px;
+  --space-64: 64px;
 
-  /* Border Radius */
+  /* Border Radius - Softer, more approachable */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-base: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
-    0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
-    0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+  /* Shadows - Enhanced for depth */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-colored: 0 4px 14px 0 rgba(var(--color-primary-500-rgb), 0.15);
 
   /* Animation */
   --duration-fast: 150ms;
@@ -134,39 +181,38 @@
   --container-xl: 1280px;
 }
 
-/* Dark mode colors */
+/* Dark mode colors - NGO Theme */
 @media (prefers-color-scheme: dark) {
   :root {
     /* RGB versions for opacity control (dark mode) */
-    --color-gray-400-rgb: 119, 124, 124;
-    --color-teal-300-rgb: 50, 184, 198;
-    --color-gray-300-rgb: 167, 169, 169;
-    --color-gray-200-rgb: 245, 245, 245;
+    --color-gray-400-rgb: 156, 163, 175;
+    --color-primary-300-rgb: 248, 113, 113;
+    --color-gray-300-rgb: 209, 213, 219;
+    --color-gray-200-rgb: 229, 231, 235;
     
     /* Semantic Color Tokens (Dark Mode) */
-    --color-background: var(--color-charcoal-700);
-    --color-surface: var(--color-charcoal-800);
+    --color-background: rgba(17, 24, 39, 1);
+    --color-surface: rgba(31, 41, 55, 1);
+    --color-surface-elevated: rgba(55, 65, 81, 1);
     --color-text: var(--color-gray-200);
-    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
-    --color-primary: var(--color-teal-300);
-    --color-primary-hover: var(--color-teal-400);
-    --color-primary-active: var(--color-teal-800);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.8);
+    --color-primary: var(--color-primary-300);
+    --color-primary-hover: var(--color-primary-400);
+    --color-primary-active: var(--color-primary-500);
     --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
     --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
     --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
-    --color-error: var(--color-red-400);
-    --color-success: var(--color-teal-300);
-    --color-warning: var(--color-orange-400);
-    --color-info: var(--color-gray-300);
-    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-border-light: rgba(var(--color-gray-400-rgb), 0.1);
+    --color-error: var(--color-error-400);
+    --color-success: var(--color-success-300);
+    --color-warning: var(--color-warning-300);
+    --color-info: var(--color-secondary-300);
+    --color-focus-ring: rgba(var(--color-primary-300-rgb), 0.4);
     --color-btn-primary-text: var(--color-slate-900);
-    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
-    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
-    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.1);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
     --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
 
     /* Common style patterns - updated for dark mode */
@@ -360,62 +406,91 @@ pre code {
   padding: 0;
 }
 
-/* Buttons */
+/* Buttons - Enhanced NGO styling */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-8) var(--space-16);
-  border-radius: var(--radius-base);
+  padding: var(--space-12) var(--space-24);
+  border-radius: var(--radius-lg);
   font-size: var(--font-size-base);
-  font-weight: 500;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.5;
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-standard);
-  border: none;
+  border: 2px solid transparent;
   text-decoration: none;
   position: relative;
+  overflow: hidden;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--duration-normal) var(--ease-standard);
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+  transform: translateY(-1px);
 }
 
 .btn--primary {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600) 100%);
   color: var(--color-btn-primary-text);
+  box-shadow: var(--shadow-colored);
 }
 
 .btn--primary:hover {
-  background: var(--color-primary-hover);
+  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-700) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn--primary:active {
   background: var(--color-primary-active);
+  transform: translateY(0);
 }
 
 .btn--secondary {
   background: var(--color-secondary);
   color: var(--color-text);
+  border-color: var(--color-border);
 }
 
 .btn--secondary:hover {
   background: var(--color-secondary-hover);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .btn--secondary:active {
   background: var(--color-secondary-active);
+  transform: translateY(0);
 }
 
 .btn--outline {
   background: transparent;
-  border: 1px solid var(--color-border);
+  border-color: var(--color-border);
   color: var(--color-text);
 }
 
 .btn--outline:hover {
   background: var(--color-secondary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .btn--sm {
@@ -503,28 +578,53 @@ select.form-control {
   margin-bottom: var(--space-16);
 }
 
-/* Card component */
+/* Card component - Enhanced for NGO */
 .card {
   background-color: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-card-border);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: box-shadow var(--duration-normal) var(--ease-standard);
+  transition: all var(--duration-normal) var(--ease-standard);
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border-light), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-standard);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .card__body {
-  padding: var(--space-16);
+  padding: var(--space-24);
 }
 
 .card__header,
 .card__footer {
-  padding: var(--space-16);
+  padding: var(--space-20) var(--space-24);
+  background: var(--color-surface-elevated);
   border-bottom: 1px solid var(--color-card-border-inner);
+}
+
+.card__footer {
+  border-top: 1px solid var(--color-card-border-inner);
+  border-bottom: none;
 }
 
 /* Status indicators - simplified with CSS variables */
@@ -710,14 +810,16 @@ select.form-control {
 /* END PERPLEXITY DESIGN SYSTEM */
 /* Additional styles for the Student Sponsorship Dashboard */
 
-/* Navigation */
+/* Navigation - Enhanced NGO styling */
 .navbar {
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-light);
   position: sticky;
   top: 0;
   z-index: 1000;
-  padding: var(--space-16) 0;
+  padding: var(--space-20) 0;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
 }
 
 .navbar .container {
@@ -726,98 +828,183 @@ select.form-control {
   align-items: center;
 }
 
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .nav-brand h2 {
   color: var(--color-primary);
   margin: 0;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
+  font-family: var(--font-family-display);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.nav-brand h3 {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 .nav-links {
   display: flex;
-  gap: var(--space-24);
+  gap: var(--space-8);
 }
 
 .nav-link {
   color: var(--color-text-secondary);
   text-decoration: none;
-  padding: var(--space-8) var(--space-16);
-  border-radius: var(--radius-base);
-  transition: all var(--duration-fast) var(--ease-standard);
+  padding: var(--space-12) var(--space-20);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal) var(--ease-standard);
   font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(var(--color-primary-500-rgb), 0.1), transparent);
+  transition: left var(--duration-normal) var(--ease-standard);
+}
+
+.nav-link:hover::before {
+  left: 100%;
 }
 
 .nav-link:hover {
   color: var(--color-primary);
   background: var(--color-secondary);
+  transform: translateY(-1px);
 }
 
 .nav-link.active {
   color: var(--color-primary);
   background: var(--color-secondary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-colored);
 }
 
 /* Main Content */
 .main-content {
-  min-height: calc(100vh - 80px);
-  padding: var(--space-24) 0;
+  min-height: calc(100vh - 120px);
+  padding: var(--space-48) 0;
 }
 
-/* Page System */
-.page {
-  display: none;
-}
-
-.page.active {
-  display: block;
-}
-
-/* Hero Section */
+/* Hero Section - Enhanced for NGO impact */
 .hero-section {
   text-align: center;
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-56);
+  padding: var(--space-48) var(--space-24);
+  background: linear-gradient(135deg, var(--color-surface-elevated) 0%, var(--color-surface) 100%);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(var(--color-primary-500-rgb), 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .hero-section h1 {
-  font-size: var(--font-size-4xl);
-  margin-bottom: var(--space-16);
+  font-size: var(--font-size-5xl);
+  margin-bottom: var(--space-24);
   color: var(--color-text);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
 }
 
 .hero-subtitle {
   font-size: var(--font-size-xl);
   color: var(--color-text-secondary);
   margin: 0;
+  line-height: var(--line-height-relaxed);
+  font-weight: var(--font-weight-medium);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* Stats Grid */
+/* Stats Grid - Enhanced NGO styling */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-24);
-  margin-bottom: var(--space-32);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-32);
+  margin-bottom: var(--space-56);
 }
 
 .stats-card {
   text-align: center;
-  transition: transform var(--duration-fast) var(--ease-standard);
+  transition: all var(--duration-normal) var(--ease-standard);
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-light);
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary-500) 100%);
 }
 
 .stats-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
+}
+
+.stats-card .card__body {
+  padding: var(--space-32);
 }
 
 .stats-number {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
   color: var(--color-primary);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-16);
+  line-height: var(--line-height-tight);
+  text-shadow: 0 2px 4px rgba(var(--color-primary-500-rgb), 0.1);
 }
 
 .stats-label {
   color: var(--color-text-secondary);
   margin: 0;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 /* Dashboard Grid */
@@ -836,18 +1023,25 @@ select.form-control {
   margin-top: var(--space-16);
 }
 
-/* Students Page */
+/* Students Page - Enhanced styling */
 .students-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-48);
   flex-wrap: wrap;
-  gap: var(--space-16);
+  gap: var(--space-24);
+  padding: var(--space-32);
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border-light);
 }
 
 .students-header h1 {
   margin: 0;
+  color: var(--color-text);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
 }
 
 .search-controls {
@@ -857,61 +1051,96 @@ select.form-control {
 }
 
 .search-controls .form-control {
-  min-width: 200px;
+  min-width: 240px;
+  border: 2px solid var(--color-border);
+  transition: all var(--duration-normal) var(--ease-standard);
 }
 
-/* Students Grid */
+.search-controls .form-control:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-colored);
+}
+
+/* Students Grid - Enhanced cards */
 .students-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-24);
-  margin-bottom: var(--space-32);
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-32);
+  margin-bottom: var(--space-48);
 }
 
 .student-card {
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-standard);
+  transition: all var(--duration-normal) var(--ease-standard);
+  border: 2px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.student-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary-500) 100%);
 }
 
 .student-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary);
 }
 
 .student-card h3 {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-16);
   color: var(--color-text);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
 }
 
 .student-info {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-12);
 }
 
 .student-info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.student-info-row:last-child {
+  border-bottom: none;
 }
 
 .student-label {
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
 }
 
 .student-value {
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text);
+  font-size: var(--font-size-base);
 }
 
 .income-badge {
-  background: var(--color-secondary);
-  color: var(--color-text);
-  padding: var(--space-4) var(--space-8);
+  background: linear-gradient(135deg, var(--color-success-100) 0%, var(--color-success-50) 100%);
+  color: var(--color-success-600);
+  padding: var(--space-6) var(--space-12);
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  border: 1px solid var(--color-success-300);
 }
 
 /* Pagination */
@@ -1065,6 +1294,15 @@ select.form-control {
   border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
+}
+
+/* Page System */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
 }
 
 /* Responsive Design */
