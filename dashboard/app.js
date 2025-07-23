@@ -1,240 +1,260 @@
-// Student Sponsorship Dashboard Application
-
-// Sample data based on the provided structure
-const sampleStudents = [
-  {
-    id: 1,
-    studentName: "AKSHDA PRAKASH TAKWALE",
-    age: 19,
-    classStandard: "1st year",
-    village: "Kondhur",
-    schoolCollege: "Abhinav College",
-    currentEducation: "MSc IT",
-    yearsReview: [
-      {"year": 2022, "standard": "10", "marks": 69.6},
-      {"year": 2023, "standard": "11", "marks": 49},
-      {"year": 2024, "standard": "12", "marks": 42}
-    ],
-    achievements: "District athletics bronze",
-    expenses: {
-      travel: 1000,
-      schoolFees: 15000,
-      books: 2000,
-      stationery: 3000,
-      uniform: 1500,
-      tuition: 10000
-    },
-    futurePlans: "Police Bharti",
-    parents: {
-      names: "Prakash & Vaishali",
-      ages: "40 & 35",
-      education: "Std 10 both"
-    },
-    familySize: 6,
-    workingMembers: 1,
-    annualIncome: 35000,
-    incomeSource: "Farming",
-    needsHelp: "Ho",
-    phone: "9022704532",
-    address: "Kondhur Pune"
-  },
-  {
-    id: 2,
-    studentName: "PRIYA SURESH PATIL",
-    age: 17,
-    classStandard: "12th",
-    village: "Shivapur",
-    schoolCollege: "Govt High School",
-    currentEducation: "12th Science",
-    yearsReview: [
-      {"year": 2022, "standard": "10", "marks": 78.5},
-      {"year": 2023, "standard": "11", "marks": 65},
-      {"year": 2024, "standard": "12", "marks": 72}
-    ],
-    achievements: "State level math competition",
-    expenses: {
-      travel: 800,
-      schoolFees: 8000,
-      books: 1500,
-      stationery: 2000,
-      uniform: 1200,
-      tuition: 8000
-    },
-    futurePlans: "Engineering",
-    parents: {
-      names: "Suresh & Sunita",
-      ages: "42 & 38",
-      education: "Std 12 both"
-    },
-    familySize: 4,
-    workingMembers: 2,
-    annualIncome: 45000,
-    incomeSource: "Agriculture",
-    needsHelp: "Ho",
-    phone: "9876543210",
-    address: "Shivapur Pune"
-  },
-  {
-    id: 3,
-    studentName: "RAHUL GANESHIMORE",
-    age: 20,
-    classStandard: "2nd year",
-    village: "Wadgaon",
-    schoolCollege: "Fergusson College",
-    currentEducation: "BSc Computer Science",
-    yearsReview: [
-      {"year": 2021, "standard": "10", "marks": 82.1},
-      {"year": 2022, "standard": "11", "marks": 68},
-      {"year": 2023, "standard": "12", "marks": 75}
-    ],
-    achievements: "College programming contest winner",
-    expenses: {
-      travel: 1200,
-      schoolFees: 20000,
-      books: 3000,
-      stationery: 2500,
-      uniform: 2000,
-      tuition: 15000
-    },
-    futurePlans: "Software Developer",
-    parents: {
-      names: "Ganesh & Mangala",
-      ages: "45 & 40",
-      education: "Std 10 & Std 8"
-    },
-    familySize: 5,
-    workingMembers: 1,
-    annualIncome: 40000,
-    incomeSource: "Labor",
-    needsHelp: "Ho",
-    phone: "9123456789",
-    address: "Wadgaon Pune"
-  },
-  {
-    id: 4,
-    studentName: "SNEHA RAMESH JADHAV",
-    age: 18,
-    classStandard: "1st year",
-    village: "Karjat",
-    schoolCollege: "Modern College",
-    currentEducation: "BCom",
-    yearsReview: [
-      {"year": 2022, "standard": "10", "marks": 74.8},
-      {"year": 2023, "standard": "11", "marks": 58},
-      {"year": 2024, "standard": "12", "marks": 61}
-    ],
-    achievements: "Best student award",
-    expenses: {
-      travel: 900,
-      schoolFees: 12000,
-      books: 1800,
-      stationery: 2200,
-      uniform: 1300,
-      tuition: 9000
-    },
-    futurePlans: "Bank officer",
-    parents: {
-      names: "Ramesh & Kavita",
-      ages: "43 & 39",
-      education: "Std 12 & Std 10"
-    },
-    familySize: 4,
-    workingMembers: 2,
-    annualIncome: 55000,
-    incomeSource: "Small business",
-    needsHelp: "Ho",
-    phone: "9988776655",
-    address: "Karjat Pune"
-  },
-  {
-    id: 5,
-    studentName: "AMIT VIJAY KALE",
-    age: 16,
-    classStandard: "11th",
-    village: "Kondhur",
-    schoolCollege: "Zilla Parishad School",
-    currentEducation: "11th Commerce",
-    yearsReview: [
-      {"year": 2023, "standard": "10", "marks": 71.2},
-      {"year": 2024, "standard": "11", "marks": 55}
-    ],
-    achievements: "Sports captain",
-    expenses: {
-      travel: 600,
-      schoolFees: 6000,
-      books: 1200,
-      stationery: 1500,
-      uniform: 1000,
-      tuition: 5000
-    },
-    futurePlans: "Chartered Accountant",
-    parents: {
-      names: "Vijay & Sushila",
-      ages: "38 & 35",
-      education: "Std 10 both"
-    },
-    familySize: 5,
-    workingMembers: 1,
-    annualIncome: 30000,
-    incomeSource: "Farming",
-    needsHelp: "Ho",
-    phone: "9112233445",
-    address: "Kondhur Pune"
-  },
-  {
-    id: 6,
-    studentName: "POOJA SANTOSH BHOSALE",
-    age: 21,
-    classStandard: "3rd year",
-    village: "Shivapur",
-    schoolCollege: "Pune University",
-    currentEducation: "BA Psychology",
-    yearsReview: [
-      {"year": 2020, "standard": "10", "marks": 85.5},
-      {"year": 2021, "standard": "11", "marks": 72},
-      {"year": 2022, "standard": "12", "marks": 78}
-    ],
-    achievements: "Research paper published",
-    expenses: {
-      travel: 1500,
-      schoolFees: 18000,
-      books: 2500,
-      stationery: 3000,
-      uniform: 1800,
-      tuition: 12000
-    },
-    futurePlans: "Clinical Psychologist",
-    parents: {
-      names: "Santosh & Vandana",
-      ages: "47 & 42",
-      education: "Graduate both"
-    },
-    familySize: 3,
-    workingMembers: 2,
-    annualIncome: 65000,
-    incomeSource: "Teaching",
-    needsHelp: "Ho",
-    phone: "9876543221",
-    address: "Shivapur Pune"
-  }
-];
+// Student Sponsorship Dashboard Application with Google Sheets Integration
 
 // Application state
 let currentPage = 'home';
 let currentStudentId = null;
-let filteredStudents = [...sampleStudents];
+let filteredStudents = [];
 let currentPageNum = 1;
 let studentsPerPage = 6;
 let charts = {};
+let googleSheetsService = null;
+let config = null;
+let allStudents = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
   console.log('App initialized');
+  
+  // Initialize configuration
+  config = new Config();
+  
+  // Initialize Google Sheets service with config
+  googleSheetsService = new GoogleSheetsService(config);
+  
+  // Load saved configuration
+  loadSavedConfiguration();
+  
   initializeNavigation();
   initializeSearch();
   initializePagination();
-  loadHomePage();
+  initializeSettings();
+  initializeSyncStatus();
+  
+  // Load initial data
+  loadData();
 });
+
+// Data Loading Functions
+async function loadData(forceRefresh = false) {
+  updateSyncStatus('loading', 'Loading data...');
+  
+  try {
+    console.log('Starting data load, forceRefresh:', forceRefresh);
+    allStudents = await googleSheetsService.fetchStudents(forceRefresh);
+    filteredStudents = [...allStudents];
+    
+    console.log('Successfully loaded students:', allStudents.length);
+    console.log('Sample student data:', allStudents[0]);
+    
+    updateSyncStatus('connected', `Connected - ${allStudents.length} students loaded`);
+    updateLastSyncTime();
+    
+    // Update current page if visible
+    if (currentPage === 'home') {
+      console.log('Updating home page with new data');
+      loadHomePage();
+    } else if (currentPage === 'students') {
+      console.log('Updating students page with new data');
+      loadStudentsPage();
+    } else if (currentPage === 'dashboard') {
+      console.log('Updating dashboard with new data');
+      loadDashboard();
+    }
+    
+    console.log(`Loaded ${allStudents.length} students from data source`);
+    
+  } catch (error) {
+    console.error('Error loading data:', error);
+    updateSyncStatus('error', 'Failed to load data - using cached/sample data');
+    
+    // Fallback to sample data if available
+    if (allStudents.length === 0) {
+      console.log('Using sample data as fallback');
+      allStudents = googleSheetsService.getSampleData();
+      filteredStudents = [...allStudents];
+      
+      // Update current page with sample data
+      if (currentPage === 'home') {
+        loadHomePage();
+      } else if (currentPage === 'students') {
+        loadStudentsPage();
+      } else if (currentPage === 'dashboard') {
+        loadDashboard();
+      }
+    }
+  }
+}
+
+// Configuration Functions
+function loadSavedConfiguration() {
+  // Configuration is automatically loaded by the Config class
+  // Just populate the form fields when they become available
+  setTimeout(() => {
+    const sheetIdField = document.getElementById('sheet-id');
+    const apiKeyField = document.getElementById('api-key');
+    const sheetNameField = document.getElementById('sheet-name');
+    
+    if (sheetIdField) sheetIdField.value = config.get('GOOGLE_SHEET_ID') || '';
+    if (apiKeyField) apiKeyField.value = config.get('GOOGLE_API_KEY') || '';
+    if (sheetNameField) sheetNameField.value = config.get('GOOGLE_SHEET_NAME') || 'students';
+  }, 100);
+}
+
+function saveConfiguration(newConfig) {
+  // Update config using the new system
+  const configUpdate = {
+    GOOGLE_SHEET_ID: newConfig.sheetId,
+    GOOGLE_API_KEY: newConfig.apiKey,
+    GOOGLE_SHEET_NAME: newConfig.sheetName
+  };
+  
+  config.update(configUpdate);
+  googleSheetsService.updateConfig(configUpdate);
+}
+
+// Sync Status Functions
+function updateSyncStatus(status, message) {
+  const syncDot = document.getElementById('sync-dot');
+  const syncText = document.getElementById('sync-status-text');
+  
+  if (syncDot && syncText) {
+    syncDot.className = `sync-dot ${status}`;
+    syncText.textContent = message;
+  }
+}
+
+function updateLastSyncTime() {
+  const lastSyncElement = document.getElementById('last-sync');
+  if (lastSyncElement) {
+    const now = new Date();
+    lastSyncElement.textContent = `Last sync: ${now.toLocaleTimeString()}`;
+  }
+}
+
+// Settings Page Functions
+function initializeSettings() {
+  const configForm = document.getElementById('sheets-config-form');
+  const testConnectionBtn = document.getElementById('test-connection');
+  const refreshBtn = document.getElementById('refresh-data');
+  const clearCacheBtn = document.getElementById('clear-cache');
+  const exportDataBtn = document.getElementById('export-data');
+  
+  if (configForm) {
+    configForm.addEventListener('submit', handleConfigSubmit);
+  }
+  
+  if (testConnectionBtn) {
+    testConnectionBtn.addEventListener('click', handleTestConnection);
+  }
+  
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => loadData(true));
+  }
+  
+  if (clearCacheBtn) {
+    clearCacheBtn.addEventListener('click', handleClearCache);
+  }
+  
+  if (exportDataBtn) {
+    exportDataBtn.addEventListener('click', handleExportData);
+  }
+}
+
+function handleConfigSubmit(e) {
+  e.preventDefault();
+  
+  const config = {
+    sheetId: document.getElementById('sheet-id').value.trim(),
+    apiKey: document.getElementById('api-key').value.trim(),
+    sheetName: document.getElementById('sheet-name').value.trim() || 'Students'
+  };
+  
+  if (!config.sheetId || !config.apiKey) {
+    alert('Please enter both Sheet ID and API Key');
+    return;
+  }
+  
+  saveConfiguration(config);
+  alert('Configuration saved successfully!');
+  
+  // Refresh data with new configuration
+  loadData(true);
+}
+
+async function handleTestConnection() {
+  const config = {
+    sheetId: document.getElementById('sheet-id').value.trim(),
+    apiKey: document.getElementById('api-key').value.trim(),
+    sheetName: document.getElementById('sheet-name').value.trim() || 'Students'
+  };
+  
+  if (!config.sheetId || !config.apiKey) {
+    alert('Please enter both Sheet ID and API Key');
+    return;
+  }
+  
+  const testBtn = document.getElementById('test-connection');
+  const originalText = testBtn.textContent;
+  testBtn.textContent = 'Testing...';
+  testBtn.disabled = true;
+  
+  try {
+    // Temporarily update config for testing
+    googleSheetsService.updateConfig(config);
+    const testData = await googleSheetsService.fetchStudents(true);
+    
+    alert(`Connection successful! Found ${testData.length} students.`);
+  } catch (error) {
+    alert(`Connection failed: ${error.message}`);
+  } finally {
+    testBtn.textContent = originalText;
+    testBtn.disabled = false;
+  }
+}
+
+function handleClearCache() {
+  googleSheetsService.clearCache();
+  alert('Cache cleared successfully!');
+}
+
+function handleExportData() {
+  if (allStudents.length === 0) {
+    alert('No data to export');
+    return;
+  }
+  
+  // Convert to CSV
+  const headers = [
+    'ID', 'Name', 'Age', 'Class', 'Village', 'School/College', 'Education',
+    'Annual Income', 'Income Source', 'Phone', 'Address'
+  ];
+  
+  const csvData = [
+    headers.join(','),
+    ...allStudents.map(student => [
+      student.id,
+      `"${student.studentName}"`,
+      student.age,
+      `"${student.classStandard}"`,
+      `"${student.village}"`,
+      `"${student.schoolCollege}"`,
+      `"${student.currentEducation}"`,
+      student.annualIncome,
+      `"${student.incomeSource}"`,
+      student.phone,
+      `"${student.address}"`
+    ].join(','))
+  ].join('\n');
+  
+  // Download
+  const blob = new Blob([csvData], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ngo-students-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
 
 // Navigation
 function initializeNavigation() {
@@ -295,6 +315,9 @@ function showPage(page) {
     case 'students':
       loadStudentsPage();
       break;
+    case 'settings':
+      loadSettingsPage();
+      break;
     case 'student-profile':
       // Profile content already loaded
       break;
@@ -303,9 +326,16 @@ function showPage(page) {
 
 // Home Page
 function loadHomePage() {
-  console.log('Loading home page');
-  const stats = calculateStats();
+  console.log('Loading home page with dynamic data');
   
+  // Get comprehensive analytics data
+  const analyticsData = googleSheetsService.getAnalyticsData(allStudents);
+  const stats = analyticsData.stats;
+  
+  // Update all statistics
+  updateDashboardStats(stats);
+  
+  // Also update individual elements by ID (for backward compatibility)
   const totalStudentsEl = document.getElementById('total-students');
   const averageAgeEl = document.getElementById('average-age');
   const medianIncomeEl = document.getElementById('median-income');
@@ -314,55 +344,52 @@ function loadHomePage() {
   if (totalStudentsEl) totalStudentsEl.textContent = stats.totalStudents;
   if (averageAgeEl) averageAgeEl.textContent = stats.averageAge;
   if (medianIncomeEl) medianIncomeEl.textContent = `₹${stats.medianIncome.toLocaleString()}`;
-  if (avgExpensesEl) avgExpensesEl.textContent = `₹${stats.avgExpenses.toLocaleString()}`;
+  if (avgExpensesEl) avgExpensesEl.textContent = `₹${stats.averageExpenses.toLocaleString()}`;
 }
 
-// Statistics calculation
-function calculateStats() {
-  const totalStudents = sampleStudents.length;
-  const averageAge = Math.round(sampleStudents.reduce((sum, student) => sum + student.age, 0) / totalStudents);
-  
-  const incomes = sampleStudents.map(s => s.annualIncome).sort((a, b) => a - b);
-  const medianIncome = incomes[Math.floor(incomes.length / 2)];
-  
-  const avgExpenses = Math.round(sampleStudents.reduce((sum, student) => {
-    const totalExpenses = Object.values(student.expenses).reduce((expSum, exp) => expSum + exp, 0);
-    return sum + totalExpenses;
-  }, 0) / totalStudents);
+// Settings page loading
+function loadSettingsPage() {
+  console.log('Loading settings page');
+  loadSavedConfiguration();
+}
 
-  return { totalStudents, averageAge, medianIncome, avgExpenses };
+// Statistics calculation (kept for backward compatibility)
+function calculateStats() {
+  return googleSheetsService.calculateStats(allStudents);
 }
 
 // Dashboard Page
 function loadDashboard() {
-  console.log('Loading dashboard');
-  setTimeout(() => {
-    createAgeChart();
-    createIncomeChart();
-    createVillageChart();
-    createExpenseChart();
-  }, 100);
+  console.log('Loading dashboard with dynamic data');
+  
+  if (!allStudents || allStudents.length === 0) {
+    console.warn('No student data available for dashboard');
+    return;
+  }
+  
+  try {
+    // Get analytics data from Google Sheets service
+    const analyticsData = googleSheetsService.getAnalyticsData(allStudents);
+    console.log('Analytics data:', analyticsData);
+    
+    setTimeout(() => {
+      createAgeChart(analyticsData.ageDistribution);
+      createIncomeChart(analyticsData.incomeSourceDistribution);
+      createVillageChart(analyticsData.villageDistribution);
+      createExpenseChart(analyticsData.expenseBreakdown);
+      createPerformanceChart(analyticsData.performanceTrends);
+      updateDashboardStats(analyticsData.stats);
+    }, 100);
+  } catch (error) {
+    console.error('Error loading dashboard:', error);
+  }
 }
 
-function createAgeChart() {
+function createAgeChart(ageData) {
   const canvas = document.getElementById('ageChart');
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
-  
-  const ageGroups = {
-    '15-17': 0,
-    '18-20': 0,
-    '21-23': 0,
-    '24+': 0
-  };
-
-  sampleStudents.forEach(student => {
-    if (student.age <= 17) ageGroups['15-17']++;
-    else if (student.age <= 20) ageGroups['18-20']++;
-    else if (student.age <= 23) ageGroups['21-23']++;
-    else ageGroups['24+']++;
-  });
 
   if (charts.ageChart) {
     charts.ageChart.destroy();
@@ -371,11 +398,11 @@ function createAgeChart() {
   charts.ageChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: Object.keys(ageGroups),
+      labels: ageData.labels,
       datasets: [{
         label: 'Number of Students',
-        data: Object.values(ageGroups),
-        backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#5D878F']
+        data: ageData.data,
+        backgroundColor: ageData.colors
       }]
     },
     options: {
@@ -384,6 +411,14 @@ function createAgeChart() {
       plugins: {
         legend: {
           display: false
+        },
+        title: {
+          display: true,
+          text: 'Age Distribution',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
         }
       },
       scales: {
@@ -398,16 +433,11 @@ function createAgeChart() {
   });
 }
 
-function createIncomeChart() {
+function createIncomeChart(incomeData) {
   const canvas = document.getElementById('incomeChart');
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
-  
-  const incomeSources = {};
-  sampleStudents.forEach(student => {
-    incomeSources[student.incomeSource] = (incomeSources[student.incomeSource] || 0) + 1;
-  });
 
   if (charts.incomeChart) {
     charts.incomeChart.destroy();
@@ -416,10 +446,10 @@ function createIncomeChart() {
   charts.incomeChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: Object.keys(incomeSources),
+      labels: incomeData.labels,
       datasets: [{
-        data: Object.values(incomeSources),
-        backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F']
+        data: incomeData.data,
+        backgroundColor: incomeData.colors
       }]
     },
     options: {
@@ -428,22 +458,25 @@ function createIncomeChart() {
       plugins: {
         legend: {
           position: 'bottom'
+        },
+        title: {
+          display: true,
+          text: 'Income Sources',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
         }
       }
     }
   });
 }
 
-function createVillageChart() {
+function createVillageChart(villageData) {
   const canvas = document.getElementById('villageChart');
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
-  
-  const villages = {};
-  sampleStudents.forEach(student => {
-    villages[student.village] = (villages[student.village] || 0) + 1;
-  });
 
   if (charts.villageChart) {
     charts.villageChart.destroy();
@@ -452,11 +485,11 @@ function createVillageChart() {
   charts.villageChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: Object.keys(villages),
+      labels: villageData.labels,
       datasets: [{
         label: 'Number of Students',
-        data: Object.values(villages),
-        backgroundColor: '#1FB8CD'
+        data: villageData.data,
+        backgroundColor: villageData.colors
       }]
     },
     options: {
@@ -465,6 +498,14 @@ function createVillageChart() {
       plugins: {
         legend: {
           display: false
+        },
+        title: {
+          display: true,
+          text: 'Students by Village',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
         }
       },
       scales: {
@@ -479,31 +520,11 @@ function createVillageChart() {
   });
 }
 
-function createExpenseChart() {
+function createExpenseChart(expenseData) {
   const canvas = document.getElementById('expenseChart');
   if (!canvas) return;
   
   const ctx = canvas.getContext('2d');
-  
-  const expenseCategories = {
-    travel: 0,
-    schoolFees: 0,
-    books: 0,
-    stationery: 0,
-    uniform: 0,
-    tuition: 0
-  };
-
-  sampleStudents.forEach(student => {
-    Object.keys(student.expenses).forEach(category => {
-      expenseCategories[category] += student.expenses[category];
-    });
-  });
-
-  // Calculate averages
-  Object.keys(expenseCategories).forEach(category => {
-    expenseCategories[category] = Math.round(expenseCategories[category] / sampleStudents.length);
-  });
 
   if (charts.expenseChart) {
     charts.expenseChart.destroy();
@@ -512,11 +533,11 @@ function createExpenseChart() {
   charts.expenseChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Travel', 'School Fees', 'Books', 'Stationery', 'Uniform', 'Tuition'],
+      labels: expenseData.labels,
       datasets: [{
-        label: 'Average Expense (₹)',
-        data: Object.values(expenseCategories),
-        backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545']
+        label: 'Total Expenses (₹)',
+        data: expenseData.data,
+        backgroundColor: expenseData.colors
       }]
     },
     options: {
@@ -525,6 +546,14 @@ function createExpenseChart() {
       plugins: {
         legend: {
           display: false
+        },
+        title: {
+          display: true,
+          text: 'Expense Breakdown',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
         }
       },
       scales: {
@@ -539,6 +568,83 @@ function createExpenseChart() {
       }
     }
   });
+}
+
+// New function for performance trends
+function createPerformanceChart(performanceData) {
+  const canvas = document.getElementById('performanceChart');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+
+  if (charts.performanceChart) {
+    charts.performanceChart.destroy();
+  }
+  
+  charts.performanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: performanceData.labels,
+      datasets: [{
+        label: 'Average Marks (%)',
+        data: performanceData.data,
+        borderColor: '#3498db',
+        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'Academic Performance Trends',
+          font: {
+            size: 16,
+            weight: 'bold'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Function to update dashboard statistics
+function updateDashboardStats(stats) {
+  // Update stats cards on home page
+  const totalStudentsEl = document.querySelector('[data-stat="total-students"]');
+  const averageAgeEl = document.querySelector('[data-stat="average-age"]');
+  const medianIncomeEl = document.querySelector('[data-stat="median-income"]');
+  const averageExpensesEl = document.querySelector('[data-stat="average-expenses"]');
+  
+  if (totalStudentsEl) totalStudentsEl.textContent = stats.totalStudents.toLocaleString();
+  if (averageAgeEl) averageAgeEl.textContent = stats.averageAge + ' years';
+  if (medianIncomeEl) medianIncomeEl.textContent = '₹' + stats.medianIncome.toLocaleString();
+  if (averageExpensesEl) averageExpensesEl.textContent = '₹' + stats.averageExpenses.toLocaleString();
+  
+  // Update additional stats if elements exist
+  const totalExpensesEl = document.querySelector('[data-stat="total-expenses"]');
+  const studentsNeedingHelpEl = document.querySelector('[data-stat="students-needing-help"]');
+  
+  if (totalExpensesEl) totalExpensesEl.textContent = '₹' + stats.totalExpenses.toLocaleString();
+  if (studentsNeedingHelpEl) studentsNeedingHelpEl.textContent = stats.studentsNeedingHelp;
 }
 
 // Students Page
@@ -571,7 +677,7 @@ function filterStudents() {
   
   const searchTerm = searchInput.value.toLowerCase();
   
-  filteredStudents = sampleStudents.filter(student => 
+  filteredStudents = allStudents.filter(student => 
     student.studentName.toLowerCase().includes(searchTerm) ||
     student.village.toLowerCase().includes(searchTerm) ||
     student.currentEducation.toLowerCase().includes(searchTerm)
@@ -625,31 +731,33 @@ function createStudentCard(student) {
   card.className = 'card student-card';
   card.addEventListener('click', () => showStudentProfile(student.id));
 
-  const totalExpenses = Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0);
+  // Safely calculate total expenses
+  const expenses = student.expenses || {};
+  const totalExpenses = Object.values(expenses).reduce((sum, exp) => sum + (exp || 0), 0);
 
   card.innerHTML = `
     <div class="card__body">
-      <h3>${student.studentName}</h3>
+      <h3>${student.studentName || 'Unknown Student'}</h3>
       <div class="student-info">
         <div class="student-info-row">
           <span class="student-label">Age:</span>
-          <span class="student-value">${student.age} years</span>
+          <span class="student-value">${student.age || 0} years</span>
         </div>
         <div class="student-info-row">
           <span class="student-label">Class:</span>
-          <span class="student-value">${student.classStandard}</span>
+          <span class="student-value">${student.classStandard || 'N/A'}</span>
         </div>
         <div class="student-info-row">
           <span class="student-label">Village:</span>
-          <span class="student-value">${student.village}</span>
+          <span class="student-value">${student.village || 'N/A'}</span>
         </div>
         <div class="student-info-row">
           <span class="student-label">Education:</span>
-          <span class="student-value">${student.currentEducation}</span>
+          <span class="student-value">${student.currentEducation || 'N/A'}</span>
         </div>
         <div class="student-info-row">
           <span class="student-label">Annual Income:</span>
-          <span class="student-value currency">₹${student.annualIncome.toLocaleString()}</span>
+          <span class="student-value currency">₹${(student.annualIncome || 0).toLocaleString()}</span>
         </div>
         <div class="student-info-row">
           <span class="student-label">Total Expenses:</span>
@@ -711,7 +819,7 @@ function updatePagination() {
 // Student Profile
 function showStudentProfile(studentId) {
   console.log('Showing student profile:', studentId);
-  const student = sampleStudents.find(s => s.id === studentId);
+  const student = allStudents.find(s => s.id === studentId);
   if (!student) return;
 
   currentStudentId = studentId;
@@ -723,17 +831,25 @@ function renderStudentProfile(student) {
   const profileContent = document.getElementById('profile-content');
   if (!profileContent) return;
   
-  const totalExpenses = Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0);
+  // Safely calculate total expenses
+  const expenses = student.expenses || {};
+  const totalExpenses = Object.values(expenses).reduce((sum, exp) => sum + (exp || 0), 0);
+  
+  // Safely get parent data
+  const parents = student.parents || {};
+  const parentNames = parents.names || student.parentNames || 'N/A';
+  const parentAges = parents.ages || student.parentAges || 'N/A';
+  const parentEducation = parents.education || student.parentEducation || 'N/A';
   
   profileContent.innerHTML = `
     <div class="profile-header">
       <div class="profile-title">
-        <h1>${student.studentName}</h1>
-        <p class="profile-subtitle">${student.currentEducation} • ${student.village}</p>
+        <h1>${student.studentName || 'Unknown Student'}</h1>
+        <p class="profile-subtitle">${student.currentEducation || 'N/A'} • ${student.village || 'N/A'}</p>
       </div>
       <div class="profile-actions">
         <button class="btn btn--primary">Sponsor Student</button>
-        <a href="tel:${student.phone}" class="btn btn--outline">Call Student</a>
+        <a href="tel:${student.phone || ''}" class="btn btn--outline">Call Student</a>
       </div>
     </div>
 
@@ -744,31 +860,31 @@ function renderStudentProfile(student) {
             <h3>Personal Information</h3>
             <div class="profile-field">
               <span class="profile-field-label">Full Name:</span>
-              <span class="profile-field-value">${student.studentName}</span>
+              <span class="profile-field-value">${student.studentName || 'N/A'}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Age:</span>
-              <span class="profile-field-value">${student.age} years</span>
+              <span class="profile-field-value">${student.age || 0} years</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Class:</span>
-              <span class="profile-field-value">${student.classStandard}</span>
+              <span class="profile-field-value">${student.classStandard || 'N/A'}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">School/College:</span>
-              <span class="profile-field-value">${student.schoolCollege}</span>
+              <span class="profile-field-value">${student.schoolCollege || 'N/A'}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Current Education:</span>
-              <span class="profile-field-value">${student.currentEducation}</span>
+              <span class="profile-field-value">${student.currentEducation || 'N/A'}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Future Plans:</span>
-              <span class="profile-field-value">${student.futurePlans}</span>
+              <span class="profile-field-value">${student.futurePlans || 'N/A'}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Achievements:</span>
-              <span class="profile-field-value">${student.achievements}</span>
+              <span class="profile-field-value">${student.achievements || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -780,31 +896,31 @@ function renderStudentProfile(student) {
             <h3>Family Information</h3>
             <div class="profile-field">
               <span class="profile-field-label">Parents:</span>
-              <span class="profile-field-value">${student.parents.names}</span>
+              <span class="profile-field-value">${parentNames}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Parent Ages:</span>
-              <span class="profile-field-value">${student.parents.ages}</span>
+              <span class="profile-field-value">${parentAges}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Parent Education:</span>
-              <span class="profile-field-value">${student.parents.education}</span>
+              <span class="profile-field-value">${parentEducation}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Family Size:</span>
-              <span class="profile-field-value">${student.familySize} members</span>
+              <span class="profile-field-value">${student.familySize || 0} members</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Working Members:</span>
-              <span class="profile-field-value">${student.workingMembers}</span>
+              <span class="profile-field-value">${student.workingMembers || 0}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Annual Income:</span>
-              <span class="profile-field-value currency">₹${student.annualIncome.toLocaleString()}</span>
+              <span class="profile-field-value currency">₹${(student.annualIncome || 0).toLocaleString()}</span>
             </div>
             <div class="profile-field">
               <span class="profile-field-label">Income Source:</span>
-              <span class="profile-field-value">${student.incomeSource}</span>
+              <span class="profile-field-value">${student.incomeSource || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -816,10 +932,10 @@ function renderStudentProfile(student) {
         <div class="profile-section">
           <h3>Educational Expenses Breakdown</h3>
           <div class="expenses-breakdown">
-            ${Object.entries(student.expenses).map(([category, amount]) => `
+            ${Object.entries(expenses).map(([category, amount]) => `
               <div class="expense-item">
                 <span class="expense-label">${formatExpenseCategory(category)}:</span>
-                <span class="expense-amount">₹${amount.toLocaleString()}</span>
+                <span class="expense-amount">₹${(amount || 0).toLocaleString()}</span>
               </div>
             `).join('')}
           </div>
@@ -836,7 +952,7 @@ function renderStudentProfile(student) {
         <div class="profile-section">
           <h3>Academic Performance</h3>
           <div class="years-review">
-            ${student.yearsReview.map(year => `
+            ${(student.yearsReview || []).map(year => `
               <div class="year-item">
                 <div class="year-info">
                   <span class="year-label">Year ${year.year}:</span>
@@ -844,7 +960,7 @@ function renderStudentProfile(student) {
                 </div>
                 <div class="marks-badge">${year.marks}%</div>
               </div>
-            `).join('')}
+            `).join('') || '<p>No academic data available</p>'}
           </div>
         </div>
       </div>
@@ -857,16 +973,16 @@ function renderStudentProfile(student) {
           <div class="profile-field">
             <span class="profile-field-label">Phone:</span>
             <span class="profile-field-value">
-              <a href="tel:${student.phone}" class="phone-link">${student.phone}</a>
+              <a href="tel:${student.phone || ''}" class="phone-link">${student.phone || 'N/A'}</a>
             </span>
           </div>
           <div class="profile-field">
             <span class="profile-field-label">Address:</span>
-            <span class="profile-field-value">${student.address}</span>
+            <span class="profile-field-value">${student.address || 'N/A'}</span>
           </div>
           <div class="profile-field">
             <span class="profile-field-label">Needs Help:</span>
-            <span class="profile-field-value">${student.needsHelp}</span>
+            <span class="profile-field-value">${student.needsHelp || 'N/A'}</span>
           </div>
         </div>
       </div>
@@ -884,4 +1000,16 @@ function formatExpenseCategory(category) {
     tuition: 'Tuition'
   };
   return categoryMap[category] || category;
+}
+
+function initializeSyncStatus() {
+  // Auto-sync every 5 minutes if enabled
+  const autoSyncCheckbox = document.getElementById('auto-sync');
+  if (autoSyncCheckbox && autoSyncCheckbox.checked) {
+    setInterval(() => {
+      if (!document.getElementById('offline-mode')?.checked) {
+        loadData();
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+  }
 }
