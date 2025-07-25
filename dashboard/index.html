@@ -6,6 +6,8 @@
     <title>Student Sponsorship Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <script src="google-sheets-service.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -18,6 +20,7 @@
                 <button class="nav-link active" data-page="home">Home</button>
                 <button class="nav-link" data-page="dashboard">Dashboard</button>
                 <button class="nav-link" data-page="students">Students</button>
+                <button class="nav-link" data-page="settings">Settings</button>
             </div>
         </div>
     </nav>
@@ -44,7 +47,7 @@
                             <p class="stats-label">Average Age</p>
                         </div>
                     </div>
-                    <div class="card stats-card p-8">
+                    <div class="card stats-card">
                         <div class="card__body">
                             <h3 class="stats-number" id="median-income">₹45,000</h3>
                             <p class="stats-label">Median Income</p>
@@ -54,6 +57,26 @@
                         <div class="card__body">
                             <h3 class="stats-number" id="avg-expenses">₹29,833</h3>
                             <p class="stats-label">Average Expenses</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Sync Status -->
+                <div class="sync-status">
+                    <div class="card">
+                        <div class="card__body">
+                            <div class="sync-info">
+                                <div class="sync-indicator">
+                                    <span class="sync-dot" id="sync-dot"></span>
+                                    <span id="sync-status-text">Loading...</span>
+                                </div>
+                                <div class="sync-actions">
+                                    <button class="btn btn--outline btn--sm" id="refresh-data">
+                                        🔄 Refresh Data
+                                    </button>
+                                    <span class="sync-time" id="last-sync">Last sync: Never</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,6 +120,14 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card chart-card">
+                        <div class="card__body">
+                            <h3>Academic Performance Trends</h3>
+                            <div style="height: 300px;">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,6 +166,120 @@
                 
                 <div class="profile-content" id="profile-content">
                     <!-- Profile content will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page">
+            <div class="container">
+                <div class="settings-header">
+                    <h1>Settings</h1>
+                    <p class="settings-subtitle">Configure Google Sheets integration and data sync</p>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Google Sheets Configuration -->
+                    <div class="card settings-card">
+                        <div class="card__header">
+                            <h3>Google Sheets Integration</h3>
+                        </div>
+                        <div class="card__body">
+                            <form id="sheets-config-form">
+                                <div class="form-group">
+                                    <label class="form-label" for="sheet-id">Google Sheet ID</label>
+                                    <input type="text" id="sheet-id" class="form-control" 
+                                           placeholder="1ABC...XYZ" 
+                                           value="">
+                                    <small class="form-text">Found in your Google Sheet URL between /d/ and /edit</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="api-key">Google Sheets API Key</label>
+                                    <input type="password" id="api-key" class="form-control" 
+                                           placeholder="AIza...abc" 
+                                           value="">
+                                    <small class="form-text">Get this from Google Cloud Console</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="sheet-name">Sheet Name</label>
+                                    <input type="text" id="sheet-name" class="form-control" 
+                                           placeholder="students" 
+                                           value="students">
+                                    <small class="form-text">Name of the tab in your Google Sheet</small>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn--primary">Save Configuration</button>
+                                    <button type="button" class="btn btn--outline" id="test-connection">Test Connection</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Data Sync Settings -->
+                    <div class="card settings-card">
+                        <div class="card__header">
+                            <h3>Data Sync Settings</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="setting-item">
+                                <label class="setting-label">
+                                    <input type="checkbox" id="auto-sync" checked>
+                                    <span class="setting-text">Auto-sync data every 5 minutes</span>
+                                </label>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <label class="setting-label">
+                                    <input type="checkbox" id="offline-mode">
+                                    <span class="setting-text">Enable offline mode (use cached data)</span>
+                                </label>
+                            </div>
+                            
+                            <div class="sync-actions">
+                                <button class="btn btn--secondary" id="clear-cache">Clear Cache</button>
+                                <button class="btn btn--secondary" id="export-data">Export Data</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Setup Instructions -->
+                    <div class="card settings-card">
+                        <div class="card__header">
+                            <h3>Setup Instructions</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="instructions">
+                                <div class="instruction-step">
+                                    <h4>Step 1: Create Google Sheet</h4>
+                                    <p>Create a new Google Sheet and copy the sample data format. Use the CSV file provided in the data folder as reference.</p>
+                                </div>
+                                
+                                <div class="instruction-step">
+                                    <h4>Step 2: Get API Key</h4>
+                                    <p>Visit <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and create a Google Sheets API key.</p>
+                                </div>
+                                
+                                <div class="instruction-step">
+                                    <h4>Step 3: Make Sheet Public</h4>
+                                    <p>Share your Google Sheet with "Anyone with the link can view" permission.</p>
+                                </div>
+                                
+                                <div class="instruction-step">
+                                    <h4>Step 4: Configure Above</h4>
+                                    <p>Enter your Sheet ID and API Key in the configuration form above.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="sample-link">
+                                <a href="data/students.csv" download class="btn btn--outline">
+                                    📥 Download Sample CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

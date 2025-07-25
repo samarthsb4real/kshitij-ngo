@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Setup scripts with credentials
+setup-credentials.js
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.temp
