@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sponsorship Application Form</title>
+    <link rel="stylesheet" href="form-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="form-header">
+            <h1 id="form-title">Student Sponsorship Application Form</h1>
+            <p id="form-subtitle">Please fill out all required fields to apply for sponsorship</p>
+            
+            <!-- Language Toggle -->
+            <div class="language-toggle">
+                <label for="language-select" id="language-label">Language:</label>
+                <select id="language-select" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                </select>
+            </div>
+        </header>
+
+        <form id="sponsorship-form" novalidate>
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h2 id="personal-info-title">Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="student-name" id="name-label">Full Name *</label>
+                    <input type="text" id="student-name" name="studentName" required>
+                    <span class="error-message" id="name-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="date-of-birth" id="dob-label">Date of Birth *</label>
+                    <input type="date" id="date-of-birth" name="dateOfBirth" required>
+                    <span class="error-message" id="dob-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="age" id="age-label">Age *</label>
+                    <input type="number" id="age" name="age" min="1" max="21" required readonly>
+                    <span class="error-message" id="age-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="village-name" id="village-label">Village Name *</label>
+                    <input type="text" id="village-name" name="villageName" required>
+                    <span class="error-message" id="village-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="disability" id="disability-label">Any Disability</label>
+                    <select id="disability" name="disability">
+                        <option value="" id="no-disability">No</option>
+                        <option value="physical" id="physical-disability">Physical</option>
+                        <option value="visual" id="visual-disability">Visual</option>
+                        <option value="hearing" id="hearing-disability">Hearing</option>
+                        <option value="intellectual" id="intellectual-disability">Intellectual</option>
+                        <option value="other" id="other-disability">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Education Information Section -->
+            <div class="form-section">
+                <h2 id="education-info-title">Education Information</h2>
+                
+                <div class="form-group">
+                    <label for="current-education" id="current-edu-label">Current Education Level *</label>
+                    <select id="current-education" name="currentEducation" required>
+                        <option value="" id="select-education">Select Education Level</option>
+                        <option value="primary" id="primary-edu">Primary School</option>
+                        <option value="secondary" id="secondary-edu">Secondary School</option>
+                        <option value="higher-secondary" id="higher-secondary-edu">Higher Secondary</option>
+                        <option value="undergraduate" id="undergraduate-edu">Undergraduate</option>
+                        <option value="postgraduate" id="postgraduate-edu">Postgraduate</option>
+                        <option value="diploma" id="diploma-edu">Diploma</option>
+                        <option value="vocational" id="vocational-edu">Vocational Training</option>
+                    </select>
+                    <span class="error-message" id="current-edu-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="current-year" id="year-label">Current Year/Class *</label>
+                    <input type="text" id="current-year" name="currentYear" required>
+                    <span class="error-message" id="year-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="school-name" id="school-label">School/College Name *</label>
+                    <input type="text" id="school-name" name="schoolName" required>
+                    <span class="error-message" id="school-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="other-education" id="other-edu-label">Other Education/Courses</label>
+                    <textarea id="other-education" name="otherEducation" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="future-plans" id="future-plans-label">Future Study Plans *</label>
+                    <textarea id="future-plans" name="futurePlans" rows="4" required></textarea>
+                    <span class="error-message" id="future-plans-error"></span>
+                </div>
+            </div>
+
+            <!-- Academic Performance Section -->
+            <div class="form-section">
+                <h2 id="academic-performance-title">Academic Performance</h2>
+                
+                <div class="marks-section">
+                    <h3 id="marks-title">Marks for Last 3 Academic Years</h3>
+                    
+                    <div class="marks-year">
+                        <h4 id="year1-title">Most Recent Year</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="year1-class" id="year1-class-label">Class/Year</label>
+                                <input type="text" id="year1-class" name="year1Class">
+                            </div>
+                            <div class="form-group">
+                                <label for="year1-marks" id="year1-marks-label">Marks/Percentage</label>
+                                <input type="text" id="year1-marks" name="year1Marks">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="marks-year">
+                        <h4 id="year2-title">Second Recent Year</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="year2-class" id="year2-class-label">Class/Year</label>
+                                <input type="text" id="year2-class" name="year2Class">
+                            </div>
+                            <div class="form-group">
+                                <label for="year2-marks" id="year2-marks-label">Marks/Percentage</label>
+                                <input type="text" id="year2-marks" name="year2Marks">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="marks-year">
+                        <h4 id="year3-title">Third Recent Year</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="year3-class" id="year3-class-label">Class/Year</label>
+                                <input type="text" id="year3-class" name="year3Class">
+                            </div>
+                            <div class="form-group">
+                                <label for="year3-marks" id="year3-marks-label">Marks/Percentage</label>
+                                <input type="text" id="year3-marks" name="year3Marks">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="achievements" id="achievements-label">Achievements and Awards</label>
+                    <textarea id="achievements" name="achievements" rows="4"></textarea>
+                </div>
+            </div>
+
+            <!-- Expense Breakdown Section -->
+            <div class="form-section">
+                <h2 id="expenses-title">Education Expense Breakdown</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tuition-fees" id="tuition-label">Tuition Fees (₹/year) *</label>
+                        <input type="number" id="tuition-fees" name="tuitionFees" min="0" required>
+                        <span class="error-message" id="tuition-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="books-cost" id="books-label">Books and Study Material (₹/year) *</label>
+                        <input type="number" id="books-cost" name="booksCost" min="0" required>
+                        <span class="error-message" id="books-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stationery-cost" id="stationery-label">Stationery (₹/year) *</label>
+                        <input type="number" id="stationery-cost" name="stationeryCost" min="0" required>
+                        <span class="error-message" id="stationery-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="travel-cost" id="travel-label">Travel/Transportation (₹/year) *</label>
+                        <input type="number" id="travel-cost" name="travelCost" min="0" required>
+                        <span class="error-message" id="travel-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="uniform-cost" id="uniform-label">Uniform and Clothing (₹/year)</label>
+                        <input type="number" id="uniform-cost" name="uniformCost" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="exam-fees" id="exam-label">Exam Fees (₹/year)</label>
+                        <input type="number" id="exam-fees" name="examFees" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="hostel-fees" id="hostel-label">Hostel/Accommodation (₹/year)</label>
+                        <input type="number" id="hostel-fees" name="hostelFees" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="other-expenses" id="other-expenses-label">Other Expenses (₹/year)</label>
+                        <input type="number" id="other-expenses" name="otherExpenses" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="total-expenses" id="total-expenses-label">Total Annual Education Expenses (₹)</label>
+                    <input type="number" id="total-expenses" name="totalExpenses" readonly>
+                </div>
+            </div>
+
+            <!-- Family Information Section -->
+            <div class="form-section">
+                <h2 id="family-info-title">Family Information</h2>
+                
+                <div class="form-group">
+                    <label for="father-name" id="father-name-label">Father's Name *</label>
+                    <input type="text" id="father-name" name="fatherName" required>
+                    <span class="error-message" id="father-name-error"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="father-age" id="father-age-label">Father's Age *</label>
+                        <input type="number" id="father-age" name="fatherAge" min="18" max="100" required>
+                        <span class="error-message" id="father-age-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="father-occupation" id="father-occupation-label">Father's Occupation *</label>
+                        <input type="text" id="father-occupation" name="fatherOccupation" required>
+                        <span class="error-message" id="father-occupation-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="father-income" id="father-income-label">Father's Annual Income (₹) *</label>
+                        <input type="number" id="father-income" name="fatherIncome" min="0" required>
+                        <span class="error-message" id="father-income-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="family-yearly-income" id="family-income-label">Total Family Annual Income (₹) *</label>
+                        <input type="number" id="family-yearly-income" name="familyYearlyIncome" min="0" required>
+                        <span class="error-message" id="family-income-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="total-family-members" id="total-members-label">Total Family Members *</label>
+                        <input type="number" id="total-family-members" name="totalFamilyMembers" min="1" required>
+                        <span class="error-message" id="total-members-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="earning-members" id="earning-members-label">Earning Members in Family *</label>
+                        <input type="number" id="earning-members" name="earningMembers" min="0" required>
+                        <span class="error-message" id="earning-members-error"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="education-expense-bearer" id="expense-bearer-label">Who Currently Bears Education Expenses? *</label>
+                    <input type="text" id="education-expense-bearer" name="educationExpenseBearer" required>
+                    <span class="error-message" id="expense-bearer-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="current-funder" id="current-funder-label">Who is Currently Funding Child's Education?</label>
+                    <input type="text" id="current-funder" name="currentFunder">
+                </div>
+
+                <div class="form-group">
+                    <label for="funder-income" id="funder-income-label">Current Funder's Annual Income (₹)</label>
+                    <input type="number" id="funder-income" name="funderIncome" min="0">
+                </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h2 id="contact-info-title">Contact Information</h2>
+                
+                <div class="form-group">
+                    <label for="phone-number" id="phone-label">Phone Number *</label>
+                    <input type="tel" id="phone-number" name="phoneNumber" pattern="[0-9]{10}" required>
+                    <span class="error-message" id="phone-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="address" id="address-label">Complete Address *</label>
+                    <textarea id="address" name="address" rows="4" required></textarea>
+                    <span class="error-message" id="address-error"></span>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" id="submit-btn">Submit Application</button>
+                <button type="reset" id="reset-btn">Reset Form</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="form-validation.js"></script>
+    <script src="language-switcher.js"></script>
+</body>
+</html>
