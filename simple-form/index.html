@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sponsorship Form</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 { font-size: 2rem; margin-bottom: 10px; }
+        .header p { opacity: 0.9; }
+        
+        .form-container { padding: 30px; }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .field { margin-bottom: 15px; }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .required { color: #e74c3c; }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn:hover { transform: translateY(-2px); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        
+        .section h3 { color: #495057; margin-bottom: 15px; }
+        .section h4 { color: #6c757d; margin-bottom: 10px; font-size: 1rem; }
+        
+        @media (max-width: 768px) {
+            .row { grid-template-columns: 1fr; }
+            .container { margin: 10px; }
+            .form-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Student Sponsorship Application</h1>
+            <p>Fill out this form to apply for educational sponsorship</p>
+        </div>
+        
+        <div class="form-container">
+            <!-- Status Messages -->
+            <div id="status" class="status"></div>
+            
+            <form id="sponsorshipForm">
+                <!-- Personal Information -->
+                <div class="section">
+                    <h2>Personal Information</h2>
+                    <div class="field">
+                        <label>Full Name <span class="required">*</span></label>
+                        <input type="text" name="studentName" required>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <input type="date" name="dateOfBirth" required>
+                        </div>
+                        <div class="field">
+                            <label>Age <span class="required">*</span></label>
+                            <input type="number" name="age" min="1" max="21" readonly>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Village Name <span class="required">*</span></label>
+                        <input type="text" name="villageName" required>
+                    </div>
+                    <div class="field">
+                        <label>Any Disability</label>
+                        <select name="disability">
+                            <option value="">No</option>
+                            <option value="physical">Physical</option>
+                            <option value="visual">Visual</option>
+                            <option value="hearing">Hearing</option>
+                            <option value="intellectual">Intellectual</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Education Information -->
+                <div class="section">
+                    <h2>Education Information</h2>
+                    <div class="field">
+                        <label>Current Education Level <span class="required">*</span></label>
+                        <select name="currentEducation" required>
+                            <option value="">Select Education Level</option>
+                            <option value="primary">Primary School</option>
+                            <option value="secondary">Secondary School</option>
+                            <option value="higher-secondary">Higher Secondary</option>
+                            <option value="undergraduate">Undergraduate</option>
+                            <option value="postgraduate">Postgraduate</option>
+                            <option value="diploma">Diploma</option>
+                            <option value="vocational">Vocational Training</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Current Year/Class <span class="required">*</span></label>
+                            <input type="text" name="currentYear" required>
+                        </div>
+                        <div class="field">
+                            <label>School/College Name <span class="required">*</span></label>
+                            <input type="text" name="schoolName" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Other Education/Courses</label>
+                        <textarea name="otherEducation" rows="3"></textarea>
+                    </div>
+                    <div class="field">
+                        <label>Future Study Plans <span class="required">*</span></label>
+                        <textarea name="futurePlans" rows="3" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Academic Performance -->
+                <div class="section">
+                    <h2>Academic Performance</h2>
+                    <h3>Marks for Last 3 Academic Years</h3>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <h4>Most Recent Year</h4>
+                        <div class="row">
+                            <div class="field">
+                                <label>Class/Year</label>
+                                <input type="text" name="year1Class">
+                            </div>
+                            <div class="field">
+                                <label>Marks/Percentage</label>
+                                <input type="text" name="year1Marks">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <h4>Second Recent Year</h4>
+                        <div class="row">
+                            <div class="field">
+                                <label>Class/Year</label>
+                                <input type="text" name="year2Class">
+                            </div>
+                            <div class="field">
+                                <label>Marks/Percentage</label>
+                                <input type="text" name="year2Marks">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <h4>Third Recent Year</h4>
+                        <div class="row">
+                            <div class="field">
+                                <label>Class/Year</label>
+                                <input type="text" name="year3Class">
+                            </div>
+                            <div class="field">
+                                <label>Marks/Percentage</label>
+                                <input type="text" name="year3Marks">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="field">
+                        <label>Achievements and Awards</label>
+                        <textarea name="achievements" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <!-- Education Expense Breakdown -->
+                <div class="section">
+                    <h2>Education Expense Breakdown</h2>
+                    <div class="row">
+                        <div class="field">
+                            <label>Tuition Fees (₹/year) <span class="required">*</span></label>
+                            <input type="number" name="tuitionFees" min="0" required>
+                        </div>
+                        <div class="field">
+                            <label>Books and Study Material (₹/year) <span class="required">*</span></label>
+                            <input type="number" name="booksCost" min="0" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Stationery (₹/year) <span class="required">*</span></label>
+                            <input type="number" name="stationeryCost" min="0" required>
+                        </div>
+                        <div class="field">
+                            <label>Travel/Transportation (₹/year) <span class="required">*</span></label>
+                            <input type="number" name="travelCost" min="0" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Uniform and Clothing (₹/year)</label>
+                            <input type="number" name="uniformCost" min="0">
+                        </div>
+                        <div class="field">
+                            <label>Exam Fees (₹/year)</label>
+                            <input type="number" name="examFees" min="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Hostel/Accommodation (₹/year)</label>
+                            <input type="number" name="hostelFees" min="0">
+                        </div>
+                        <div class="field">
+                            <label>Other Expenses (₹/year)</label>
+                            <input type="number" name="otherExpenses" min="0">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Total Annual Education Expenses (₹)</label>
+                        <input type="number" name="totalExpenses" readonly>
+                    </div>
+                </div>
+
+                <!-- Family Information -->
+                <div class="section">
+                    <h2>Family Information</h2>
+                    <div class="field">
+                        <label>Father's Name <span class="required">*</span></label>
+                        <input type="text" name="fatherName" required>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Father's Age <span class="required">*</span></label>
+                            <input type="number" name="fatherAge" min="18" max="100" required>
+                        </div>
+                        <div class="field">
+                            <label>Father's Occupation <span class="required">*</span></label>
+                            <input type="text" name="fatherOccupation" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Father's Annual Income (₹) <span class="required">*</span></label>
+                            <input type="number" name="fatherIncome" min="0" required>
+                        </div>
+                        <div class="field">
+                            <label>Total Family Annual Income (₹) <span class="required">*</span></label>
+                            <input type="number" name="familyYearlyIncome" min="0" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="field">
+                            <label>Total Family Members <span class="required">*</span></label>
+                            <input type="number" name="totalFamilyMembers" min="1" required>
+                        </div>
+                        <div class="field">
+                            <label>Earning Members in Family <span class="required">*</span></label>
+                            <input type="number" name="earningMembers" min="0" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Who Currently Bears Education Expenses? <span class="required">*</span></label>
+                        <input type="text" name="educationExpenseBearer" required>
+                    </div>
+                    <div class="field">
+                        <label>Who is Currently Funding Child's Education?</label>
+                        <input type="text" name="currentFunder">
+                    </div>
+                    <div class="field">
+                        <label>Current Funder's Annual Income (₹)</label>
+                        <input type="number" name="funderIncome" min="0">
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="section">
+                    <h2>Contact Information</h2>
+                    <div class="field">
+                        <label>Phone Number <span class="required">*</span></label>
+                        <input type="tel" name="phoneNumber" pattern="[0-9]{10}" required>
+                    </div>
+                    <div class="field">
+                        <label>Complete Address <span class="required">*</span></label>
+                        <textarea name="address" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Simple Form Handler with Google Sheets Integration
+        class SimpleFormHandler {
+            constructor() {
+                this.form = document.getElementById('sponsorshipForm');
+                this.submitBtn = this.form.querySelector('.submit-btn');
+                this.status = document.getElementById('status');
+                
+                // Google Sheets Web App URL - Replace with your URL
+                this.sheetsURL = 'https://script.google.com/macros/s/AKfycbx11sEMlGtdW6WK-x2lrRL261rhFhl9-4OB5ZUBDOe-Lvkbhe_HaUN0--GtatF5loZw/exec';
+                
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.setupAutoCalculations();
+            }
+
+            setupAutoCalculations() {
+                // Auto-calculate age from date of birth
+                const dobField = this.form.querySelector('input[name="dateOfBirth"]');
+                const ageField = this.form.querySelector('input[name="age"]');
+                
+                dobField.addEventListener('change', () => {
+                    const dob = new Date(dobField.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const monthDiff = today.getMonth() - dob.getMonth();
+                    
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    
+                    ageField.value = age > 0 ? age : '';
+                });
+
+                // Auto-calculate total expenses
+                const expenseFields = [
+                    'tuitionFees', 'booksCost', 'stationeryCost', 'travelCost',
+                    'uniformCost', 'examFees', 'hostelFees', 'otherExpenses'
+                ];
+                const totalField = this.form.querySelector('input[name="totalExpenses"]');
+                
+                expenseFields.forEach(fieldName => {
+                    const field = this.form.querySelector(`input[name="${fieldName}"]`);
+                    if (field) {
+                        field.addEventListener('input', () => {
+                            let total = 0;
+                            expenseFields.forEach(name => {
+                                const f = this.form.querySelector(`input[name="${name}"]`);
+                                if (f && f.value) {
+                                    total += parseFloat(f.value) || 0;
+                                }
+                            });
+                            totalField.value = total;
+                        });
+                    }
+                });
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                this.setSubmitState(true);
+                this.showStatus('Submitting application...', 'info');
+
+                try {
+                    const formData = this.collectFormData();
+                    await this.submitToSheets(formData);
+                    
+                    this.showStatus('✅ Application submitted successfully!', 'success');
+                    this.form.reset();
+                    
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    this.showStatus('❌ Error submitting application. Please try again.', 'error');
+                } finally {
+                    this.setSubmitState(false);
+                }
+            }
+
+            collectFormData() {
+                const formData = new FormData(this.form);
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    submissionId: 'APP_' + Date.now()
+                };
+                
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                return data;
+            }
+
+            async submitToSheets(data) {
+                const response = await fetch(this.sheetsURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Submission failed');
+                }
+            }
+
+            setSubmitState(isSubmitting) {
+                this.submitBtn.disabled = isSubmitting;
+                this.submitBtn.textContent = isSubmitting ? 'Submitting...' : 'Submit Application';
+            }
+
+            showStatus(message, type) {
+                this.status.textContent = message;
+                this.status.className = `status ${type}`;
+                this.status.style.display = 'block';
+                
+                if (type === 'success') {
+                    setTimeout(() => {
+                        this.status.style.display = 'none';
+                    }, 5000);
+                }
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SimpleFormHandler();
+        });
+    </script>
+</body>
+</html>

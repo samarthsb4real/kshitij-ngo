@@ -1,338 +1,723 @@
-// Form validation and functionality
+// Production-Grade Form Validation for Sponsorship Form
+// Comprehensive validation with security, accessibility, and UX features
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('sponsorship-form');
-    const dateOfBirthInput = document.getElementById('date-of-birth');
-    const ageInput = document.getElementById('age');
-    const expenseInputs = document.querySelectorAll('[id$="-cost"], [id$="-fees"], #other-expenses');
-    const totalExpensesInput = document.getElementById('total-expenses');
-    const earningMembersInput = document.getElementById('earning-members');
-    const totalMembersInput = document.getElementById('total-family-members');
-
-    // Age calculation based on date of birth
-    dateOfBirthInput.addEventListener('change', function() {
-        const dob = new Date(this.value);
-        const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const monthDiff = today.getMonth() - dob.getMonth();
+class FormValidator {
+    constructor() {
+        this.form = document.getElementById('sponsorship-form');
+        this.errors = new Map();
+        this.isSubmitting = false;
+        this.autoSaveTimer = null;
+        this.submissionAttempts = 0;
+        this.maxAttempts = 3;
         
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
-        
-        ageInput.value = age;
-        
-        // Validate age (must be 21 or under)
-        if (age > 21) {
-            showError('age-error', 'Age must be 21 or under to be eligible for sponsorship');
-            ageInput.classList.add('error');
-        } else if (age < 1) {
-            showError('age-error', 'Please enter a valid date of birth');
-            ageInput.classList.add('error');
-        } else {
-            clearError('age-error');
-            ageInput.classList.remove('error');
-        }
-    });
-
-    // Real-time expense calculation
-    expenseInputs.forEach(input => {
-        input.addEventListener('input', calculateTotalExpenses);
-    });
-
-    function calculateTotalExpenses() {
-        let total = 0;
-        expenseInputs.forEach(input => {
-            const value = parseFloat(input.value) || 0;
-            total += value;
-        });
-        totalExpensesInput.value = total;
+        this.init();
     }
 
-    // Validate earning members vs total members
-    function validateFamilyMembers() {
-        const totalMembers = parseInt(totalMembersInput.value) || 0;
-        const earningMembers = parseInt(earningMembersInput.value) || 0;
+    init() {
+        if (!this.form) {
+            console.error('Sponsorship form not found');
+            return;
+        }
+
+        this.setupEventListeners();
+        this.setupAutoSave();
+        this.setupProgressTracking();
+        this.loadSavedData();
+        this.setupAccessibility();
+    }
+
+    setupEventListeners() {
+        // Real-time validation on input
+        this.form.addEventListener('input', (e) => this.handleInput(e));
+        this.form.addEventListener('blur', (e) => this.handleBlur(e), true);
+        this.form.addEventListener('change', (e) => this.handleChange(e));
+        
+        // Form submission
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        
+        // Reset button
+        const resetBtn = document.getElementById('reset-btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', (e) => this.handleReset(e));
+        }
+    }
+
+    setupAutoSave() {
+        if (!CONFIG?.ui?.autoSaveEnabled) return;
+        
+        const interval = CONFIG.ui.autoSaveInterval || 30000;
+        this.autoSaveTimer = setInterval(() => {
+            this.saveFormData();
+        }, interval);
+    }
+
+    setupProgressTracking() {
+        if (!CONFIG?.ui?.showProgressIndicator) return;
+        
+        this.createProgressIndicator();
+        this.updateProgress();
+    }
+
+    setupAccessibility() {
+        // Add ARIA labels and descriptions
+        const requiredFields = this.form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            field.setAttribute('aria-required', 'true');
+            
+            // Add asterisk to label if not present
+            const label = this.form.querySelector(`label[for="${field.id}"]`);
+            if (label && !label.textContent.includes('*')) {
+                label.innerHTML += ' <span class="required-asterisk" aria-label="required">*</span>';
+            }
+        });
+    }
+
+    handleInput(e) {
+        const field = e.target;
+        if (!field.name) return;
+
+        // Clear previous errors on input
+        this.clearFieldError(field);
+        
+        // Special handling for specific fields
+        switch (field.id) {
+            case 'date-of-birth':
+                this.calculateAge();
+                break;
+            case 'tuition-fees':
+            case 'books-cost':
+            case 'stationery-cost':
+            case 'travel-cost':
+            case 'uniform-cost':
+            case 'exam-fees':
+            case 'hostel-fees':
+            case 'other-expenses':
+                this.calculateTotalExpenses();
+                break;
+            case 'phone-number':
+                this.formatPhoneNumber(field);
+                break;
+        }
+
+        // Update progress
+        this.updateProgress();
+    }
+
+    handleBlur(e) {
+        const field = e.target;
+        if (!field.name) return;
+
+        // Validate field on blur
+        this.validateField(field);
+    }
+
+    handleChange(e) {
+        const field = e.target;
+        if (!field.name) return;
+
+        // Validate and update progress
+        this.validateField(field);
+        this.updateProgress();
+    }
+
+    async handleSubmit(e) {
+        e.preventDefault();
+        
+        if (this.isSubmitting) return;
+        
+        this.submissionAttempts++;
+        
+        if (this.submissionAttempts > this.maxAttempts) {
+            this.showError('Maximum submission attempts exceeded. Please refresh the page.');
+            return;
+        }
+
+        // Comprehensive validation
+        if (!this.validateForm()) {
+            this.showError('Please correct the errors below and try again.');
+            return;
+        }
+
+        // Security checks
+        if (!this.performSecurityChecks()) {
+            this.showError('Security validation failed. Please try again.');
+            return;
+        }
+
+        this.isSubmitting = true;
+        this.setSubmitState(true);
+
+        try {
+            const formData = this.collectFormData();
+            
+            // Submit to configured backends
+            await this.submitForm(formData);
+            
+            this.showSuccess('Application submitted successfully! We will review your application and contact you soon.');
+            this.clearSavedData();
+            this.form.reset();
+            this.updateProgress();
+            
+        } catch (error) {
+            console.error('Submission error:', error);
+            this.showError(`Submission failed: ${error.message}`);
+        } finally {
+            this.isSubmitting = false;
+            this.setSubmitState(false);
+        }
+    }
+
+    handleReset(e) {
+        if (!confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+            e.preventDefault();
+            return;
+        }
+        
+        this.clearAllErrors();
+        this.clearSavedData();
+        this.updateProgress();
+    }
+
+    validateForm() {
+        let isValid = true;
+        this.errors.clear();
+
+        // Validate required fields
+        const requiredFields = CONFIG?.validation?.requiredFields || [];
+        requiredFields.forEach(fieldName => {
+            const field = this.form.querySelector(`[name="${fieldName}"]`);
+            if (field && !this.validateField(field)) {
+                isValid = false;
+            }
+        });
+
+        // Cross-field validation
+        if (!this.validateCrossFields()) {
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    validateField(field) {
+        if (!field || !field.name) return true;
+
+        const value = field.value.trim();
+        const fieldName = field.name;
+        let isValid = true;
+
+        // Required field validation
+        if (field.hasAttribute('required') && !value) {
+            this.setFieldError(field, 'This field is required');
+            return false;
+        }
+
+        // Skip further validation if field is empty and not required
+        if (!value && !field.hasAttribute('required')) {
+            return true;
+        }
+
+        // Field-specific validation
+        switch (fieldName) {
+            case 'studentName':
+            case 'fatherName':
+                if (!/^[a-zA-Z\s.'-]+$/.test(value)) {
+                    this.setFieldError(field, 'Please enter a valid name (letters only)');
+                    isValid = false;
+                }
+                break;
+
+            case 'age':
+                const age = parseInt(value);
+                const minAge = CONFIG?.validation?.minAge || 1;
+                const maxAge = CONFIG?.validation?.maxAge || 21;
+                if (age < minAge || age > maxAge) {
+                    this.setFieldError(field, `Age must be between ${minAge} and ${maxAge}`);
+                    isValid = false;
+                }
+                break;
+
+            case 'phoneNumber':
+                const phonePattern = CONFIG?.validation?.phonePattern || /^[0-9]{10}$/;
+                if (!phonePattern.test(value)) {
+                    this.setFieldError(field, 'Please enter a valid 10-digit phone number');
+                    isValid = false;
+                }
+                break;
+
+            case 'fatherAge':
+                const fatherAge = parseInt(value);
+                if (fatherAge < 18 || fatherAge > 100) {
+                    this.setFieldError(field, 'Please enter a valid age (18-100)');
+                    isValid = false;
+                }
+                break;
+
+            case 'fatherIncome':
+            case 'familyYearlyIncome':
+            case 'tuitionFees':
+            case 'booksCost':
+            case 'stationeryCost':
+            case 'travelCost':
+                const amount = parseFloat(value);
+                if (amount < 0) {
+                    this.setFieldError(field, 'Amount cannot be negative');
+                    isValid = false;
+                } else if (amount > 10000000) { // 1 crore limit
+                    this.setFieldError(field, 'Amount seems too high, please verify');
+                    isValid = false;
+                }
+                break;
+
+            case 'totalFamilyMembers':
+            case 'earningMembers':
+                const count = parseInt(value);
+                if (count < 1 || count > 50) {
+                    this.setFieldError(field, 'Please enter a valid number (1-50)');
+                    isValid = false;
+                }
+                break;
+
+            case 'dateOfBirth':
+                if (!this.validateDateOfBirth(value)) {
+                    this.setFieldError(field, 'Please enter a valid date of birth');
+                    isValid = false;
+                }
+                break;
+        }
+
+        if (isValid) {
+            this.clearFieldError(field);
+        }
+
+        return isValid;
+    }
+
+    validateCrossFields() {
+        let isValid = true;
+
+        // Validate family members vs earning members
+        const totalMembers = parseInt(this.getFieldValue('totalFamilyMembers')) || 0;
+        const earningMembers = parseInt(this.getFieldValue('earningMembers')) || 0;
         
         if (earningMembers > totalMembers) {
-            showError('earning-members-error', 'Earning members cannot exceed total family members');
-            return false;
-        } else {
-            clearError('earning-members-error');
-            return true;
+            const earningField = this.form.querySelector('[name="earningMembers"]');
+            this.setFieldError(earningField, 'Earning members cannot exceed total family members');
+            isValid = false;
         }
-    }
 
-    totalMembersInput.addEventListener('input', validateFamilyMembers);
-    earningMembersInput.addEventListener('input', validateFamilyMembers);
-
-    // Form validation functions
-    function validateRequired(fieldId, errorId, message) {
-        const field = document.getElementById(fieldId);
-        const value = field.value.trim();
+        // Validate father's income vs family income
+        const fatherIncome = parseFloat(this.getFieldValue('fatherIncome')) || 0;
+        const familyIncome = parseFloat(this.getFieldValue('familyYearlyIncome')) || 0;
         
-        if (!value) {
-            showError(errorId, message);
-            field.classList.add('error');
-            return false;
-        } else {
-            clearError(errorId);
-            field.classList.remove('error');
-            return true;
+        if (fatherIncome > familyIncome) {
+            const familyIncomeField = this.form.querySelector('[name="familyYearlyIncome"]');
+            this.setFieldError(familyIncomeField, 'Family income cannot be less than father\'s income');
+            isValid = false;
         }
+
+        return isValid;
     }
 
-    function validateName(fieldId, errorId) {
-        const field = document.getElementById(fieldId);
-        const value = field.value.trim();
-        const namePattern = /^[a-zA-Z\s]+$/;
+    validateDateOfBirth(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
         
-        if (!value) {
-            showError(errorId, 'This field is required');
-            field.classList.add('error');
-            return false;
-        } else if (!namePattern.test(value)) {
-            showError(errorId, 'Please enter a valid name (letters and spaces only)');
-            field.classList.add('error');
-            return false;
-        } else {
-            clearError(errorId);
-            field.classList.remove('error');
-            return true;
-        }
-    }
-
-    function validatePhone(fieldId, errorId) {
-        const field = document.getElementById(fieldId);
-        const value = field.value.trim();
-        const phonePattern = /^[6-9]\d{9}$/;
+        // Check if date is valid
+        if (isNaN(date.getTime())) return false;
         
-        if (!value) {
-            showError(errorId, 'Phone number is required');
-            field.classList.add('error');
-            return false;
-        } else if (!phonePattern.test(value)) {
-            showError(errorId, 'Please enter a valid 10-digit Indian mobile number');
-            field.classList.add('error');
-            return false;
-        } else {
-            clearError(errorId);
-            field.classList.remove('error');
-            return true;
-        }
-    }
-
-    function validateEmail(fieldId, errorId) {
-        const field = document.getElementById(fieldId);
-        const value = field.value.trim();
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Check if date is not in the future
+        if (date > today) return false;
         
-        if (value && !emailPattern.test(value)) {
-            showError(errorId, 'Please enter a valid email address');
-            field.classList.add('error');
-            return false;
-        } else {
-            clearError(errorId);
-            field.classList.remove('error');
-            return true;
-        }
-    }
-
-    function validateAge() {
-        const age = parseInt(ageInput.value);
-        if (!age || age < 1 || age > 21) {
-            showError('age-error', 'Age must be between 1 and 21 years');
-            return false;
-        }
-        clearError('age-error');
+        // Check if date is reasonable (not too old)
+        const hundredYearsAgo = new Date();
+        hundredYearsAgo.setFullYear(today.getFullYear() - 100);
+        if (date < hundredYearsAgo) return false;
+        
         return true;
     }
 
-    function validateNumberField(fieldId, errorId, min = 0, message = 'Please enter a valid amount') {
-        const field = document.getElementById(fieldId);
-        const value = parseFloat(field.value);
+    performSecurityChecks() {
+        if (!CONFIG?.security?.enableRateLimiting) return true;
         
-        if (field.hasAttribute('required') && (!value && value !== 0)) {
-            showError(errorId, 'This field is required');
-            field.classList.add('error');
+        // Check submission rate limiting
+        const submissions = JSON.parse(localStorage.getItem('submissionTimes') || '[]');
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        const recentSubmissions = submissions.filter(time => time > oneHourAgo);
+        
+        const maxSubmissions = CONFIG.security.maxSubmissionsPerHour || 5;
+        if (recentSubmissions.length >= maxSubmissions) {
             return false;
-        } else if (value < min) {
-            showError(errorId, `Value must be at least ${min}`);
-            field.classList.add('error');
-            return false;
-        } else {
-            clearError(errorId);
-            field.classList.remove('error');
-            return true;
+        }
+        
+        // Record this submission attempt
+        recentSubmissions.push(Date.now());
+        localStorage.setItem('submissionTimes', JSON.stringify(recentSubmissions));
+        
+        return true;
+    }
+
+    // Utility methods continue in next part...
+    calculateAge() {
+        const dobField = document.getElementById('date-of-birth');
+        const ageField = document.getElementById('age');
+        
+        if (!dobField?.value || !ageField) return;
+        
+        const birthDate = new Date(dobField.value);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        ageField.value = age > 0 ? age : '';
+        this.validateField(ageField);
+    }
+
+    calculateTotalExpenses() {
+        const expenseFields = [
+            'tuition-fees', 'books-cost', 'stationery-cost', 'travel-cost',
+            'uniform-cost', 'exam-fees', 'hostel-fees', 'other-expenses'
+        ];
+        
+        let total = 0;
+        expenseFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field?.value) {
+                total += parseFloat(field.value) || 0;
+            }
+        });
+        
+        const totalField = document.getElementById('total-expenses');
+        if (totalField) {
+            totalField.value = total;
         }
     }
 
-    function showError(errorId, message) {
-        const errorElement = document.getElementById(errorId);
+    formatPhoneNumber(field) {
+        let value = field.value.replace(/\D/g, ''); // Remove non-digits
+        if (value.length > 10) {
+            value = value.substring(0, 10);
+        }
+        field.value = value;
+    }
+
+    setFieldError(field, message) {
+        this.errors.set(field.name, message);
+        
+        const errorElement = document.getElementById(field.id + '-error');
         if (errorElement) {
             errorElement.textContent = message;
             errorElement.style.display = 'block';
         }
+        
+        field.classList.add('error');
+        field.setAttribute('aria-invalid', 'true');
+        field.setAttribute('aria-describedby', field.id + '-error');
     }
 
-    function clearError(errorId) {
-        const errorElement = document.getElementById(errorId);
+    clearFieldError(field) {
+        this.errors.delete(field.name);
+        
+        const errorElement = document.getElementById(field.id + '-error');
         if (errorElement) {
-            errorElement.textContent = '';
             errorElement.style.display = 'none';
         }
+        
+        field.classList.remove('error');
+        field.removeAttribute('aria-invalid');
+        field.removeAttribute('aria-describedby');
     }
 
-    // Real-time validation for specific fields
-    document.getElementById('student-name').addEventListener('blur', () => validateName('student-name', 'name-error'));
-    document.getElementById('village-name').addEventListener('blur', () => validateRequired('village-name', 'village-error', 'Village name is required'));
-    document.getElementById('current-education').addEventListener('change', () => validateRequired('current-education', 'current-edu-error', 'Please select current education level'));
-    document.getElementById('current-year').addEventListener('blur', () => validateRequired('current-year', 'year-error', 'Current year/class is required'));
-    document.getElementById('school-name').addEventListener('blur', () => validateRequired('school-name', 'school-error', 'School/College name is required'));
-    document.getElementById('future-plans').addEventListener('blur', () => validateRequired('future-plans', 'future-plans-error', 'Please describe your future study plans'));
-    
-    // Expense field validations
-    document.getElementById('tuition-fees').addEventListener('blur', () => validateNumberField('tuition-fees', 'tuition-error', 0, 'Please enter a valid tuition amount'));
-    document.getElementById('books-cost').addEventListener('blur', () => validateNumberField('books-cost', 'books-error', 0, 'Please enter a valid books cost'));
-    document.getElementById('stationery-cost').addEventListener('blur', () => validateNumberField('stationery-cost', 'stationery-error', 0, 'Please enter a valid stationery cost'));
-    document.getElementById('travel-cost').addEventListener('blur', () => validateNumberField('travel-cost', 'travel-error', 0, 'Please enter a valid travel cost'));
-    
-    // Family information validations
-    document.getElementById('father-name').addEventListener('blur', () => validateName('father-name', 'father-name-error'));
-    document.getElementById('father-age').addEventListener('blur', () => validateNumberField('father-age', 'father-age-error', 18, 'Father\'s age must be at least 18'));
-    document.getElementById('father-occupation').addEventListener('blur', () => validateRequired('father-occupation', 'father-occupation-error', 'Father\'s occupation is required'));
-    document.getElementById('father-income').addEventListener('blur', () => validateNumberField('father-income', 'father-income-error', 0, 'Please enter a valid income'));
-    document.getElementById('family-yearly-income').addEventListener('blur', () => validateNumberField('family-yearly-income', 'family-income-error', 0, 'Please enter valid family income'));
-    document.getElementById('total-family-members').addEventListener('blur', () => validateNumberField('total-family-members', 'total-members-error', 1, 'Total family members must be at least 1'));
-    document.getElementById('earning-members').addEventListener('blur', () => validateNumberField('earning-members', 'earning-members-error', 0, 'Please enter number of earning members'));
-    document.getElementById('education-expense-bearer').addEventListener('blur', () => validateRequired('education-expense-bearer', 'expense-bearer-error', 'Please specify who bears education expenses'));
-    
-    // Contact validations
-    document.getElementById('phone-number').addEventListener('blur', () => validatePhone('phone-number', 'phone-error'));
-    document.getElementById('address').addEventListener('blur', () => validateRequired('address', 'address-error', 'Complete address is required'));
+    clearAllErrors() {
+        this.errors.clear();
+        const errorElements = this.form.querySelectorAll('.error-message');
+        errorElements.forEach(el => el.style.display = 'none');
+        
+        const errorFields = this.form.querySelectorAll('.error');
+        errorFields.forEach(field => {
+            field.classList.remove('error');
+            field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
+        });
+    }
 
-    // Form submission
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+    getFieldValue(fieldName) {
+        const field = this.form.querySelector(`[name="${fieldName}"]`);
+        return field ? field.value.trim() : '';
+    }
+
+    collectFormData() {
+        const formData = new FormData(this.form);
+        const data = {
+            timestamp: new Date().toISOString(),
+            submissionId: this.generateSubmissionId(),
+            userAgent: navigator.userAgent,
+            language: getCurrentLanguage?.() || 'en'
+        };
         
-        // Validate all required fields
-        let isValid = true;
-        
-        // Personal information
-        isValid &= validateName('student-name', 'name-error');
-        isValid &= validateRequired('date-of-birth', 'dob-error', 'Date of birth is required');
-        isValid &= validateAge();
-        isValid &= validateRequired('village-name', 'village-error', 'Village name is required');
-        
-        // Education information
-        isValid &= validateRequired('current-education', 'current-edu-error', 'Please select current education level');
-        isValid &= validateRequired('current-year', 'year-error', 'Current year/class is required');
-        isValid &= validateRequired('school-name', 'school-error', 'School/College name is required');
-        isValid &= validateRequired('future-plans', 'future-plans-error', 'Please describe your future study plans');
-        
-        // Expense validation
-        isValid &= validateNumberField('tuition-fees', 'tuition-error', 0);
-        isValid &= validateNumberField('books-cost', 'books-error', 0);
-        isValid &= validateNumberField('stationery-cost', 'stationery-error', 0);
-        isValid &= validateNumberField('travel-cost', 'travel-error', 0);
-        
-        // Family information
-        isValid &= validateName('father-name', 'father-name-error');
-        isValid &= validateNumberField('father-age', 'father-age-error', 18);
-        isValid &= validateRequired('father-occupation', 'father-occupation-error', 'Father\'s occupation is required');
-        isValid &= validateNumberField('father-income', 'father-income-error', 0);
-        isValid &= validateNumberField('family-yearly-income', 'family-income-error', 0);
-        isValid &= validateNumberField('total-family-members', 'total-members-error', 1);
-        isValid &= validateNumberField('earning-members', 'earning-members-error', 0);
-        isValid &= validateRequired('education-expense-bearer', 'expense-bearer-error', 'Please specify who bears education expenses');
-        isValid &= validateFamilyMembers();
-        
-        // Contact information
-        isValid &= validatePhone('phone-number', 'phone-error');
-        isValid &= validateRequired('address', 'address-error', 'Complete address is required');
-        
-        if (isValid) {
-            // Show success message
-            showSuccessMessage();
-            
-            // Here you would typically send the data to a server
-            console.log('Form submitted successfully!');
-            
-            // Optionally reset the form
-            // form.reset();
-        } else {
-            // Scroll to first error
-            const firstError = document.querySelector('.error-message:not(:empty)');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+        // Convert FormData to regular object with sanitization
+        for (let [key, value] of formData.entries()) {
+            data[key] = CONFIG?.security?.sanitizeInputs ? this.sanitizeInput(value) : value;
         }
-    });
+        
+        return data;
+    }
 
-    function showSuccessMessage() {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.textContent = 'Application submitted successfully! We will review your application and contact you soon.';
+    sanitizeInput(input) {
+        if (typeof input !== 'string') return input;
         
-        form.insertBefore(successDiv, form.firstChild);
+        // Basic HTML sanitization
+        return input
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#x27;')
+            .replace(/\//g, '&#x2F;');
+    }
+
+    async submitForm(data) {
+        const promises = [];
         
-        // Scroll to top
-        successDiv.scrollIntoView({ behavior: 'smooth' });
+        // Submit to Google Sheets if enabled
+        if (CONFIG?.googleSheets?.enabled && window.SheetsIntegration) {
+            const sheetsIntegration = new window.SheetsIntegration();
+            promises.push(sheetsIntegration.submitToSheets(data));
+        }
         
-        // Remove success message after 5 seconds
+        // Submit via email if enabled
+        if (CONFIG?.email?.notificationEnabled && window.EmailIntegration) {
+            const emailIntegration = new window.EmailIntegration();
+            promises.push(emailIntegration.sendEmail(data));
+        }
+        
+        // Wait for all submissions to complete
+        const results = await Promise.allSettled(promises);
+        
+        // Check if at least one submission succeeded
+        const hasSuccess = results.some(result => result.status === 'fulfilled');
+        if (!hasSuccess) {
+            throw new Error('All submission methods failed');
+        }
+    }
+
+    setSubmitState(isSubmitting) {
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) {
+            submitBtn.disabled = isSubmitting;
+            submitBtn.textContent = isSubmitting ? 'Submitting...' : 'Submit Application';
+        }
+    }
+
+    showSuccess(message) {
+        this.showNotification(message, 'success');
+    }
+
+    showError(message) {
+        this.showNotification(message, 'error');
+    }
+
+    showNotification(message, type) {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.setAttribute('role', 'alert');
+        notification.innerHTML = `
+            <span>${message}</span>
+            <button onclick="this.parentElement.remove()" aria-label="Close notification">&times;</button>
+        `;
+        
+        // Add to page
+        document.body.insertBefore(notification, document.body.firstChild);
+        
+        // Auto-remove after 5 seconds
         setTimeout(() => {
-            successDiv.remove();
+            if (notification.parentElement) {
+                notification.remove();
+            }
         }, 5000);
     }
 
-    // Reset form functionality
-    const resetBtn = document.getElementById('reset-btn');
-    resetBtn.addEventListener('click', function() {
-        // Clear all error messages
-        document.querySelectorAll('.error-message').forEach(error => {
-            error.textContent = '';
-            error.style.display = 'none';
-        });
-        
-        // Remove error classes
-        document.querySelectorAll('.error').forEach(field => {
-            field.classList.remove('error');
-        });
-        
-        // Reset total expenses
-        totalExpensesInput.value = '';
-    });
-});
-
-// Auto-save functionality (optional)
-function autoSave() {
-    const formData = new FormData(document.getElementById('sponsorship-form'));
-    const data = {};
-    
-    for (let [key, value] of formData.entries()) {
-        data[key] = value;
+    generateSubmissionId() {
+        return 'SUB_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
-    
-    localStorage.setItem('sponsorship-form-data', JSON.stringify(data));
-}
 
-// Load saved data on page load
-function loadSavedData() {
-    const savedData = localStorage.getItem('sponsorship-form-data');
-    if (savedData) {
-        const data = JSON.parse(savedData);
+    // Progress tracking methods
+    createProgressIndicator() {
+        const existingProgress = document.querySelector('.progress-container');
+        if (existingProgress) return;
         
-        for (let [key, value] of Object.entries(data)) {
-            const field = document.querySelector(`[name="${key}"]`);
-            if (field) {
-                field.value = value;
+        const progressHTML = `
+            <div class="progress-container">
+                <div class="progress-header">
+                    <h3>Form Progress</h3>
+                    <span class="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-sections">
+                    <div class="section-progress" data-section="personal">Personal Info</div>
+                    <div class="section-progress" data-section="education">Education</div>
+                    <div class="section-progress" data-section="academic">Academic</div>
+                    <div class="section-progress" data-section="expenses">Expenses</div>
+                    <div class="section-progress" data-section="family">Family</div>
+                    <div class="section-progress" data-section="contact">Contact</div>
+                </div>
+            </div>
+        `;
+        
+        const formHeader = document.querySelector('.form-header');
+        if (formHeader) {
+            formHeader.insertAdjacentHTML('afterend', progressHTML);
+        }
+    }
+
+    updateProgress() {
+        const progressContainer = document.querySelector('.progress-container');
+        if (!progressContainer) return;
+        
+        const sections = {
+            personal: ['studentName', 'dateOfBirth', 'age', 'villageName'],
+            education: ['currentEducation', 'currentYear', 'schoolName', 'futurePlans'],
+            academic: ['year1Class', 'year1Marks'],
+            expenses: ['tuitionFees', 'booksCost', 'stationeryCost', 'travelCost'],
+            family: ['fatherName', 'fatherAge', 'fatherOccupation', 'fatherIncome', 'familyYearlyIncome'],
+            contact: ['phoneNumber', 'address']
+        };
+        
+        let totalFields = 0;
+        let completedFields = 0;
+        
+        Object.keys(sections).forEach(sectionName => {
+            const fields = sections[sectionName];
+            let sectionCompleted = 0;
+            
+            fields.forEach(fieldName => {
+                totalFields++;
+                const field = this.form.querySelector(`[name="${fieldName}"]`);
+                if (field && field.value.trim()) {
+                    completedFields++;
+                    sectionCompleted++;
+                }
+            });
+            
+            // Update section indicator
+            const sectionElement = progressContainer.querySelector(`[data-section="${sectionName}"]`);
+            if (sectionElement) {
+                const percentage = (sectionCompleted / fields.length) * 100;
+                sectionElement.className = 'section-progress';
+                if (percentage === 100) {
+                    sectionElement.classList.add('completed');
+                } else if (percentage > 0) {
+                    sectionElement.classList.add('partial');
+                }
             }
+        });
+        
+        // Update overall progress
+        const percentage = Math.round((completedFields / totalFields) * 100);
+        const progressFill = progressContainer.querySelector('.progress-fill');
+        const progressPercentage = progressContainer.querySelector('.progress-percentage');
+        
+        if (progressFill) progressFill.style.width = `${percentage}%`;
+        if (progressPercentage) progressPercentage.textContent = `${percentage}%`;
+    }
+
+    // Auto-save functionality
+    saveFormData() {
+        if (!CONFIG?.ui?.autoSaveEnabled) return;
+        
+        try {
+            const formData = new FormData(this.form);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (value.trim()) {
+                    data[key] = value;
+                }
+            }
+            
+            localStorage.setItem('ngoFormAutoSave', JSON.stringify({
+                data,
+                timestamp: Date.now(),
+                language: getCurrentLanguage?.() || 'en'
+            }));
+        } catch (error) {
+            console.warn('Auto-save failed:', error);
+        }
+    }
+
+    loadSavedData() {
+        if (!CONFIG?.ui?.autoSaveEnabled) return;
+        
+        try {
+            const saved = localStorage.getItem('ngoFormAutoSave');
+            if (!saved) return;
+            
+            const { data, timestamp } = JSON.parse(saved);
+            
+            // Don't load data older than 24 hours
+            if (Date.now() - timestamp > 24 * 60 * 60 * 1000) {
+                localStorage.removeItem('ngoFormAutoSave');
+                return;
+            }
+            
+            // Ask user if they want to restore
+            if (confirm('We found previously saved form data. Would you like to restore it?')) {
+                Object.keys(data).forEach(key => {
+                    const field = this.form.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = data[key];
+                        // Trigger events to update calculations
+                        field.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                });
+                
+                this.updateProgress();
+            }
+        } catch (error) {
+            console.warn('Failed to load saved data:', error);
+        }
+    }
+
+    clearSavedData() {
+        localStorage.removeItem('ngoFormAutoSave');
+    }
+
+    // Cleanup method
+    destroy() {
+        if (this.autoSaveTimer) {
+            clearInterval(this.autoSaveTimer);
         }
     }
 }
 
-// Auto-save every 30 seconds
-setInterval(autoSave, 30000);
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Wait for config to be available
+    if (typeof CONFIG !== 'undefined') {
+        window.formValidator = new FormValidator();
+    } else {
+        // Retry after a short delay
+        setTimeout(() => {
+            if (typeof CONFIG !== 'undefined') {
+                window.formValidator = new FormValidator();
+            }
+        }, 100);
+    }
+});
 
-// Load saved data when page loads
-document.addEventListener('DOMContentLoaded', loadSavedData);
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (window.formValidator) {
+        window.formValidator.destroy();
+    }
+});

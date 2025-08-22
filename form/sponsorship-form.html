@@ -3,58 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Sponsorship Application Form</title>
+    <meta name="description" content="Student Sponsorship Application Form for Kshitij NGO - Apply for educational sponsorship support">
+    <meta name="keywords" content="sponsorship, education, NGO, student support, Kshitij">
+    <meta name="author" content="Kshitij NGO">
+    
+    <title>Student Sponsorship Application - Kshitij NGO</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="form-styles.css" as="style">
+    <link rel="preload" href="config.js" as="script">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="form-styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="Student Sponsorship Application - Kshitij NGO">
+    <meta property="og:description" content="Apply for educational sponsorship to support your academic journey">
+    <meta property="og:type" content="website">
+    
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 </head>
 <body>
-    <div class="container">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-form" class="skip-link">Skip to main content</a>
+    
+    <main class="container" role="main">
+        <!-- Form Header -->
         <header class="form-header">
             <h1 id="form-title">Student Sponsorship Application Form</h1>
             <p id="form-subtitle">Please fill out all required fields to apply for sponsorship</p>
             
-            <!-- Language Toggle -->
+            <!-- Language Selection -->
             <div class="language-toggle">
                 <label for="language-select" id="language-label">Language:</label>
-                <select id="language-select" onchange="changeLanguage()">
+                <select id="language-select" onchange="changeLanguage()" aria-describedby="language-help">
                     <option value="en">English</option>
                     <option value="hi">हिंदी (Hindi)</option>
                     <option value="mr">मराठी (Marathi)</option>
                 </select>
+                <div id="language-help" class="sr-only">Select your preferred language for the form</div>
             </div>
         </header>
 
-        <form id="sponsorship-form" novalidate>
+        <!-- Main Form -->
+        <form id="sponsorship-form" novalidate aria-labelledby="form-title" role="form">
+            
             <!-- Personal Information Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="personal-info-title">
                 <h2 id="personal-info-title">Personal Information</h2>
                 
                 <div class="form-group">
                     <label for="student-name" id="name-label">Full Name *</label>
-                    <input type="text" id="student-name" name="studentName" required>
-                    <span class="error-message" id="name-error"></span>
+                    <input type="text" 
+                           id="student-name" 
+                           name="studentName" 
+                           required 
+                           autocomplete="name"
+                           aria-describedby="name-help name-error"
+                           placeholder="Enter your full name">
+                    <div id="name-help" class="field-help">Enter your complete name as it appears on official documents</div>
+                    <span class="error-message" id="name-error" role="alert"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="date-of-birth" id="dob-label">Date of Birth *</label>
-                    <input type="date" id="date-of-birth" name="dateOfBirth" required>
-                    <span class="error-message" id="dob-error"></span>
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date-of-birth" id="dob-label">Date of Birth *</label>
+                        <input type="date" 
+                               id="date-of-birth" 
+                               name="dateOfBirth" 
+                               required 
+                               autocomplete="bday"
+                               aria-describedby="dob-help dob-error">
+                        <div id="dob-help" class="field-help">Your date of birth will be used to calculate your age</div>
+                        <span class="error-message" id="dob-error" role="alert"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label for="age" id="age-label">Age *</label>
-                    <input type="number" id="age" name="age" min="1" max="21" required readonly>
-                    <span class="error-message" id="age-error"></span>
+                    <div class="form-group">
+                        <label for="age" id="age-label">Age *</label>
+                        <input type="number" 
+                               id="age" 
+                               name="age" 
+                               min="1" 
+                               max="21" 
+                               required 
+                               readonly
+                               aria-describedby="age-help age-error">
+                        <div id="age-help" class="field-help">Age is automatically calculated from date of birth</div>
+                        <span class="error-message" id="age-error" role="alert"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="village-name" id="village-label">Village Name *</label>
-                    <input type="text" id="village-name" name="villageName" required>
-                    <span class="error-message" id="village-error"></span>
+                    <input type="text" 
+                           id="village-name" 
+                           name="villageName" 
+                           required
+                           aria-describedby="village-help village-error"
+                           placeholder="Enter your village name">
+                    <div id="village-help" class="field-help">Enter the name of your village or town</div>
+                    <span class="error-message" id="village-error" role="alert"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="disability" id="disability-label">Any Disability</label>
-                    <select id="disability" name="disability">
+                    <select id="disability" name="disability" aria-describedby="disability-help">
                         <option value="" id="no-disability">No</option>
                         <option value="physical" id="physical-disability">Physical</option>
                         <option value="visual" id="visual-disability">Visual</option>
@@ -62,16 +121,17 @@
                         <option value="intellectual" id="intellectual-disability">Intellectual</option>
                         <option value="other" id="other-disability">Other</option>
                     </select>
+                    <div id="disability-help" class="field-help">Select if you have any disability that affects your education</div>
                 </div>
-            </div>
+            </section>
 
             <!-- Education Information Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="education-info-title">
                 <h2 id="education-info-title">Education Information</h2>
                 
                 <div class="form-group">
                     <label for="current-education" id="current-edu-label">Current Education Level *</label>
-                    <select id="current-education" name="currentEducation" required>
+                    <select id="current-education" name="currentEducation" required aria-describedby="current-edu-help current-edu-error">
                         <option value="" id="select-education">Select Education Level</option>
                         <option value="primary" id="primary-edu">Primary School</option>
                         <option value="secondary" id="secondary-edu">Secondary School</option>
@@ -81,35 +141,61 @@
                         <option value="diploma" id="diploma-edu">Diploma</option>
                         <option value="vocational" id="vocational-edu">Vocational Training</option>
                     </select>
-                    <span class="error-message" id="current-edu-error"></span>
+                    <div id="current-edu-help" class="field-help">Select your current level of education</div>
+                    <span class="error-message" id="current-edu-error" role="alert"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="current-year" id="year-label">Current Year/Class *</label>
-                    <input type="text" id="current-year" name="currentYear" required>
-                    <span class="error-message" id="year-error"></span>
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="current-year" id="year-label">Current Year/Class *</label>
+                        <input type="text" 
+                               id="current-year" 
+                               name="currentYear" 
+                               required
+                               aria-describedby="year-help year-error"
+                               placeholder="e.g., 12th, 2nd Year B.A.">
+                        <div id="year-help" class="field-help">Enter your current class or year of study</div>
+                        <span class="error-message" id="year-error" role="alert"></span>
+                    </div>
 
-                <div class="form-group">
-                    <label for="school-name" id="school-label">School/College Name *</label>
-                    <input type="text" id="school-name" name="schoolName" required>
-                    <span class="error-message" id="school-error"></span>
+                    <div class="form-group">
+                        <label for="school-name" id="school-label">School/College Name *</label>
+                        <input type="text" 
+                               id="school-name" 
+                               name="schoolName" 
+                               required
+                               aria-describedby="school-help school-error"
+                               placeholder="Enter institution name">
+                        <div id="school-help" class="field-help">Full name of your educational institution</div>
+                        <span class="error-message" id="school-error" role="alert"></span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="other-education" id="other-edu-label">Other Education/Courses</label>
-                    <textarea id="other-education" name="otherEducation" rows="3"></textarea>
+                    <textarea id="other-education" 
+                              name="otherEducation" 
+                              rows="3"
+                              aria-describedby="other-edu-help"
+                              placeholder="Any additional courses or certifications"></textarea>
+                    <div id="other-edu-help" class="field-help">List any additional courses, certifications, or training you have completed</div>
                 </div>
 
                 <div class="form-group">
                     <label for="future-plans" id="future-plans-label">Future Study Plans *</label>
-                    <textarea id="future-plans" name="futurePlans" rows="4" required></textarea>
-                    <span class="error-message" id="future-plans-error"></span>
+                    <textarea id="future-plans" 
+                              name="futurePlans" 
+                              rows="4" 
+                              required
+                              aria-describedby="future-plans-help future-plans-error"
+                              placeholder="Describe your academic goals and career aspirations"></textarea>
+                    <div id="future-plans-help" class="field-help">Describe your educational goals and career aspirations</div>
+                    <span class="error-message" id="future-plans-error" role="alert"></span>
                 </div>
-            </div>
+            </section>
 
             <!-- Academic Performance Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="academic-performance-title">
                 <h2 id="academic-performance-title">Academic Performance</h2>
                 
                 <div class="marks-section">
@@ -160,160 +246,318 @@
 
                 <div class="form-group">
                     <label for="achievements" id="achievements-label">Achievements and Awards</label>
-                    <textarea id="achievements" name="achievements" rows="4"></textarea>
+                    <textarea id="achievements" 
+                              name="achievements" 
+                              rows="4"
+                              aria-describedby="achievements-help"
+                              placeholder="List any awards, competitions won, or notable achievements"></textarea>
+                    <div id="achievements-help" class="field-help">Include academic awards, competition wins, or other notable achievements</div>
                 </div>
-            </div>
+            </section>
 
             <!-- Expense Breakdown Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="expenses-title">
                 <h2 id="expenses-title">Education Expense Breakdown</h2>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tuition-fees" id="tuition-label">Tuition Fees (₹/year) *</label>
-                        <input type="number" id="tuition-fees" name="tuitionFees" min="0" required>
-                        <span class="error-message" id="tuition-error"></span>
+                        <input type="number" 
+                               id="tuition-fees" 
+                               name="tuitionFees" 
+                               min="0" 
+                               required
+                               aria-describedby="tuition-help tuition-error">
+                        <div id="tuition-help" class="field-help">Annual tuition or school fees</div>
+                        <span class="error-message" id="tuition-error" role="alert"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="books-cost" id="books-label">Books and Study Material (₹/year) *</label>
-                        <input type="number" id="books-cost" name="booksCost" min="0" required>
-                        <span class="error-message" id="books-error"></span>
+                        <input type="number" 
+                               id="books-cost" 
+                               name="booksCost" 
+                               min="0" 
+                               required
+                               aria-describedby="books-help books-error">
+                        <div id="books-help" class="field-help">Cost of textbooks and study materials</div>
+                        <span class="error-message" id="books-error" role="alert"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="stationery-cost" id="stationery-label">Stationery (₹/year) *</label>
-                        <input type="number" id="stationery-cost" name="stationeryCost" min="0" required>
-                        <span class="error-message" id="stationery-error"></span>
+                        <input type="number" 
+                               id="stationery-cost" 
+                               name="stationeryCost" 
+                               min="0" 
+                               required
+                               aria-describedby="stationery-help stationery-error">
+                        <div id="stationery-help" class="field-help">Notebooks, pens, and other stationery items</div>
+                        <span class="error-message" id="stationery-error" role="alert"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="travel-cost" id="travel-label">Travel/Transportation (₹/year) *</label>
-                        <input type="number" id="travel-cost" name="travelCost" min="0" required>
-                        <span class="error-message" id="travel-error"></span>
+                        <input type="number" 
+                               id="travel-cost" 
+                               name="travelCost" 
+                               min="0" 
+                               required
+                               aria-describedby="travel-help travel-error">
+                        <div id="travel-help" class="field-help">Daily transportation to school/college</div>
+                        <span class="error-message" id="travel-error" role="alert"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="uniform-cost" id="uniform-label">Uniform and Clothing (₹/year)</label>
-                        <input type="number" id="uniform-cost" name="uniformCost" min="0">
+                        <input type="number" 
+                               id="uniform-cost" 
+                               name="uniformCost" 
+                               min="0"
+                               aria-describedby="uniform-help">
+                        <div id="uniform-help" class="field-help">School uniform and related clothing</div>
                     </div>
+
                     <div class="form-group">
                         <label for="exam-fees" id="exam-label">Exam Fees (₹/year)</label>
-                        <input type="number" id="exam-fees" name="examFees" min="0">
+                        <input type="number" 
+                               id="exam-fees" 
+                               name="examFees" 
+                               min="0"
+                               aria-describedby="exam-help">
+                        <div id="exam-help" class="field-help">Examination and assessment fees</div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="hostel-fees" id="hostel-label">Hostel/Accommodation (₹/year)</label>
-                        <input type="number" id="hostel-fees" name="hostelFees" min="0">
+                        <input type="number" 
+                               id="hostel-fees" 
+                               name="hostelFees" 
+                               min="0"
+                               aria-describedby="hostel-help">
+                        <div id="hostel-help" class="field-help">Hostel or accommodation expenses if applicable</div>
                     </div>
+
                     <div class="form-group">
                         <label for="other-expenses" id="other-expenses-label">Other Expenses (₹/year)</label>
-                        <input type="number" id="other-expenses" name="otherExpenses" min="0">
+                        <input type="number" 
+                               id="other-expenses" 
+                               name="otherExpenses" 
+                               min="0"
+                               aria-describedby="other-expenses-help">
+                        <div id="other-expenses-help" class="field-help">Any other education-related expenses</div>
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group total-expenses-group">
                     <label for="total-expenses" id="total-expenses-label">Total Annual Education Expenses (₹)</label>
-                    <input type="number" id="total-expenses" name="totalExpenses" readonly>
+                    <input type="number" 
+                           id="total-expenses" 
+                           name="totalExpenses" 
+                           readonly
+                           aria-describedby="total-expenses-help">
+                    <div id="total-expenses-help" class="field-help">Automatically calculated from above expenses</div>
                 </div>
-            </div>
+            </section>
 
             <!-- Family Information Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="family-info-title">
                 <h2 id="family-info-title">Family Information</h2>
                 
                 <div class="form-group">
                     <label for="father-name" id="father-name-label">Father's Name *</label>
-                    <input type="text" id="father-name" name="fatherName" required>
-                    <span class="error-message" id="father-name-error"></span>
+                    <input type="text" 
+                           id="father-name" 
+                           name="fatherName" 
+                           required
+                           autocomplete="family-name"
+                           aria-describedby="father-name-help father-name-error"
+                           placeholder="Enter father's full name">
+                    <div id="father-name-help" class="field-help">Full name of your father</div>
+                    <span class="error-message" id="father-name-error" role="alert"></span>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="father-age" id="father-age-label">Father's Age *</label>
-                        <input type="number" id="father-age" name="fatherAge" min="18" max="100" required>
-                        <span class="error-message" id="father-age-error"></span>
+                        <input type="number" 
+                               id="father-age" 
+                               name="fatherAge" 
+                               min="18" 
+                               max="100" 
+                               required
+                               aria-describedby="father-age-help father-age-error">
+                        <div id="father-age-help" class="field-help">Your father's current age</div>
+                        <span class="error-message" id="father-age-error" role="alert"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="father-occupation" id="father-occupation-label">Father's Occupation *</label>
-                        <input type="text" id="father-occupation" name="fatherOccupation" required>
-                        <span class="error-message" id="father-occupation-error"></span>
+                        <input type="text" 
+                               id="father-occupation" 
+                               name="fatherOccupation" 
+                               required
+                               aria-describedby="father-occupation-help father-occupation-error"
+                               placeholder="e.g., Farmer, Teacher, Business">
+                        <div id="father-occupation-help" class="field-help">Your father's job or profession</div>
+                        <span class="error-message" id="father-occupation-error" role="alert"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="father-income" id="father-income-label">Father's Annual Income (₹) *</label>
-                        <input type="number" id="father-income" name="fatherIncome" min="0" required>
-                        <span class="error-message" id="father-income-error"></span>
+                        <input type="number" 
+                               id="father-income" 
+                               name="fatherIncome" 
+                               min="0" 
+                               required
+                               aria-describedby="father-income-help father-income-error">
+                        <div id="father-income-help" class="field-help">Your father's yearly income</div>
+                        <span class="error-message" id="father-income-error" role="alert"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="family-yearly-income" id="family-income-label">Total Family Annual Income (₹) *</label>
-                        <input type="number" id="family-yearly-income" name="familyYearlyIncome" min="0" required>
-                        <span class="error-message" id="family-income-error"></span>
+                        <input type="number" 
+                               id="family-yearly-income" 
+                               name="familyYearlyIncome" 
+                               min="0" 
+                               required
+                               aria-describedby="family-income-help family-income-error">
+                        <div id="family-income-help" class="field-help">Combined income of all earning family members</div>
+                        <span class="error-message" id="family-income-error" role="alert"></span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="total-family-members" id="total-members-label">Total Family Members *</label>
-                        <input type="number" id="total-family-members" name="totalFamilyMembers" min="1" required>
-                        <span class="error-message" id="total-members-error"></span>
+                        <input type="number" 
+                               id="total-family-members" 
+                               name="totalFamilyMembers" 
+                               min="1" 
+                               required
+                               aria-describedby="total-members-help total-members-error">
+                        <div id="total-members-help" class="field-help">Total number of people in your family</div>
+                        <span class="error-message" id="total-members-error" role="alert"></span>
                     </div>
+
                     <div class="form-group">
                         <label for="earning-members" id="earning-members-label">Earning Members in Family *</label>
-                        <input type="number" id="earning-members" name="earningMembers" min="0" required>
-                        <span class="error-message" id="earning-members-error"></span>
+                        <input type="number" 
+                               id="earning-members" 
+                               name="earningMembers" 
+                               min="0" 
+                               required
+                               aria-describedby="earning-members-help earning-members-error">
+                        <div id="earning-members-help" class="field-help">Number of family members who earn income</div>
+                        <span class="error-message" id="earning-members-error" role="alert"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="education-expense-bearer" id="expense-bearer-label">Who Currently Bears Education Expenses? *</label>
-                    <input type="text" id="education-expense-bearer" name="educationExpenseBearer" required>
-                    <span class="error-message" id="expense-bearer-error"></span>
+                    <input type="text" 
+                           id="education-expense-bearer" 
+                           name="educationExpenseBearer" 
+                           required
+                           aria-describedby="expense-bearer-help expense-bearer-error"
+                           placeholder="e.g., Father, Mother, Self, Relative">
+                    <div id="expense-bearer-help" class="field-help">Who currently pays for your education</div>
+                    <span class="error-message" id="expense-bearer-error" role="alert"></span>
                 </div>
 
-                <div class="form-group">
-                    <label for="current-funder" id="current-funder-label">Who is Currently Funding Child's Education?</label>
-                    <input type="text" id="current-funder" name="currentFunder">
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="current-funder" id="current-funder-label">Who is Currently Funding Child's Education?</label>
+                        <input type="text" 
+                               id="current-funder" 
+                               name="currentFunder"
+                               aria-describedby="current-funder-help"
+                               placeholder="e.g., Parents, Scholarship, Loan">
+                        <div id="current-funder-help" class="field-help">Source of current education funding</div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="funder-income" id="funder-income-label">Current Funder's Annual Income (₹)</label>
-                    <input type="number" id="funder-income" name="funderIncome" min="0">
+                    <div class="form-group">
+                        <label for="funder-income" id="funder-income-label">Current Funder's Annual Income (₹)</label>
+                        <input type="number" 
+                               id="funder-income" 
+                               name="funderIncome" 
+                               min="0"
+                               aria-describedby="funder-income-help">
+                        <div id="funder-income-help" class="field-help">Annual income of the person funding education</div>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Contact Information Section -->
-            <div class="form-section">
+            <section class="form-section" aria-labelledby="contact-info-title">
                 <h2 id="contact-info-title">Contact Information</h2>
                 
                 <div class="form-group">
                     <label for="phone-number" id="phone-label">Phone Number *</label>
-                    <input type="tel" id="phone-number" name="phoneNumber" pattern="[0-9]{10}" required>
-                    <span class="error-message" id="phone-error"></span>
+                    <input type="tel" 
+                           id="phone-number" 
+                           name="phoneNumber" 
+                           pattern="[0-9]{10}" 
+                           required
+                           autocomplete="tel"
+                           aria-describedby="phone-help phone-error"
+                           placeholder="10-digit mobile number">
+                    <div id="phone-help" class="field-help">Enter a 10-digit mobile number for contact</div>
+                    <span class="error-message" id="phone-error" role="alert"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="address" id="address-label">Complete Address *</label>
-                    <textarea id="address" name="address" rows="4" required></textarea>
-                    <span class="error-message" id="address-error"></span>
+                    <textarea id="address" 
+                              name="address" 
+                              rows="4" 
+                              required
+                              autocomplete="street-address"
+                              aria-describedby="address-help address-error"
+                              placeholder="Complete postal address with pin code"></textarea>
+                    <div id="address-help" class="field-help">Include house number, street, city, state, and pin code</div>
+                    <span class="error-message" id="address-error" role="alert"></span>
                 </div>
-            </div>
+            </section>
 
-            <!-- Submit Button -->
+            <!-- Form Actions -->
             <div class="form-actions">
-                <button type="submit" id="submit-btn">Submit Application</button>
-                <button type="reset" id="reset-btn">Reset Form</button>
+                <button type="submit" id="submit-btn" class="primary-btn">Submit Application</button>
+                <button type="reset" id="reset-btn" class="secondary-btn">Reset Form</button>
             </div>
         </form>
+    </main>
+
+    <!-- Loading indicator -->
+    <div id="loading-indicator" class="loading-indicator" style="display: none;" role="status" aria-live="polite">
+        <div class="spinner"></div>
+        <span>Processing your application...</span>
     </div>
 
-    <script src="form-validation.js"></script>
+    <!-- Scripts -->
+    <script src="config.js"></script>
     <script src="language-switcher.js"></script>
+    <script src="sheets-integration.js"></script>
+    <script src="form-validation.js"></script>
+
+    <!-- Service Worker for offline functionality -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            });
+        }
+    </script>
 </body>
 </html>

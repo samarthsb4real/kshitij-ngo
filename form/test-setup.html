@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Setup Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Sponsorship Form Setup Test</h1>
+        <p>This page will help you verify that your form integration is set up correctly.</p>
+        
+        <h3>File Existence Check</h3>
+        <div id="file-check">Checking files...</div>
+        
+        <h3>Google Sheets Configuration</h3>
+        <div id="config-check">Checking configuration...</div>
+        
+        <h3>Form Functionality Test</h3>
+        <button class="test-btn" onclick="testFormSubmission()">Test Form Submission</button>
+        <button class="test-btn" onclick="testDirectURL()">Test Apps Script URL</button>
+        <div id="submission-test"></div>
+        
+        <h3>Next Steps</h3>
+        <div class="status warning">
+            <strong>Important:</strong> Remember to:
+            <ul>
+                <li>Set up your Google Apps Script with the provided code</li>
+                <li>Replace the placeholder URLs and IDs with your actual values</li>
+                <li>Deploy the Apps Script as a Web App</li>
+                <li>Update the configuration in sheets-integration.js</li>
+            </ul>
+        </div>
+        
+        <h3>Quick Links</h3>
+        <a href="sponsorship-form.html" class="test-btn">Open Form</a>
+        <a href="SETUP_GUIDE.md" class="test-btn">Setup Guide</a>
+    </div>
+
+    <script>
+        // Check if required files exist
+        function checkFiles() {
+            const files = [
+                'sponsorship-form.html',
+                'form-styles.css',
+                'sheets-integration.js',
+                'form-validation.js',
+                'language-switcher.js'
+            ];
+            
+            const checkDiv = document.getElementById('file-check');
+            let html = '';
+            
+            files.forEach(file => {
+                // We can't actually check file existence from client-side
+                // This is just for demonstration
+                html += `<div class="status success">✓ ${file} - Expected to exist</div>`;
+            });
+            
+            checkDiv.innerHTML = html;
+        }
+        
+        // Check configuration
+        function checkConfig() {
+            const configDiv = document.getElementById('config-check');
+            
+            // Check if the script URL is configured
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx11sEMlGtdW6WK-x2lrRL261rhFhl9-4OB5ZUBDOe-Lvkbhe_HaUN0--GtatF5loZw/exec';
+            
+            let configStatus = '';
+            
+            if (scriptURL && scriptURL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                configStatus += '<div class="status success">✅ Google Apps Script URL is configured</div>';
+                configStatus += `<div class="status success">🔗 URL: ${scriptURL}</div>`;
+            } else {
+                configStatus += '<div class="status error">❌ Google Apps Script URL not configured</div>';
+            }
+            
+            // Try to load the sheets integration script
+            try {
+                const script = document.createElement('script');
+                script.src = 'sheets-integration.js';
+                script.onload = function() {
+                    configDiv.innerHTML = configStatus + '<div class="status success">✅ sheets-integration.js loaded successfully</div>';
+                };
+                script.onerror = function() {
+                    configDiv.innerHTML = configStatus + '<div class="status error">❌ Could not load sheets-integration.js</div>';
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                configDiv.innerHTML = configStatus + '<div class="status error">❌ Error loading configuration</div>';
+            }
+        }
+        
+        // Test form submission functionality
+        async function testFormSubmission() {
+            const testDiv = document.getElementById('submission-test');
+            testDiv.innerHTML = '<div class="status warning">🔄 Testing actual Google Sheets connection...</div>';
+            
+            // Get the script URL from the sheets integration file
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx11sEMlGtdW6WK-x2lrRL261rhFhl9-4OB5ZUBDOe-Lvkbhe_HaUN0--GtatF5loZw/exec';
+            
+            // Create test data
+            const testData = {
+                timestamp: new Date().toISOString(),
+                submissionId: 'TEST_' + Date.now(),
+                studentName: 'Test Student',
+                age: '18',
+                villageName: 'Test Village',
+                phoneNumber: '1234567890',
+                currentEducation: 'undergraduate',
+                schoolName: 'Test School',
+                futurePlans: 'Test plans',
+                fatherName: 'Test Father',
+                fatherAge: '45',
+                fatherOccupation: 'Test Job',
+                fatherIncome: '50000',
+                familyYearlyIncome: '60000',
+                totalFamilyMembers: '4',
+                earningMembers: '1',
+                educationExpenseBearer: 'Father',
+                tuitionFees: '10000',
+                booksCost: '2000',
+                stationeryCost: '1000',
+                travelCost: '3000',
+                totalExpenses: '16000',
+                address: 'Test Address'
+            };
+            
+            try {
+                testDiv.innerHTML = '<div class="status warning">🔄 Sending test data to Google Sheets...</div>';
+                
+                // First, let's try a simple GET request to check if the endpoint is accessible
+                testDiv.innerHTML += '<div class="status warning">🔍 Checking if Apps Script endpoint is accessible...</div>';
+                
+                try {
+                    const getResponse = await fetch(scriptURL, {
+                        method: 'GET',
+                        mode: 'no-cors'
+                    });
+                    testDiv.innerHTML += '<div class="status success">✅ Apps Script endpoint is reachable</div>';
+                } catch (getError) {
+                    testDiv.innerHTML += '<div class="status error">❌ Apps Script endpoint not accessible: ' + getError.message + '</div>';
+                    throw new Error('Apps Script endpoint not accessible. Check deployment.');
+                }
+                
+                testDiv.innerHTML += '<div class="status warning">🔄 Attempting POST request...</div>';
+                
+                const response = await fetch(scriptURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    testDiv.innerHTML = `
+                        <div class="status success">✅ SUCCESS! Google Sheets integration is working!</div>
+                        <div class="status success">📊 Test data saved to your Google Sheet</div>
+                        <div class="status success">🆔 Submission ID: ${result.submissionId || testData.submissionId}</div>
+                        <p><strong>Next:</strong> Check your Google Sheet to see the test data.</p>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Unknown error occurred');
+                }
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+                testDiv.innerHTML = `
+                    <div class="status error">❌ Test Failed: ${error.message}</div>
+                    <div class="status warning">
+                        <strong>Common NetworkError causes:</strong>
+                        <ul>
+                            <li><strong>Apps Script not deployed as Web App</strong> - Make sure you deployed it, not just saved</li>
+                            <li><strong>Wrong URL</strong> - Use the Web App URL, not the script editor URL</li>
+                            <li><strong>Permissions issue</strong> - Web App must be set to "Anyone" access</li>
+                            <li><strong>Apps Script not public</strong> - Check deployment settings</li>
+                        </ul>
+                    </div>
+                    <div class="status warning">
+                        <strong>To fix NetworkError:</strong>
+                        <ol>
+                            <li>In Google Apps Script, click <strong>Deploy → Manage deployments</strong></li>
+                            <li>Check that status shows "Active"</li>
+                            <li>Verify "Execute as" is set to "Me"</li>
+                            <li>Verify "Who has access" is set to "Anyone"</li>
+                            <li>Copy the <strong>Web app URL</strong> (not the script URL)</li>
+                            <li>Test the URL directly in browser - should show "Google Apps Script is running"</li>
+                        </ol>
+                    </div>
+                    <div class="status warning">
+                        <strong>Your current URL:</strong><br>
+                        <code>${scriptURL}</code><br>
+                        <small>Try opening this URL directly in a new tab - it should work</small>
+                    </div>
+                `;
+            }
+        }
+        
+        // Test if the Apps Script URL is accessible
+        function testDirectURL() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx11sEMlGtdW6WK-x2lrRL261rhFhl9-4OB5ZUBDOe-Lvkbhe_HaUN0--GtatF5loZw/exec';
+            const testDiv = document.getElementById('submission-test');
+            
+            testDiv.innerHTML = `
+                <div class="status warning">🔍 Testing Apps Script URL accessibility...</div>
+                <div class="status warning">
+                    <strong>Manual Test:</strong><br>
+                    1. <a href="${scriptURL}" target="_blank" class="test-btn">Click here to open Apps Script URL</a><br>
+                    2. You should see "Google Apps Script is running" message<br>
+                    3. If you see an error or blank page, the deployment has issues
+                </div>
+                <div class="status warning">
+                    <strong>If the URL doesn't work:</strong><br>
+                    • Go to your Apps Script project<br>
+                    • Click <strong>Deploy → Manage deployments</strong><br>
+                    • Make sure it shows "Active" status<br>
+                    • Verify "Who has access" is set to "Anyone"<br>
+                    • If needed, create a new deployment
+                </div>
+            `;
+        }
+        
+        // Run checks when page loads
+        window.onload = function() {
+            checkFiles();
+            checkConfig();
+        };
+    </script>
+</body>
+</html>

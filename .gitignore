@@ -21,3 +21,24 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Large data files (consider using Git LFS or external storage)
+*.csv
+data/
+sample.csv
+
+# Jupyter notebook files
+*.ipynb
+
+# Large image files (consider compressing or using external storage)
+workflow/*.png
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Backup files
+*.bak
+*.orig
+*~
