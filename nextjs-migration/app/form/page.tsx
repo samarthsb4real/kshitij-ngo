@@ -124,7 +124,8 @@ export default function FormPage() {
                   </CardContent>
                 </Card>
 
-                {/* Features Card */}
+
+                {/* Features Card 
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -143,7 +144,7 @@ export default function FormPage() {
                     </ul>
                   </CardContent>
                 </Card>
-
+*/}
                 {/* Languages Card */}
                 <Card>
                   <CardHeader>

@@ -15,7 +15,10 @@ import {
   RefreshCw,
   Settings,
   Search,
-  Filter
+  Filter,
+  Home,
+  FileText,
+  Download
 } from 'lucide-react'
 import { EnhancedStatsCards } from '@/components/dashboard/enhanced-stats-cards'
 import { ChartsGrid } from '@/components/dashboard/charts-grid'
@@ -23,12 +26,15 @@ import { StudentsTable } from '@/components/dashboard/students-table'
 import { SyncStatus } from '@/components/dashboard/sync-status'
 import { useGoogleSheets } from '@/hooks/use-google-sheets'
 import { useToast } from '@/hooks/use-toast'
+import { exportTodaysSubmissions, exportAllSubmissions, getStoredSubmissions, clearAllSubmissions } from '@/lib/excel-utils'
+import Link from 'next/link'
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('name')
   const [villageFilter, setVillageFilter] = useState('all')
+  const [submissionCount, setSubmissionCount] = useState(0)
   const { 
     students, 
     analytics, 
@@ -38,6 +44,11 @@ export default function DashboardPage() {
     refreshData 
   } = useGoogleSheets()
   const { toast } = useToast()
+
+  useEffect(() => {
+    // Update submission count
+    setSubmissionCount(getStoredSubmissions().length)
+  }, [])
 
   const handleRefresh = async () => {
     try {
@@ -78,6 +89,18 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/">
+                  <Home className="w-4 h-4 mr-2" />
+                  Home
+                </Link>
+              </Button>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/form">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Apply
+                </Link>
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -112,7 +135,7 @@ export default function DashboardPage() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6">
-              <EnhancedStatsCards analytics={analytics} />
+              {analytics && <EnhancedStatsCards analytics={analytics} />}
               
               <div className="grid lg:grid-cols-2 gap-6">
                 <Card>
@@ -125,16 +148,18 @@ export default function DashboardPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {students.slice(0, 3).map((student) => (
-                        <div key={student.id} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                            <GraduationCap className="w-5 h-5 text-primary" />
+                        <Link key={student.id} href={`/students/${student.id}`}>
+                          <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                              <GraduationCap className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium">{student.studentName}</p>
+                              <p className="text-sm text-gray-600">{student.currentEducation}</p>
+                            </div>
+                            <Badge variant="secondary">{student.village}</Badge>
                           </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{student.studentName}</p>
-                            <p className="text-sm text-gray-600">{student.currentEducation}</p>
-                          </div>
-                          <Badge variant="secondary">{student.village}</Badge>
-                        </div>
+                        </Link>
                       ))}
                     </div>
                   </CardContent>
@@ -148,19 +173,17 @@ export default function DashboardPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full justify-start" variant="outline" asChild>
-                      <a href="/students">
-                        <Users className="w-4 h-4 mr-2" />
-                        Manage Students
-                      </a>
+                    <Button className="w-full justify-start" variant="outline" onClick={() => setActiveTab('students')}>
+                      <Users className="w-4 h-4 mr-2" />
+                      View Students
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start" variant="outline" onClick={exportTodaysSubmissions}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Export Today's Forms
+                    </Button>
+                    <Button className="w-full justify-start" variant="outline" onClick={exportAllSubmissions}>
                       <TrendingUp className="w-4 h-4 mr-2" />
-                      Generate Report
-                    </Button>
-                    <Button className="w-full justify-start" variant="outline">
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      Update Expenses
+                      Export All Forms
                     </Button>
                   </CardContent>
                 </Card>
@@ -171,8 +194,8 @@ export default function DashboardPage() {
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid gap-6">
-              <EnhancedStatsCards analytics={analytics} />
-              <ChartsGrid analytics={analytics} />
+              {analytics && <EnhancedStatsCards analytics={analytics} />}
+              {analytics && <ChartsGrid analytics={analytics} />}
             </div>
           </TabsContent>
 
@@ -215,9 +238,9 @@ export default function DashboardPage() {
                       <SelectContent>
                         <SelectItem value="all">All Villages</SelectItem>
                         <SelectItem value="Kondhur">Kondhur</SelectItem>
-                        <SelectItem value="Wanjale">Wanjale</SelectItem>
-                        <SelectItem value="Lawarde">Lawarde</SelectItem>
-                        <SelectItem value="Temghar">Temghar</SelectItem>
+                        <SelectItem value="Shivapur">Shivapur</SelectItem>
+                        <SelectItem value="Wadgaon">Wadgaon</SelectItem>
+                        <SelectItem value="Karjat">Karjat</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -236,6 +259,56 @@ export default function DashboardPage() {
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
             <div className="grid gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Form Submissions Management</CardTitle>
+                  <CardDescription>
+                    Manage and export form submissions stored locally
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">Total Stored Submissions</p>
+                        <p className="text-sm text-gray-600">{submissionCount} form submissions in local storage</p>
+                      </div>
+                      <Badge variant="secondary">{submissionCount}</Badge>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button onClick={exportTodaysSubmissions} className="w-full">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export Today's Forms
+                    </Button>
+                    <Button onClick={exportAllSubmissions} variant="outline" className="w-full">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export All Forms
+                    </Button>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <Button 
+                      onClick={() => {
+                        if (clearAllSubmissions()) {
+                          setSubmissionCount(0)
+                          toast({
+                            title: "Submissions cleared",
+                            description: "All form submissions have been removed from local storage",
+                          })
+                        }
+                      }} 
+                      variant="destructive" 
+                      size="sm"
+                    >
+                      Clear All Submissions
+                    </Button>
+                    <p className="text-xs text-gray-500 mt-2">
+                      This will permanently delete all locally stored form submissions
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader>
                   <CardTitle>Google Sheets Integration</CardTitle>

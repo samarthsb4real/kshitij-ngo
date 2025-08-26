@@ -1,82 +1,31 @@
 import { Student } from './pdf-utils'
 
-// Parse CSV data and convert to Student objects
-export const parseCSVToStudents = (csvData: string): Student[] => {
-  const lines = csvData.trim().split('\n')
-  const headers = lines[0].split(',')
-  
-  return lines.slice(1).map((line, index) => {
-    const values = line.split(',')
-    
-    // Extract relevant fields from CSV
-    const name = values[3] || `Student ${index + 1}`
-    const age = parseInt(values[4]) || 18
-    const classLevel = values[5] || 'Unknown'
-    const village = values[6] || 'Unknown'
-    const school = values[7] || 'Unknown'
-    const fatherName = values[14] ? values[14].split(',')[0] : 'Unknown'
-    const phone = values[24] || 'Not provided'
-    const address = values[25] || 'Not provided'
-    
-    // Calculate expenses from CSV columns
-    const travel = parseInt(values[16]) || 0
-    const fees = parseInt(values[17]) || 0
-    const books = parseInt(values[18]) || 0
-    const stationery = parseInt(values[19]) || 0
-    const uniform = parseInt(values[20]) || 0
-    const tuition = parseInt(values[21]) || 0
-    const totalExpenses = travel + fees + books + stationery + uniform + tuition
-    
-    const familyIncome = parseInt(values[19]) || 0
-    
-    // Assign random status for demo
-    const statuses: ('pending' | 'approved' | 'rejected')[] = ['pending', 'approved', 'rejected']
-    const status = statuses[Math.floor(Math.random() * statuses.length)]
-    
-    return {
-      id: `student-${index + 1}`,
-      name,
-      age,
-      class: classLevel,
-      village,
-      school,
-      fatherName,
-      phone,
-      address,
-      status,
-      totalExpenses,
-      familyIncome,
-      submissionDate: values[2] || new Date().toISOString()
-    }
-  })
-}
-
 // Mock data for development
 export const mockStudents: Student[] = [
   {
     id: '1',
-    name: 'AKSHDA PRAKASH TAKWALE',
+    name: 'Akshada Prakash Takwale',
     age: 19,
-    class: '1st year',
+    class: '1st Year College',
     village: 'Kondhur',
-    school: 'Abhinav College nare ambega',
-    currentEducation: 'MSc IT',
+    school: 'Abhinav College Narhe Ambegaon',
+    currentEducation: 'MSc Information Technology',
     academicPerformance: {
-      year1: '2022, 10th, 69.60%',
-      year2: '2023, 11th, 49%',
-      year3: '2024, 12th, 42%'
+      year1: '2022, 10th Standard, 69.60%',
+      year2: '2023, 11th Standard, 49.00%',
+      year3: '2024, 12th Standard, 42.00%'
     },
-    achievements: 'District level third rank',
-    futurePlans: 'Police Officer',
+    achievements: 'District level athletics third rank, School topper in Computer Science',
+    futurePlans: 'Police Officer in Maharashtra Police',
     disability: 'None',
     fatherName: 'Prakash Takwale',
     motherName: 'Vaishali Takwale',
-    parentAge: '40 & 35',
-    parentEducation: 'Standard 10',
+    parentAge: '40 & 35 years',
+    parentEducation: 'Standard 10th both parents',
     totalFamilyMembers: 6,
     earningMembers: 1,
     phone: '9022704532',
-    address: 'Kondhur digewadi taluka mushi Jilla Pune',
+    address: 'Kondhur Digewadi, Taluka Mulshi, District Pune, Maharashtra 412108',
     status: 'approved',
     expenses: {
       travel: 1000,
@@ -85,39 +34,39 @@ export const mockStudents: Student[] = [
       stationery: 3000,
       uniform: 1500,
       tuition: 10000,
-      other: 0
+      other: 2000
     },
-    totalExpenses: 32500,
+    totalExpenses: 34500,
     familyIncome: 35000,
-    incomeSource: 'Farming',
+    incomeSource: 'Agriculture and Farming',
     expenseBearer: 'Parents',
     needsHelp: 'Yes',
-    submissionDate: '2025-02-07'
+    submissionDate: '2025-01-15'
   },
   {
     id: '2',
     name: 'Vaishnavi Prakash Takwale',
     age: 18,
-    class: '1st year',
+    class: '1st Year College',
     village: 'Kondhur',
-    school: 'Abhinav College mere ambegaon',
-    currentEducation: 'Tally',
+    school: 'Abhinav College Narhe Ambegaon',
+    currentEducation: 'Diploma in Tally and Accounting',
     academicPerformance: {
-      year1: 'Year 2022 standard 10 marks 72',
-      year2: 'Year 2023 standard 11 marks 47',
-      year3: 'Year 2024 standard 12 marks 49.50%'
+      year1: '2022, 10th Standard, 72.00%',
+      year2: '2023, 11th Standard, 47.00%',
+      year3: '2024, 12th Standard, 49.50%'
     },
-    achievements: '',
-    futurePlans: 'Bank manager',
-    disability: 'नाही',
-    fatherName: 'Prakash takwale',
-    motherName: 'Vaishali takwale',
-    parentAge: 'Year 40 and 35',
-    parentEducation: 'Standard 10 pass',
+    achievements: 'Best student in Commerce stream, Participated in state level debate competition',
+    futurePlans: 'Bank Manager in Cooperative Bank',
+    disability: 'None',
+    fatherName: 'Prakash Takwale',
+    motherName: 'Vaishali Takwale',
+    parentAge: '40 & 35 years',
+    parentEducation: 'Standard 10th both parents',
     totalFamilyMembers: 6,
     earningMembers: 1,
     phone: '9022704532',
-    address: 'Kondhur digewadi taluka mushi Jilla Pune',
+    address: 'Kondhur Digewadi, Taluka Mulshi, District Pune, Maharashtra 412108',
     status: 'pending',
     expenses: {
       travel: 1000,
@@ -126,54 +75,177 @@ export const mockStudents: Student[] = [
       stationery: 1500,
       uniform: 1000,
       tuition: 10000,
-      other: 0
+      other: 500
     },
-    totalExpenses: 35500,
+    totalExpenses: 36000,
     familyIncome: 35000,
-    incomeSource: 'Fram',
-    expenseBearer: 'पालक',
-    needsHelp: 'Ho',
-    submissionDate: '2025-02-07'
+    incomeSource: 'Agriculture and Farming',
+    expenseBearer: 'Parents',
+    needsHelp: 'Yes',
+    submissionDate: '2025-01-20'
   },
   {
     id: '3',
-    name: 'Komal prakash salunke',
+    name: 'Komal Prakash Salunke',
     age: 16,
-    class: '11th',
+    class: '11th Standard',
     village: 'Wanjale',
-    school: 'MES.Aabasaheb garware college',
-    currentEducation: '11th science',
+    school: 'MES Abasaheb Garware College',
+    currentEducation: '11th Science (PCB)',
     academicPerformance: {
-      year1: '2023',
-      year2: '2024',
-      year3: '2025'
+      year1: '2023, 9th Standard, 78.00%',
+      year2: '2024, 10th Standard, 82.50%',
+      year3: '2025, 11th Standard, Ongoing'
     },
-    achievements: 'Pass',
-    futurePlans: 'Doctor',
-    disability: 'नाही',
-    fatherName: 'Prakash',
-    motherName: '',
-    parentAge: '45',
-    parentEducation: '2th',
-    totalFamilyMembers: 6,
-    earningMembers: 1,
+    achievements: 'School Science Exhibition winner, District level drawing competition second prize',
+    futurePlans: 'Doctor (MBBS) and serve rural areas',
+    disability: 'None',
+    fatherName: 'Prakash Salunke',
+    motherName: 'Sunita Salunke',
+    parentAge: '45 & 42 years',
+    parentEducation: 'Father: 12th Standard, Mother: 10th Standard',
+    totalFamilyMembers: 5,
+    earningMembers: 2,
     phone: '7391858935',
-    address: 'Wanjale, Pune',
+    address: 'Wanjale Village, Taluka Mulshi, District Pune, Maharashtra 412115',
+    status: 'approved',
+    expenses: {
+      travel: 2000,
+      fees: 8000,
+      books: 3000,
+      stationery: 1500,
+      uniform: 2000,
+      tuition: 12000,
+      other: 1500
+    },
+    totalExpenses: 30000,
+    familyIncome: 48000,
+    incomeSource: 'Agriculture and Small Business',
+    expenseBearer: 'Parents',
+    needsHelp: 'Yes',
+    submissionDate: '2025-01-25'
+  },
+  {
+    id: '4',
+    name: 'Rahul Ganesh Patil',
+    age: 20,
+    class: '2nd Year College',
+    village: 'Shivapur',
+    school: 'Fergusson College Pune',
+    currentEducation: 'BSc Computer Science',
+    academicPerformance: {
+      year1: '2021, 10th Standard, 85.20%',
+      year2: '2022, 11th Standard, 72.00%',
+      year3: '2023, 12th Standard, 78.50%'
+    },
+    achievements: 'College programming contest winner, Internship at local IT company',
+    futurePlans: 'Software Developer in multinational company',
+    disability: 'None',
+    fatherName: 'Ganesh Patil',
+    motherName: 'Mangala Patil',
+    parentAge: '48 & 44 years',
+    parentEducation: 'Father: 10th Standard, Mother: 8th Standard',
+    totalFamilyMembers: 4,
+    earningMembers: 1,
+    phone: '9876543210',
+    address: 'Shivapur Village, Taluka Mulshi, District Pune, Maharashtra 412112',
+    status: 'approved',
+    expenses: {
+      travel: 1500,
+      fees: 25000,
+      books: 4000,
+      stationery: 2000,
+      uniform: 0,
+      tuition: 15000,
+      other: 2500
+    },
+    totalExpenses: 50000,
+    familyIncome: 42000,
+    incomeSource: 'Daily Labor and Agriculture',
+    expenseBearer: 'Parents and Self (Part-time work)',
+    needsHelp: 'Yes',
+    submissionDate: '2025-02-01'
+  },
+  {
+    id: '5',
+    name: 'Sneha Ramesh Jadhav',
+    age: 18,
+    class: '1st Year College',
+    village: 'Karjat',
+    school: 'Modern College Pune',
+    currentEducation: 'BCom (Bachelor of Commerce)',
+    academicPerformance: {
+      year1: '2022, 10th Standard, 74.80%',
+      year2: '2023, 11th Standard, 58.00%',
+      year3: '2024, 12th Standard, 61.20%'
+    },
+    achievements: 'Best student award in Commerce, Active member of college cultural committee',
+    futurePlans: 'Bank Officer in nationalized bank',
+    disability: 'None',
+    fatherName: 'Ramesh Jadhav',
+    motherName: 'Kavita Jadhav',
+    parentAge: '43 & 39 years',
+    parentEducation: 'Father: 12th Standard, Mother: 10th Standard',
+    totalFamilyMembers: 4,
+    earningMembers: 2,
+    phone: '9988776655',
+    address: 'Karjat Village, Taluka Mulshi, District Pune, Maharashtra 412117',
+    status: 'pending',
+    expenses: {
+      travel: 900,
+      fees: 12000,
+      books: 1800,
+      stationery: 2200,
+      uniform: 1300,
+      tuition: 9000,
+      other: 800
+    },
+    totalExpenses: 28000,
+    familyIncome: 55000,
+    incomeSource: 'Small Business and Agriculture',
+    expenseBearer: 'Parents',
+    needsHelp: 'Yes',
+    submissionDate: '2025-02-05'
+  },
+  {
+    id: '6',
+    name: 'Amit Vijay Kale',
+    age: 16,
+    class: '11th Standard',
+    village: 'Kondhur',
+    school: 'Zilla Parishad High School',
+    currentEducation: '11th Commerce',
+    academicPerformance: {
+      year1: '2023, 9th Standard, 68.40%',
+      year2: '2024, 10th Standard, 71.20%',
+      year3: '2025, 11th Standard, Ongoing'
+    },
+    achievements: 'Sports captain of school cricket team, District level cricket player',
+    futurePlans: 'Chartered Accountant (CA)',
+    disability: 'None',
+    fatherName: 'Vijay Kale',
+    motherName: 'Sushila Kale',
+    parentAge: '38 & 35 years',
+    parentEducation: 'Both parents: 10th Standard',
+    totalFamilyMembers: 5,
+    earningMembers: 1,
+    phone: '9112233445',
+    address: 'Kondhur Village, Taluka Mulshi, District Pune, Maharashtra 412108',
     status: 'rejected',
     expenses: {
-      travel: 6000,
-      fees: 5925,
-      books: 2000,
-      stationery: 1000,
-      uniform: 0,
-      tuition: 0,
-      other: 1000
+      travel: 600,
+      fees: 6000,
+      books: 1200,
+      stationery: 1500,
+      uniform: 1000,
+      tuition: 5000,
+      other: 700
     },
-    totalExpenses: 15925,
-    familyIncome: 61000,
-    incomeSource: 'Sheti',
-    expenseBearer: 'पालक',
-    needsHelp: '',
-    submissionDate: '2025-02-07'
+    totalExpenses: 16000,
+    familyIncome: 30000,
+    incomeSource: 'Agriculture and Seasonal Work',
+    expenseBearer: 'Parents',
+    needsHelp: 'Yes',
+    submissionDate: '2025-02-10'
   }
 ]

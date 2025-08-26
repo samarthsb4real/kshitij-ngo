@@ -61,7 +61,7 @@ export default function HomePage() {
           </Card>
         </div>
 
-        {/* Features Section */}
+        {/* Features Section 
         <div className="mt-20">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Program Features
@@ -96,8 +96,9 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+    */}
 
-        {/* Statistics */}
+        {/* Statistics 
         <div className="mt-20 bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
             Our Impact
@@ -121,6 +122,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+    */}
       </div>
     </div>
   )

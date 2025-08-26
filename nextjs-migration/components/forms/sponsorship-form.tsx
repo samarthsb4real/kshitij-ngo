@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator'
 import { useLanguage } from './language-provider'
 import { useToast } from '@/hooks/use-toast'
+import { saveFormSubmission } from '@/lib/excel-utils'
 
 const formSchema = z.object({
   // Personal Information
@@ -174,12 +175,44 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
   const onFormSubmit = async (data: FormData) => {
     try {
+      // Save to localStorage
+      const submissionId = saveFormSubmission({
+        studentName: data.studentName,
+        age: data.age,
+        class: data.currentYear,
+        village: data.villageName,
+        school: data.schoolName,
+        currentEducation: data.currentEducation,
+        fatherName: data.fatherName,
+        motherName: '', // Not collected in current form
+        parentAge: data.fatherAge.toString(),
+        parentEducation: '', // Not collected in current form
+        familyMembers: data.totalFamilyMembers,
+        earningMembers: data.earningMembers,
+        annualIncome: data.familyYearlyIncome,
+        incomeSource: data.fatherOccupation,
+        phone: data.phoneNumber,
+        address: data.address,
+        futurePlans: data.futurePlans,
+        needsHelp: 'Yes',
+        expenses: {
+          travel: data.travelCost || 0,
+          fees: data.tuitionFees || 0,
+          books: data.booksCost || 0,
+          stationery: data.stationeryCost || 0,
+          uniform: data.uniformCost || 0,
+          tuition: data.examFees || 0,
+          other: (data.hostelFees || 0) + (data.otherExpenses || 0)
+        },
+        totalExpenses: totalExpenses
+      })
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       toast({
         title: "Application Submitted",
-        description: "Your sponsorship application has been submitted successfully!",
+        description: `Your application has been saved locally with ID: ${submissionId}. You can export it from the dashboard.`,
       })
       
       onSubmit()

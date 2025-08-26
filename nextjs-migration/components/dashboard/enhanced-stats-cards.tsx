@@ -16,19 +16,44 @@ import {
 import { generateDashboardStatsPDF } from '@/lib/pdf-utils'
 import { mockStudents } from '@/lib/student-data'
 
-interface Analytics {
-  totalStudents: number
-  totalExpenses: number
-  averageIncome: number
-  totalIncome: number
-  expensesByCategory: { [key: string]: number }
-  studentsByVillage: { [key: string]: number }
-  ageDistribution: { [key: string]: number }
-  incomeDistribution: { [key: string]: number }
+interface AnalyticsData {
+  stats: {
+    totalStudents: number
+    averageAge: number
+    medianIncome: number
+    averageExpenses: number
+    totalExpenses: number
+    studentsNeedingHelp: number
+  }
+  ageDistribution: {
+    labels: string[]
+    data: number[]
+    colors: string[]
+  }
+  villageDistribution: {
+    labels: string[]
+    data: number[]
+    colors: string[]
+  }
+  incomeSourceDistribution: {
+    labels: string[]
+    data: number[]
+    colors: string[]
+  }
+  expenseBreakdown: {
+    labels: string[]
+    data: number[]
+    colors: string[]
+  }
+  performanceTrends: {
+    labels: string[]
+    data: number[]
+    colors: string[]
+  }
 }
 
 interface EnhancedStatsCardsProps {
-  analytics: Analytics
+  analytics: AnalyticsData
 }
 
 export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
@@ -46,7 +71,7 @@ export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
 
   const handleExportStats = () => {
     const stats = {
-      totalStudents: analytics.totalStudents,
+      totalStudents: analytics.stats.totalStudents,
       approved,
       pending,
       rejected,
@@ -60,7 +85,7 @@ export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
   const cards = [
     {
       title: 'Total Students',
-      value: analytics.totalStudents,
+      value: analytics.stats.totalStudents,
       icon: Users,
       color: 'text-blue-600',
       bgColor: 'bg-blue-100',
@@ -168,7 +193,7 @@ export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
             </div>
             <div className="ml-auto">
               <span className="text-sm text-gray-600">
-                Approval Rate: {Math.round((approved / analytics.totalStudents) * 100)}%
+                Approval Rate: {Math.round((approved / analytics.stats.totalStudents) * 100)}%
               </span>
             </div>
           </div>
