@@ -357,14 +357,12 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   const nextSection = () => {
     if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
   const prevSection = () => {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -901,22 +899,23 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
       <Separator />
 
       {/* Form Content */}
-      <div className="min-h-[400px]">
+      <div className="h-[500px] md:h-[450px] overflow-y-auto px-1">
         {renderSection()}
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between items-center pt-6 border-t">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={prevSection}
           disabled={currentSection === 0}
+          className="w-full sm:w-auto order-2 sm:order-1"
         >
           {t('prev-btn')}
         </Button>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 order-1 sm:order-2">
           {sections.map((_, index) => (
             <button
               key={index}
@@ -935,8 +934,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         </div>
 
         {currentSection === sections.length - 1 ? (
-          <div className="flex gap-3">
-            <Button type="submit" disabled={isSubmittingForm}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto order-3">
+            <Button type="submit" disabled={isSubmittingForm} className="w-full sm:w-auto">
               {isSubmittingForm ? 'Submitting...' : 'Submit'}
             </Button>
             <Button 
@@ -948,12 +947,13 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
                 setCurrentSection(0)
                 toast({ title: "Form Cleared", description: "All fields have been reset" })
               }}
+              className="w-full sm:w-auto"
             >
               Clear Form
             </Button>
           </div>
         ) : (
-          <Button type="button" onClick={nextSection} disabled={!isSectionValid()}>
+          <Button type="button" onClick={nextSection} disabled={!isSectionValid()} className="w-full sm:w-auto order-3">
             {t('next-btn')}
           </Button>
         )}
