@@ -250,7 +250,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     }
   ]
 
-  const onFormSubmit = async (data: FormData, shouldReset = true) => {
+  const onFormSubmit = async (data: FormData) => {
     setIsSubmittingForm(true)
     try {
       // Check age eligibility
@@ -334,11 +334,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           : `Saved locally (ID: ${submissionId}). Google Sheets sync may be delayed.`,
       })
       
-      if (shouldReset) {
-        reset()
-        setCurrentSection(0)
-        onSubmit()
-      }
+      reset()
+      setCurrentSection(0)
+      onSubmit()
       setIsSubmittingForm(false)
     } catch (error) {
       console.error('Form submission error:', error)
