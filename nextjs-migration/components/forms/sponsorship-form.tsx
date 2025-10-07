@@ -250,7 +250,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     }
   ]
 
-  const submitForm = async (data: FormData, shouldReset = true) => {
+  const onFormSubmit = async (data: FormData, shouldReset = true) => {
     setIsSubmittingForm(true)
     try {
       // Check age eligibility
@@ -889,7 +889,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   }
 
   return (
-    <form onSubmit={handleSubmit((data) => submitForm(data, true))} className="space-y-8">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
       {/* Section Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -940,13 +940,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <div className="flex gap-3">
             <Button type="submit" disabled={isSubmittingForm}>
               {isSubmittingForm ? 'Submitting...' : 'Submit'}
-            </Button>
-            <Button 
-              type="button" 
-              disabled={isSubmittingForm}
-              onClick={() => handleSubmit((data) => submitForm(data, false))()}
-            >
-              {isSubmittingForm ? 'Submitting...' : 'Re-submit'}
             </Button>
             <Button 
               type="button" 

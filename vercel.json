@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd nextjs-migration && npm run build",
-  "outputDirectory": "nextjs-migration/.next",
-  "installCommand": "cd nextjs-migration && npm install"
-}
