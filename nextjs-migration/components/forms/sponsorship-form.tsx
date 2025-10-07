@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { useLanguage } from './language-provider'
 import { useToast } from '@/hooks/use-toast'
@@ -17,51 +16,99 @@ import { saveFormSubmission } from '@/lib/excel-utils'
 
 const formSchema = z.object({
   // Personal Information
-  studentName: z.string().min(2, 'Name must be at least 2 characters'),
+  studentName: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name is too long')
+    .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters'),
   dateOfBirth: z.string().min(1, 'Date of birth is required'),
-  age: z.number().min(1).max(21, 'Age must be between 1 and 21'),
-  villageName: z.string().min(1, 'Village name is required'),
+  age: z.number()
+    .min(10, 'Student must be at least 10 years old')
+    .max(21, 'Student must be 21 years or younger to be eligible'),
+  villageName: z.string()
+    .min(2, 'Village name is required')
+    .max(100, 'Village name is too long'),
   disability: z.string().optional(),
   
   // Education Information
-  currentEducation: z.string().min(1, 'Current education is required'),
-  currentYear: z.string().min(1, 'Current year/class is required'),
-  schoolName: z.string().min(1, 'School/college name is required'),
-  otherEducation: z.string().optional(),
-  futurePlans: z.string().min(10, 'Future plans must be at least 10 characters'),
+  currentEducation: z.string().min(1, 'Current education level is required'),
+  currentYear: z.string()
+    .min(1, 'Current year/class is required')
+    .max(50, 'Class/year is too long'),
+  schoolName: z.string()
+    .min(3, 'School/college name must be at least 3 characters')
+    .max(200, 'School name is too long'),
+  otherEducation: z.string().max(500, 'Description is too long').optional(),
+  futurePlans: z.string()
+    .min(10, 'Please describe your future plans (at least 10 characters)')
+    .max(1000, 'Description is too long'),
   
   // Academic Performance
-  year1Class: z.string().optional(),
-  year1Marks: z.string().optional(),
-  year2Class: z.string().optional(),
-  year2Marks: z.string().optional(),
-  year3Class: z.string().optional(),
-  year3Marks: z.string().optional(),
-  achievements: z.string().optional(),
+  year1Class: z.string().max(50).optional(),
+  year1Marks: z.string().max(20).optional(),
+  year2Class: z.string().max(50).optional(),
+  year2Marks: z.string().max(20).optional(),
+  year3Class: z.string().max(50).optional(),
+  year3Marks: z.string().max(20).optional(),
+  achievements: z.string().max(1000, 'Description is too long').optional(),
   
   // Expenses
-  tuitionFees: z.number().min(0, 'Tuition fees cannot be negative'),
-  booksCost: z.number().min(0, 'Books cost cannot be negative'),
-  stationeryCost: z.number().min(0, 'Stationery cost cannot be negative'),
-  travelCost: z.number().min(0, 'Travel cost cannot be negative'),
-  uniformCost: z.number().min(0).optional(),
-  examFees: z.number().min(0).optional(),
-  hostelFees: z.number().min(0).optional(),
-  otherExpenses: z.number().min(0).optional(),
+  tuitionFees: z.number()
+    .min(0, 'Tuition fees cannot be negative')
+    .max(1000000, 'Amount seems too high'),
+  booksCost: z.number()
+    .min(0, 'Books cost cannot be negative')
+    .max(100000, 'Amount seems too high'),
+  stationeryCost: z.number()
+    .min(0, 'Stationery cost cannot be negative')
+    .max(50000, 'Amount seems too high'),
+  travelCost: z.number()
+    .min(0, 'Travel cost cannot be negative')
+    .max(100000, 'Amount seems too high'),
+  uniformCost: z.number().min(0).max(50000).optional(),
+  examFees: z.number().min(0).max(100000).optional(),
+  hostelFees: z.number().min(0).max(500000).optional(),
+  otherExpenses: z.number().min(0).max(100000).optional(),
   
   // Family Information
-  fatherName: z.string().min(2, 'Father name is required'),
-  fatherAge: z.number().min(18).max(100, 'Father age must be between 18 and 100'),
-  fatherOccupation: z.string().min(1, 'Father occupation is required'),
-  fatherIncome: z.number().min(0, 'Father income cannot be negative'),
-  familyYearlyIncome: z.number().min(0, 'Family income cannot be negative'),
-  totalFamilyMembers: z.number().min(1, 'Total family members must be at least 1'),
-  earningMembers: z.number().min(0, 'Earning members cannot be negative'),
-  educationExpenseBearer: z.string().min(1, 'Education expense bearer is required'),
+  fatherName: z.string()
+    .min(2, 'Father\'s name is required')
+    .max(100, 'Name is too long')
+    .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters'),
+  motherName: z.string()
+    .min(2, 'Mother\'s name is required')
+    .max(100, 'Name is too long')
+    .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters'),
+  fatherAge: z.number()
+    .min(25, 'Father\'s age must be at least 25')
+    .max(100, 'Please enter a valid age'),
+  fatherOccupation: z.string()
+    .min(2, 'Father\'s occupation is required')
+    .max(100, 'Occupation description is too long'),
+  fatherIncome: z.number()
+    .min(0, 'Income cannot be negative')
+    .max(10000000, 'Amount seems too high'),
+  familyYearlyIncome: z.number()
+    .min(0, 'Family income cannot be negative')
+    .max(10000000, 'Amount seems too high'),
+  totalFamilyMembers: z.number()
+    .min(1, 'At least 1 family member required')
+    .max(50, 'Please enter a valid number'),
+  earningMembers: z.number()
+    .min(0, 'Cannot be negative')
+    .max(20, 'Please enter a valid number'),
+  educationExpenseBearer: z.string()
+    .min(2, 'Please specify who bears education expenses')
+    .max(100, 'Description is too long'),
   
   // Contact Information
-  phoneNumber: z.string().regex(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
-  address: z.string().min(10, 'Address must be at least 10 characters')
+  phoneNumber: z.string()
+    .regex(/^[6-9][0-9]{9}$/, 'Enter valid 10-digit Indian mobile number'),
+  address: z.string()
+    .min(10, 'Please provide complete address (at least 10 characters)')
+    .max(500, 'Address is too long')
+}).refine((data) => data.earningMembers <= data.totalFamilyMembers, {
+  message: 'Earning members cannot exceed total family members',
+  path: ['earningMembers'],
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -77,16 +124,29 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   const { toast } = useToast()
   const [currentSection, setCurrentSection] = useState(0)
   const [totalExpenses, setTotalExpenses] = useState(0)
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false)
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
+    control,
     formState: { errors, isSubmitting }
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+    defaultValues: {
+      tuitionFees: 0,
+      booksCost: 0,
+      stationeryCost: 0,
+      travelCost: 0,
+      uniformCost: 0,
+      examFees: 0,
+      hostelFees: 0,
+      otherExpenses: 0
+    }
   })
 
   const watchedFields = watch()
@@ -104,11 +164,19 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         age--
       }
       
-      if (age > 0 && age <= 21) {
+      if (age > 0) {
         setValue('age', age)
+        
+        if (age < 10 || age > 21) {
+          toast({
+            title: "Ineligible for Sponsorship",
+            description: `Student age is ${age} years. Only students aged 10-21 are eligible for this program.`,
+            variant: "destructive",
+          })
+        }
       }
     }
-  }, [watchedFields.dateOfBirth, setValue])
+  }, [watchedFields.dateOfBirth, setValue, toast])
 
   // Calculate total expenses
   useEffect(() => {
@@ -137,12 +205,21 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
   // Calculate progress
   useEffect(() => {
-    const allFields = Object.keys(formSchema.shape)
-    const filledFields = allFields.filter(field => {
+    const requiredFields = [
+      'studentName', 'dateOfBirth', 'age', 'villageName',
+      'currentEducation', 'currentYear', 'schoolName', 'futurePlans',
+      'tuitionFees', 'booksCost', 'stationeryCost', 'travelCost',
+      'fatherName', 'motherName', 'fatherAge', 'fatherOccupation', 'fatherIncome',
+      'familyYearlyIncome', 'totalFamilyMembers', 'earningMembers', 'educationExpenseBearer',
+      'phoneNumber', 'address'
+    ]
+    
+    const filledCount = requiredFields.filter(field => {
       const value = watchedFields[field as keyof FormData]
       return value !== undefined && value !== '' && value !== 0
-    })
-    const progress = (filledFields.length / allFields.length) * 100
+    }).length
+    
+    const progress = (filledCount / requiredFields.length) * 100
     onProgressChange(progress)
   }, [watchedFields, onProgressChange])
 
@@ -173,9 +250,33 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     }
   ]
 
-  const onFormSubmit = async (data: FormData) => {
+  const submitForm = async (data: FormData, shouldReset = true) => {
+    setIsSubmittingForm(true)
     try {
-      // Save to localStorage
+      // Check age eligibility
+      if (data.age < 10 || data.age > 21) {
+        setIsSubmittingForm(false)
+        toast({
+          title: "Submission Failed - Ineligible",
+          description: `Student age is ${data.age} years. Only students aged 10-21 are eligible for sponsorship.`,
+          variant: "destructive",
+        })
+        return
+      }
+      
+      // Calculate total expenses
+      const calculatedTotal = [
+        data.tuitionFees || 0,
+        data.booksCost || 0,
+        data.stationeryCost || 0,
+        data.travelCost || 0,
+        data.uniformCost || 0,
+        data.examFees || 0,
+        data.hostelFees || 0,
+        data.otherExpenses || 0
+      ].reduce((sum, expense) => sum + Number(expense), 0)
+
+      // Save to localStorage first
       const submissionId = saveFormSubmission({
         studentName: data.studentName,
         age: data.age,
@@ -184,9 +285,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         school: data.schoolName,
         currentEducation: data.currentEducation,
         fatherName: data.fatherName,
-        motherName: '', // Not collected in current form
-        parentAge: data.fatherAge.toString(),
-        parentEducation: '', // Not collected in current form
+        motherName: data.motherName,
+        parentAge: data.fatherAge?.toString() || '',
+        parentEducation: '',
         familyMembers: data.totalFamilyMembers,
         earningMembers: data.earningMembers,
         annualIncome: data.familyYearlyIncome,
@@ -204,36 +305,68 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           tuition: data.examFees || 0,
           other: (data.hostelFees || 0) + (data.otherExpenses || 0)
         },
-        totalExpenses: totalExpenses
+        totalExpenses: calculatedTotal
       })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      // Submit to Google Sheets
+      const response = await fetch('/api/submit-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          motherName: data.motherName,
+          totalExpenses: calculatedTotal
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Submission failed')
+      }
       
       toast({
-        title: "Application Submitted",
-        description: `Your application has been saved locally with ID: ${submissionId}. You can export it from the dashboard.`,
+        title: "Application Submitted Successfully!",
+        description: result.googleSheetsSuccess 
+          ? `Saved to Google Sheets and locally (ID: ${submissionId})`
+          : `Saved locally (ID: ${submissionId}). Google Sheets sync may be delayed.`,
       })
       
-      onSubmit()
+      if (shouldReset) {
+        reset()
+        setCurrentSection(0)
+        onSubmit()
+      }
+      setIsSubmittingForm(false)
     } catch (error) {
+      console.error('Form submission error:', error)
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your application. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error submitting your application. Please try again.",
         variant: "destructive",
       })
+      setIsSubmittingForm(false)
     }
+  }
+
+  const isSectionValid = () => {
+    const currentFields = sections[currentSection].fields
+    return !currentFields.some(field => errors[field as keyof FormData])
   }
 
   const nextSection = () => {
     if (currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
   const prevSection = () => {
     if (currentSection > 0) {
       setCurrentSection(currentSection - 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -294,19 +427,25 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
       <div>
         <Label htmlFor="disability">{t('disability-label')}</Label>
-        <Select onValueChange={(value) => setValue('disability', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder={t('no-disability')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">{t('no-disability')}</SelectItem>
-            <SelectItem value="physical">{t('physical-disability')}</SelectItem>
-            <SelectItem value="visual">{t('visual-disability')}</SelectItem>
-            <SelectItem value="hearing">{t('hearing-disability')}</SelectItem>
-            <SelectItem value="intellectual">{t('intellectual-disability')}</SelectItem>
-            <SelectItem value="other">{t('other-disability')}</SelectItem>
-          </SelectContent>
-        </Select>
+        <Controller
+          name="disability"
+          control={control}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('no-disability')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t('no-disability')}</SelectItem>
+                <SelectItem value="physical">{t('physical-disability')}</SelectItem>
+                <SelectItem value="visual">{t('visual-disability')}</SelectItem>
+                <SelectItem value="hearing">{t('hearing-disability')}</SelectItem>
+                <SelectItem value="intellectual">{t('intellectual-disability')}</SelectItem>
+                <SelectItem value="other">{t('other-disability')}</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
     </div>
   )
@@ -315,20 +454,26 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     <div className="space-y-6">
       <div>
         <Label htmlFor="currentEducation">{t('current-edu-label')}</Label>
-        <Select onValueChange={(value) => setValue('currentEducation', value)}>
-          <SelectTrigger>
-            <SelectValue placeholder={t('select-education')} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="primary">{t('primary-edu')}</SelectItem>
-            <SelectItem value="secondary">{t('secondary-edu')}</SelectItem>
-            <SelectItem value="higher-secondary">{t('higher-secondary-edu')}</SelectItem>
-            <SelectItem value="undergraduate">{t('undergraduate-edu')}</SelectItem>
-            <SelectItem value="postgraduate">{t('postgraduate-edu')}</SelectItem>
-            <SelectItem value="diploma">{t('diploma-edu')}</SelectItem>
-            <SelectItem value="vocational">{t('vocational-edu')}</SelectItem>
-          </SelectContent>
-        </Select>
+        <Controller
+          name="currentEducation"
+          control={control}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('select-education')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="primary">{t('primary-edu')}</SelectItem>
+                <SelectItem value="secondary">{t('secondary-edu')}</SelectItem>
+                <SelectItem value="higher-secondary">{t('higher-secondary-edu')}</SelectItem>
+                <SelectItem value="undergraduate">{t('undergraduate-edu')}</SelectItem>
+                <SelectItem value="postgraduate">{t('postgraduate-edu')}</SelectItem>
+                <SelectItem value="diploma">{t('diploma-edu')}</SelectItem>
+                <SelectItem value="vocational">{t('vocational-edu')}</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
         {errors.currentEducation && (
           <p className="text-sm text-red-600 mt-1">{errors.currentEducation.message}</p>
         )}
@@ -498,16 +643,30 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
   const renderFamilyInfo = () => (
     <div className="space-y-6">
-      <div>
-        <Label htmlFor="fatherName">{t('father-name-label')}</Label>
-        <Input
-          id="fatherName"
-          {...register('fatherName')}
-          placeholder="Enter father's full name"
-        />
-        {errors.fatherName && (
-          <p className="text-sm text-red-600 mt-1">{errors.fatherName.message}</p>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="fatherName">{t('father-name-label')}</Label>
+          <Input
+            id="fatherName"
+            {...register('fatherName')}
+            placeholder="Enter father's full name"
+          />
+          {errors.fatherName && (
+            <p className="text-sm text-red-600 mt-1">{errors.fatherName.message}</p>
+          )}
+        </div>
+        
+        <div>
+          <Label htmlFor="motherName">Mother's Name *</Label>
+          <Input
+            id="motherName"
+            {...register('motherName')}
+            placeholder="Enter mother's full name"
+          />
+          {errors.motherName && (
+            <p className="text-sm text-red-600 mt-1">{errors.motherName.message}</p>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -637,23 +796,91 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     </div>
   )
 
+  const renderAcademicPerformance = () => (
+    <div className="space-y-6">
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-gray-900 mb-4">Most Recent Year</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="year1Class">Class/Year</Label>
+            <Input
+              id="year1Class"
+              {...register('year1Class')}
+              placeholder="e.g., 12th, 2nd Year B.A."
+            />
+          </div>
+          <div>
+            <Label htmlFor="year1Marks">Marks/Percentage</Label>
+            <Input
+              id="year1Marks"
+              {...register('year1Marks')}
+              placeholder="e.g., 85%, 450/500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-green-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-gray-900 mb-4">Second Recent Year</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="year2Class">Class/Year</Label>
+            <Input
+              id="year2Class"
+              {...register('year2Class')}
+              placeholder="e.g., 11th, 1st Year B.A."
+            />
+          </div>
+          <div>
+            <Label htmlFor="year2Marks">Marks/Percentage</Label>
+            <Input
+              id="year2Marks"
+              {...register('year2Marks')}
+              placeholder="e.g., 80%, 420/500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-gray-900 mb-4">Third Recent Year</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="year3Class">Class/Year</Label>
+            <Input
+              id="year3Class"
+              {...register('year3Class')}
+              placeholder="e.g., 10th, SSC"
+            />
+          </div>
+          <div>
+            <Label htmlFor="year3Marks">Marks/Percentage</Label>
+            <Input
+              id="year3Marks"
+              {...register('year3Marks')}
+              placeholder="e.g., 75%, 400/500"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="achievements">Achievements and Awards</Label>
+        <Textarea
+          id="achievements"
+          {...register('achievements')}
+          placeholder="List any awards, competitions won, or notable achievements"
+          rows={4}
+        />
+      </div>
+    </div>
+  )
+
   const renderSection = () => {
     switch (currentSection) {
       case 0: return renderPersonalInfo()
       case 1: return renderEducationInfo()
-      case 2: return (
-        <div className="space-y-6">
-          <div>
-            <Label htmlFor="achievements">{t('achievements-label')}</Label>
-            <Textarea
-              id="achievements"
-              {...register('achievements')}
-              placeholder="List any awards, competitions won, or notable achievements"
-              rows={4}
-            />
-          </div>
-        </div>
-      )
+      case 2: return renderAcademicPerformance()
       case 3: return renderExpenses()
       case 4: return renderFamilyInfo()
       case 5: return renderContactInfo()
@@ -662,7 +889,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   }
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit((data) => submitForm(data, true))} className="space-y-8">
       {/* Section Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -693,25 +920,49 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
         <div className="flex gap-2">
           {sections.map((_, index) => (
-            <div
+            <button
               key={index}
-              className={`w-3 h-3 rounded-full ${
+              type="button"
+              onClick={() => setCurrentSection(index)}
+              className={`w-3 h-3 rounded-full transition-all ${
                 index === currentSection
-                  ? 'bg-primary'
+                  ? 'bg-primary w-8'
                   : index < currentSection
-                  ? 'bg-green-500'
+                  ? 'bg-green-500 cursor-pointer hover:scale-125'
                   : 'bg-gray-300'
               }`}
+              title={`Go to ${sections[index].title}`}
             />
           ))}
         </div>
 
         {currentSection === sections.length - 1 ? (
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : t('submit-btn')}
-          </Button>
+          <div className="flex gap-3">
+            <Button type="submit" disabled={isSubmittingForm}>
+              {isSubmittingForm ? 'Submitting...' : 'Submit'}
+            </Button>
+            <Button 
+              type="button" 
+              disabled={isSubmittingForm}
+              onClick={() => handleSubmit((data) => submitForm(data, false))()}
+            >
+              {isSubmittingForm ? 'Submitting...' : 'Re-submit'}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline"
+              disabled={isSubmittingForm}
+              onClick={() => {
+                reset()
+                setCurrentSection(0)
+                toast({ title: "Form Cleared", description: "All fields have been reset" })
+              }}
+            >
+              Clear Form
+            </Button>
+          </div>
         ) : (
-          <Button type="button" onClick={nextSection}>
+          <Button type="button" onClick={nextSection} disabled={!isSectionValid()}>
             {t('next-btn')}
           </Button>
         )}

@@ -24,6 +24,7 @@ import { EnhancedStatsCards } from '@/components/dashboard/enhanced-stats-cards'
 import { ChartsGrid } from '@/components/dashboard/charts-grid'
 import { StudentsTable } from '@/components/dashboard/students-table'
 import { SyncStatus } from '@/components/dashboard/sync-status'
+import { GoogleSheetsStatus } from '@/components/dashboard/google-sheets-status'
 import { useGoogleSheets } from '@/hooks/use-google-sheets'
 import { useToast } from '@/hooks/use-toast'
 import { exportTodaysSubmissions, exportAllSubmissions, getStoredSubmissions, clearAllSubmissions } from '@/lib/excel-utils'
@@ -309,40 +310,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Google Sheets Integration</CardTitle>
-                  <CardDescription>
-                    Configure your Google Sheets connection for data sync
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-4">
-                    <div>
-                      <label className="text-sm font-medium">Google Sheet ID</label>
-                      <Input placeholder="1ABC...XYZ" className="mt-1" />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Found in your Google Sheet URL between /d/ and /edit
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">API Key</label>
-                      <Input type="password" placeholder="AIza...abc" className="mt-1" />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Get this from Google Cloud Console
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Sheet Name</label>
-                      <Input placeholder="students" defaultValue="students" className="mt-1" />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button>Save Configuration</Button>
-                    <Button variant="outline">Test Connection</Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <GoogleSheetsStatus />
 
               <Card>
                 <CardHeader>

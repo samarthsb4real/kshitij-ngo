@@ -1,0 +1,118 @@
+// Google Sheets integration for form submissions
+
+export interface FormSubmissionData {
+  studentName: string
+  age: number
+  dateOfBirth: string
+  villageName: string
+  disability?: string
+  currentEducation: string
+  currentYear: string
+  schoolName: string
+  otherEducation?: string
+  futurePlans: string
+  year1Class?: string
+  year1Marks?: string
+  year2Class?: string
+  year2Marks?: string
+  year3Class?: string
+  year3Marks?: string
+  achievements?: string
+  tuitionFees: number
+  booksCost: number
+  stationeryCost: number
+  travelCost: number
+  uniformCost?: number
+  examFees?: number
+  hostelFees?: number
+  otherExpenses?: number
+  fatherName: string
+  motherName: string
+  fatherAge: number
+  fatherOccupation: string
+  fatherIncome: number
+  familyYearlyIncome: number
+  totalFamilyMembers: number
+  earningMembers: number
+  educationExpenseBearer: string
+  phoneNumber: string
+  address: string
+}
+
+// Submit form data to Google Sheets via Apps Script Web App
+export const submitToGoogleSheets = async (formData: FormSubmissionData): Promise<boolean> => {
+  try {
+    // Replace this URL with your Google Apps Script Web App URL
+    const GOOGLE_SCRIPT_URL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || ''
+    
+    if (!GOOGLE_SCRIPT_URL) {
+      console.warn('Google Sheets URL not configured. Saving locally only.')
+      return false
+    }
+
+    const totalExpenses = 
+      (formData.tuitionFees || 0) +
+      (formData.booksCost || 0) +
+      (formData.stationeryCost || 0) +
+      (formData.travelCost || 0) +
+      (formData.uniformCost || 0) +
+      (formData.examFees || 0) +
+      (formData.hostelFees || 0) +
+      (formData.otherExpenses || 0)
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      studentName: formData.studentName,
+      age: formData.age,
+      dateOfBirth: formData.dateOfBirth,
+      villageName: formData.villageName,
+      disability: formData.disability || 'None',
+      currentEducation: formData.currentEducation,
+      currentYear: formData.currentYear,
+      schoolName: formData.schoolName,
+      otherEducation: formData.otherEducation || '',
+      futurePlans: formData.futurePlans,
+      year1Class: formData.year1Class || '',
+      year1Marks: formData.year1Marks || '',
+      year2Class: formData.year2Class || '',
+      year2Marks: formData.year2Marks || '',
+      year3Class: formData.year3Class || '',
+      year3Marks: formData.year3Marks || '',
+      achievements: formData.achievements || '',
+      tuitionFees: formData.tuitionFees || 0,
+      booksCost: formData.booksCost || 0,
+      stationeryCost: formData.stationeryCost || 0,
+      travelCost: formData.travelCost || 0,
+      uniformCost: formData.uniformCost || 0,
+      examFees: formData.examFees || 0,
+      hostelFees: formData.hostelFees || 0,
+      otherExpenses: formData.otherExpenses || 0,
+      totalExpenses: totalExpenses,
+      fatherName: formData.fatherName,
+      motherName: formData.motherName,
+      fatherAge: formData.fatherAge,
+      fatherOccupation: formData.fatherOccupation,
+      fatherIncome: formData.fatherIncome,
+      familyYearlyIncome: formData.familyYearlyIncome,
+      totalFamilyMembers: formData.totalFamilyMembers,
+      earningMembers: formData.earningMembers,
+      educationExpenseBearer: formData.educationExpenseBearer,
+      phoneNumber: formData.phoneNumber,
+      address: formData.address
+    }
+
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    })
+
+    return true
+  } catch (error) {
+    console.error('Error submitting to Google Sheets:', error)
+    return false
+  }
+}

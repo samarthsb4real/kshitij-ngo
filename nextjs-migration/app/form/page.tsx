@@ -46,9 +46,12 @@ export default function FormPage() {
               Thank you for your application. We will review it and contact you soon.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Button onClick={() => setIsSubmitted(false)} className="w-full">
               Submit Another Application
+            </Button>
+            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+              Clear Form
             </Button>
           </CardContent>
         </Card>

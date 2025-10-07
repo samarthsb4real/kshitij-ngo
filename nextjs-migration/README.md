@@ -95,19 +95,44 @@ nextjs-migration/
 
 ### Google Sheets Integration
 
-1. Create a Google Sheet with student data
-2. Get a Google Sheets API key from Google Cloud Console
-3. Make the sheet publicly viewable
-4. Configure in the Settings tab of the dashboard
+The application now includes full Google Sheets integration for form submissions:
+
+1. **Automatic Form Submission**: All form data is automatically sent to Google Sheets
+2. **Real-time Sync**: Dashboard displays live data from your spreadsheet
+3. **Connection Status**: Monitor your Google Sheets connection in the dashboard
+4. **Fallback Mode**: Uses sample data when Google Sheets is unavailable
+
+**Setup Steps:**
+1. Follow the detailed guide in `GOOGLE_SHEETS_SETUP.md`
+2. Create a Google Cloud service account
+3. Enable Google Sheets API
+4. Configure environment variables
+5. Share your spreadsheet with the service account
+
+**Features:**
+- ✅ Automatic sheet and header creation
+- ✅ Real-time form submissions
+- ✅ Connection testing and status monitoring
+- ✅ Secure credential management
+- ✅ Error handling and fallback data
 
 ### Environment Variables
 
-Create a `.env.local` file:
+Create a `.env.local` file with your Google Sheets credentials:
 
 ```env
-NEXT_PUBLIC_GOOGLE_SHEETS_API_KEY=your_api_key
-NEXT_PUBLIC_GOOGLE_SHEET_ID=your_sheet_id
+# Google Sheets API Configuration (Required)
+GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----"
+GOOGLE_SHEETS_CLIENT_EMAIL="your-service-account@your-project.iam.gserviceaccount.com"
+GOOGLE_SHEETS_PROJECT_ID="your-google-cloud-project-id"
+GOOGLE_SPREADSHEET_ID="your-google-spreadsheet-id"
+
+# Optional: Sheet names (defaults will be used if not specified)
+STUDENTS_SHEET_NAME="Students"
+FORM_SUBMISSIONS_SHEET_NAME="Form Submissions"
 ```
+
+**Important:** See `GOOGLE_SHEETS_SETUP.md` for detailed setup instructions.
 
 ## Migration from Original
 

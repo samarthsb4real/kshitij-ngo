@@ -412,18 +412,64 @@ export function useGoogleSheets() {
     }
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Test Google Sheets connection first
+      const testResponse = await fetch('/api/google-sheets?action=test')
+      const testResult = await testResponse.json()
       
-      const studentsData = getSampleData()
-      const analyticsData = calculateAnalytics(studentsData)
+      if (!testResult.success) {
+        throw new Error(testResult.error || 'Google Sheets connection failed')
+      }
+
+      // Fetch submissions from Google Sheets
+      const submissionsResponse = await fetch('/api/google-sheets?action=submissions')
+      const submissionsResult = await submissionsResponse.json()
       
-      setStudents(studentsData)
+      if (!submissionsResult.success) {
+        throw new Error('Failed to fetch submissions from Google Sheets')
+      }
+
+      // Convert submissions to student format
+      const studentsData = submissionsResult.data.map((submission: any, index: number) => ({
+        id: index + 1,
+        studentName: submission.studentName,
+        age: submission.age,
+        classStandard: submission.currentYear,
+        village: submission.villageName,
+        schoolCollege: submission.schoolName,
+        currentEducation: submission.currentEducation,
+        achievements: '',
+        futurePlans: submission.futurePlans,
+        parentNames: submission.fatherName,
+        parentAges: submission.fatherAge.toString(),
+        parentEducation: '',
+        familySize: submission.totalFamilyMembers,
+        workingMembers: submission.earningMembers,
+        annualIncome: submission.familyYearlyIncome,
+        incomeSource: submission.fatherOccupation,
+        needsHelp: 'Ho',
+        phone: submission.phoneNumber,
+        address: submission.address,
+        expenses: {
+          travel: submission.travelCost,
+          schoolFees: submission.tuitionFees,
+          books: submission.booksCost,
+          stationery: submission.stationeryCost,
+          uniform: submission.uniformCost,
+          tuition: submission.examFees
+        },
+        yearsReview: []
+      }))
+      
+      // If no real data, use sample data
+      const finalStudentsData = studentsData.length > 0 ? studentsData : getSampleData()
+      const analyticsData = calculateAnalytics(finalStudentsData)
+      
+      setStudents(finalStudentsData)
       setAnalytics(analyticsData)
       setError(null)
       setSyncStatus({
         state: 'connected',
-        message: `Connected - ${studentsData.length} students loaded`,
+        message: `Connected - ${finalStudentsData.length} students loaded (${studentsData.length} from sheets)`,
         lastSync: new Date().toLocaleTimeString(),
         autoSync: true
       })
