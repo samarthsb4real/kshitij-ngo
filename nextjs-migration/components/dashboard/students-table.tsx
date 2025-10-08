@@ -16,6 +16,7 @@ interface Student {
   currentEducation: string
   annualIncome: number
   phone: string
+  status?: string
   expenses: {
     [key: string]: number
   }
@@ -83,17 +84,22 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
                       <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                         <GraduationCap className="w-6 h-6 text-primary" />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {student.studentName}
-                        </h3>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {student.studentName}
+                          </h3>
+                          <Badge className={`${student.status === 'approved' ? 'bg-green-100 text-green-800' : student.status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                            {(student.status || 'pending').toUpperCase()}
+                          </Badge>
+                        </div>
                         <p className="text-sm text-gray-600">
                           {student.currentEducation}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2 text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">Age:</span>
                         <span className="font-medium">{student.age} years</span>
@@ -107,22 +113,30 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
                         <span className="font-medium">{student.village}</span>
                       </div>
                       <div className="flex items-center gap-2">
+                        <span className="text-gray-500">School:</span>
+                        <span className="font-medium text-xs">{student.schoolCollege}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-400" />
                         <span className="font-medium">{student.phone}</span>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Income:</span>
+                        <span className="font-medium">₹{student.annualIncome.toLocaleString()}</span>
+                      </div>
                     </div>
                     
-                    <div className="flex items-center gap-4 mt-4">
+                    <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Annual Income:</span>
-                        <Badge variant="secondary" className="text-green-700 bg-green-100">
-                          ₹{student.annualIncome.toLocaleString()}
+                        <span className="text-sm text-gray-500">Education Expenses:</span>
+                        <Badge variant="secondary" className="text-blue-700 bg-blue-100">
+                          ₹{totalExpenses.toLocaleString()}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Total Expenses:</span>
-                        <Badge variant="secondary" className="text-blue-700 bg-blue-100">
-                          ₹{totalExpenses.toLocaleString()}
+                        <span className="text-sm text-gray-500">Gap:</span>
+                        <Badge variant="secondary" className={totalExpenses > student.annualIncome ? 'text-red-700 bg-red-100' : 'text-green-700 bg-green-100'}>
+                          {totalExpenses > student.annualIncome ? '-' : '+'}₹{Math.abs(student.annualIncome - totalExpenses).toLocaleString()}
                         </Badge>
                       </div>
                     </div>
