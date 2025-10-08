@@ -412,55 +412,55 @@ export function useGoogleSheets() {
     }
 
     try {
-      // Test Google Sheets connection first
-      const testResponse = await fetch('/api/google-sheets?action=test')
-      const testResult = await testResponse.json()
+      // Fetch data directly from Google Sheets using Apps Script
+      const response = await fetch(process.env.NEXT_PUBLIC_GOOGLE_SHEETS_API_URL || 'https://script.google.com/macros/s/AKfycbzM-7XZh4ehhpPv7yFnVsiDUj6u6wlMx0OEw3yimjdG9eYaxPV_XjnYQ1Qm6F5QzGLo/exec')
+      const sheetsData = await response.json()
       
-      if (!testResult.success) {
-        throw new Error(testResult.error || 'Google Sheets connection failed')
+      if (!response.ok) {
+        throw new Error('Failed to fetch from Google Sheets')
       }
 
-      // Fetch submissions from Google Sheets
-      const submissionsResponse = await fetch('/api/google-sheets?action=submissions')
-      const submissionsResult = await submissionsResponse.json()
+      // Convert Google Sheets data to student format
+      const studentsData = sheetsData.map((row: any[], index: number) => {
+        if (index === 0) return null // Skip header row
+        
+        return {
+          id: index,
+          studentName: row[1] || '',
+          age: parseInt(row[2]) || 0,
+          classStandard: row[7] || '',
+          village: row[4] || '',
+          schoolCollege: row[8] || '',
+          currentEducation: row[6] || '',
+          achievements: row[17] || '',
+          futurePlans: row[10] || '',
+          parentNames: `${row[27] || ''} & ${row[28] || ''}`,
+          parentAges: row[29] || '',
+          parentEducation: '',
+          familySize: parseInt(row[32]) || 0,
+          workingMembers: parseInt(row[33]) || 0,
+          annualIncome: parseFloat(row[31]) || 0,
+          incomeSource: row[30] || '',
+          needsHelp: 'Ho',
+          phone: row[35] || '',
+          address: row[36] || '',
+          status: row[38] || 'pending',
+          expenses: {
+            travel: parseFloat(row[21]) || 0,
+            schoolFees: parseFloat(row[18]) || 0,
+            books: parseFloat(row[19]) || 0,
+            stationery: parseFloat(row[20]) || 0,
+            uniform: parseFloat(row[22]) || 0,
+            tuition: parseFloat(row[23]) || 0
+          },
+          yearsReview: [
+            { year: 2024, standard: row[11] || '', marks: parseFloat(row[12]) || 0 },
+            { year: 2023, standard: row[13] || '', marks: parseFloat(row[14]) || 0 },
+            { year: 2022, standard: row[15] || '', marks: parseFloat(row[16]) || 0 }
+          ].filter(yr => yr.standard && yr.marks)
+        }
+      }).filter(Boolean)
       
-      if (!submissionsResult.success) {
-        throw new Error('Failed to fetch submissions from Google Sheets')
-      }
-
-      // Convert submissions to student format
-      const studentsData = submissionsResult.data.map((submission: any, index: number) => ({
-        id: index + 1,
-        studentName: submission.studentName,
-        age: submission.age,
-        classStandard: submission.currentYear,
-        village: submission.villageName,
-        schoolCollege: submission.schoolName,
-        currentEducation: submission.currentEducation,
-        achievements: '',
-        futurePlans: submission.futurePlans,
-        parentNames: submission.fatherName,
-        parentAges: submission.fatherAge.toString(),
-        parentEducation: '',
-        familySize: submission.totalFamilyMembers,
-        workingMembers: submission.earningMembers,
-        annualIncome: submission.familyYearlyIncome,
-        incomeSource: submission.fatherOccupation,
-        needsHelp: 'Ho',
-        phone: submission.phoneNumber,
-        address: submission.address,
-        expenses: {
-          travel: submission.travelCost,
-          schoolFees: submission.tuitionFees,
-          books: submission.booksCost,
-          stationery: submission.stationeryCost,
-          uniform: submission.uniformCost,
-          tuition: submission.examFees
-        },
-        yearsReview: []
-      }))
-      
-      // If no real data, use sample data
       const finalStudentsData = studentsData.length > 0 ? studentsData : getSampleData()
       const analyticsData = calculateAnalytics(finalStudentsData)
       
@@ -469,12 +469,11 @@ export function useGoogleSheets() {
       setError(null)
       setSyncStatus({
         state: 'connected',
-        message: `Connected - ${finalStudentsData.length} students loaded (${studentsData.length} from sheets)`,
+        message: `Connected - ${finalStudentsData.length} students loaded from Google Sheets`,
         lastSync: new Date().toLocaleTimeString(),
         autoSync: true
       })
     } catch (err) {
-      // Use fallback data when Google Sheets fails
       const fallbackData = getSampleData()
       const fallbackAnalytics = calculateAnalytics(fallbackData)
       

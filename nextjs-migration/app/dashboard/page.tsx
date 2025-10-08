@@ -67,6 +67,9 @@ export default function DashboardPage() {
     }
   }
 
+  // Get unique villages from students data
+  const uniqueVillages = [...new Set(students.map(student => student.village))].filter(Boolean).sort()
+
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.village.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -238,10 +241,11 @@ export default function DashboardPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Villages</SelectItem>
-                        <SelectItem value="Kondhur">Kondhur</SelectItem>
-                        <SelectItem value="Shivapur">Shivapur</SelectItem>
-                        <SelectItem value="Wadgaon">Wadgaon</SelectItem>
-                        <SelectItem value="Karjat">Karjat</SelectItem>
+                        {uniqueVillages.map((village) => (
+                          <SelectItem key={village} value={village}>
+                            {village}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

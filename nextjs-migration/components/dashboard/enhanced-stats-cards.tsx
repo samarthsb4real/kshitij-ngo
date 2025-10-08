@@ -14,7 +14,6 @@ import {
   XCircle
 } from 'lucide-react'
 import { generateDashboardStatsPDF } from '@/lib/pdf-utils'
-import { mockStudents } from '@/lib/student-data'
 
 interface AnalyticsData {
   stats: {
@@ -62,12 +61,12 @@ export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
     return <div>Loading...</div>
   }
 
-  // Calculate status-based stats from mock data
-  const approved = mockStudents.filter(s => s.status === 'approved').length
-  const pending = mockStudents.filter(s => s.status === 'pending').length
-  const rejected = mockStudents.filter(s => s.status === 'rejected').length
-  const totalFunding = mockStudents.reduce((sum, s) => sum + s.totalExpenses, 0)
-  const avgIncome = mockStudents.reduce((sum, s) => sum + s.familyIncome, 0) / mockStudents.length
+  // All students from Google Sheets are considered approved
+  const approved = analytics.stats.totalStudents
+  const pending = 0
+  const rejected = 0
+  const totalFunding = analytics.stats.totalExpenses
+  const avgIncome = analytics.stats.medianIncome
 
   const handleExportStats = () => {
     const stats = {
@@ -77,7 +76,7 @@ export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
       rejected,
       totalFunding,
       avgIncome: Math.round(avgIncome),
-      students: mockStudents
+      students: []
     }
     generateDashboardStatsPDF(stats)
   }

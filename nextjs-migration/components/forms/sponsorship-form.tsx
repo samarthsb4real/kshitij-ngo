@@ -22,6 +22,7 @@ const formSchema = z.object({
     .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters'),
   dateOfBirth: z.string().min(1, 'Date of birth is required'),
   age: z.number()
+    .int('Age must be a whole number')
     .min(10, 'Student must be at least 10 years old')
     .max(21, 'Student must be 21 years or younger to be eligible'),
   villageName: z.string()
@@ -64,10 +65,10 @@ const formSchema = z.object({
   travelCost: z.number()
     .min(0, 'Travel cost cannot be negative')
     .max(100000, 'Amount seems too high'),
-  uniformCost: z.number().min(0).max(50000).optional(),
-  examFees: z.number().min(0).max(100000).optional(),
-  hostelFees: z.number().min(0).max(500000).optional(),
-  otherExpenses: z.number().min(0).max(100000).optional(),
+  uniformCost: z.number().min(0, 'Cannot be negative').max(50000).optional().or(z.literal(0)),
+  examFees: z.number().min(0, 'Cannot be negative').max(100000).optional().or(z.literal(0)),
+  hostelFees: z.number().min(0, 'Cannot be negative').max(500000).optional().or(z.literal(0)),
+  otherExpenses: z.number().min(0, 'Cannot be negative').max(100000).optional().or(z.literal(0)),
   
   // Family Information
   fatherName: z.string()
@@ -79,6 +80,7 @@ const formSchema = z.object({
     .max(100, 'Name is too long')
     .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters'),
   fatherAge: z.number()
+    .int('Age must be a whole number')
     .min(25, 'Father\'s age must be at least 25')
     .max(100, 'Please enter a valid age'),
   fatherOccupation: z.string()
@@ -91,9 +93,11 @@ const formSchema = z.object({
     .min(0, 'Family income cannot be negative')
     .max(10000000, 'Amount seems too high'),
   totalFamilyMembers: z.number()
+    .int('Must be a whole number')
     .min(1, 'At least 1 family member required')
     .max(50, 'Please enter a valid number'),
   earningMembers: z.number()
+    .int('Must be a whole number')
     .min(0, 'Cannot be negative')
     .max(20, 'Please enter a valid number'),
   educationExpenseBearer: z.string()
@@ -402,6 +406,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             type="number"
             {...register('age', { valueAsNumber: true })}
             readOnly
+            className="bg-gray-50"
           />
           {errors.age && (
             <p className="text-sm text-red-600 mt-1">{errors.age.message}</p>
@@ -534,6 +539,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="tuitionFees"
             type="number"
+            min="0"
+            step="1"
             {...register('tuitionFees', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -547,6 +554,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="booksCost"
             type="number"
+            min="0"
+            step="1"
             {...register('booksCost', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -562,6 +571,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="stationeryCost"
             type="number"
+            min="0"
+            step="1"
             {...register('stationeryCost', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -575,6 +586,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="travelCost"
             type="number"
+            min="0"
+            step="1"
             {...register('travelCost', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -590,6 +603,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="uniformCost"
             type="number"
+            min="0"
+            step="1"
             {...register('uniformCost', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -600,6 +615,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="examFees"
             type="number"
+            min="0"
+            step="1"
             {...register('examFees', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -612,6 +629,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="hostelFees"
             type="number"
+            min="0"
+            step="1"
             {...register('hostelFees', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -622,6 +641,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="otherExpenses"
             type="number"
+            min="0"
+            step="1"
             {...register('otherExpenses', { valueAsNumber: true })}
             placeholder="0"
           />
@@ -671,6 +692,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="fatherAge"
             type="number"
+            min="25"
+            max="100"
+            step="1"
             {...register('fatherAge', { valueAsNumber: true })}
             placeholder="Age"
           />
@@ -698,6 +722,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="fatherIncome"
             type="number"
+            min="0"
+            step="1000"
             {...register('fatherIncome', { valueAsNumber: true })}
             placeholder="Annual income"
           />
@@ -711,6 +737,8 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="familyYearlyIncome"
             type="number"
+            min="0"
+            step="1000"
             {...register('familyYearlyIncome', { valueAsNumber: true })}
             placeholder="Total family income"
           />
@@ -726,6 +754,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="totalFamilyMembers"
             type="number"
+            min="1"
+            max="50"
+            step="1"
             {...register('totalFamilyMembers', { valueAsNumber: true })}
             placeholder="Number of members"
           />
@@ -739,6 +770,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           <Input
             id="earningMembers"
             type="number"
+            min="0"
+            max="20"
+            step="1"
             {...register('earningMembers', { valueAsNumber: true })}
             placeholder="Number of earning members"
           />
@@ -768,6 +802,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         <Label htmlFor="phoneNumber">{t('phone-label')}</Label>
         <Input
           id="phoneNumber"
+          type="tel"
+          inputMode="numeric"
+          pattern="[6-9][0-9]{9}"
           {...register('phoneNumber')}
           placeholder="10-digit mobile number"
           maxLength={10}
