@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-// import { Student, generateStudentProfilePDF } from '@/lib/pdf-utils'
+import { Student as PDFStudent, generateStudentProfilePDF } from '@/lib/pdf-utils'
 
 interface Student {
   id: number
@@ -58,8 +58,48 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
   }
 
   const handleExportPDF = () => {
-    // TODO: Implement PDF export with correct student data structure
-    console.log('PDF export functionality needs to be updated for new data structure')
+    const pdfStudent: PDFStudent = {
+      id: student.id.toString(),
+      name: student.studentName,
+      age: student.age,
+      class: student.classStandard,
+      village: student.village,
+      school: student.schoolCollege,
+      currentEducation: student.currentEducation,
+      academicPerformance: {
+        year1: student.yearsReview[0] ? `${student.yearsReview[0].year}, ${student.yearsReview[0].standard}, ${student.yearsReview[0].marks}%` : '',
+        year2: student.yearsReview[1] ? `${student.yearsReview[1].year}, ${student.yearsReview[1].standard}, ${student.yearsReview[1].marks}%` : '',
+        year3: student.yearsReview[2] ? `${student.yearsReview[2].year}, ${student.yearsReview[2].standard}, ${student.yearsReview[2].marks}%` : ''
+      },
+      achievements: student.achievements,
+      futurePlans: student.futurePlans,
+      disability: 'None',
+      fatherName: student.parentNames.split('&')[0]?.trim() || '',
+      motherName: student.parentNames.split('&')[1]?.trim() || '',
+      parentAge: student.parentAges,
+      parentEducation: student.parentEducation || 'Not specified',
+      totalFamilyMembers: student.familySize,
+      earningMembers: student.workingMembers,
+      phone: student.phone,
+      address: student.address,
+      status: (student.status as 'pending' | 'approved' | 'rejected') || 'pending',
+      expenses: {
+        travel: student.expenses.travel,
+        fees: student.expenses.schoolFees,
+        books: student.expenses.books,
+        stationery: student.expenses.stationery,
+        uniform: student.expenses.uniform,
+        tuition: student.expenses.tuition,
+        other: 0
+      },
+      totalExpenses: Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0),
+      familyIncome: student.annualIncome,
+      incomeSource: student.incomeSource,
+      expenseBearer: 'Parents',
+      needsHelp: student.needsHelp,
+      submissionDate: new Date().toISOString()
+    }
+    generateStudentProfilePDF(pdfStudent)
   }
 
   return (

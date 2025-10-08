@@ -38,12 +38,12 @@ export function StudentsList({ students, onStudentSelect, onStatusChange }: Stud
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Students List</CardTitle>
-        <div className="flex gap-4">
+        <CardTitle>Students ({filteredStudents.length})</CardTitle>
+        <div className="flex gap-4 mt-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <Input
-              placeholder="Search students..."
+              placeholder="Search by name, village, or school..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -68,47 +68,49 @@ export function StudentsList({ students, onStudentSelect, onStatusChange }: Stud
         <div className="space-y-4">
           {filteredStudents.map((student) => (
             <div key={student.id} className="border rounded-lg p-4 hover:bg-gray-50">
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold">{student.name}</h3>
+                    <h3 className="font-semibold text-lg">{student.name}</h3>
                     <Badge className={getStatusColor(student.status)}>
                       {student.status.toUpperCase()}
                     </Badge>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
-                    <span>Age: {student.age}</span>
-                    <span>Class: {student.class}</span>
-                    <span>Village: {student.village}</span>
-                    <span>Expenses: ₹{student.totalExpenses.toLocaleString()}</span>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1 text-sm text-gray-600">
+                    <span><span className="font-medium">Age:</span> {student.age} years</span>
+                    <span><span className="font-medium">Class:</span> {student.class}</span>
+                    <span><span className="font-medium">Village:</span> {student.village}</span>
+                    <span><span className="font-medium">School:</span> {student.school}</span>
+                    <span><span className="font-medium">Phone:</span> {student.phone}</span>
+                    <span><span className="font-medium">Expenses:</span> ₹{student.totalExpenses.toLocaleString()}</span>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onStudentSelect(student)}
+                    className="whitespace-nowrap"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
+                  </Button>
                   <Select
                     value={student.status}
                     onValueChange={(value: 'pending' | 'approved' | 'rejected') => 
                       onStatusChange(student.id, value)
                     }
                   >
-                    <SelectTrigger className="w-28">
+                    <SelectTrigger className="w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="approved">Approve</SelectItem>
+                      <SelectItem value="rejected">Reject</SelectItem>
                     </SelectContent>
                   </Select>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onStudentSelect(student)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View
-                  </Button>
                 </div>
               </div>
             </div>
