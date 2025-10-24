@@ -68,7 +68,7 @@ export default function DashboardPage() {
   }
 
   // Get unique villages from students data
-  const uniqueVillages = [...new Set(students.map(student => student.village))].filter(Boolean).sort()
+  const uniqueVillages = Array.from(new Set(students.map(student => student.village))).filter(Boolean).sort()
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
