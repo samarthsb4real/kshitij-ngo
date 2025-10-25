@@ -139,7 +139,7 @@ export default function DashboardPage() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6">
-              {analytics && <EnhancedStatsCards analytics={analytics} />}
+              {analytics && <EnhancedStatsCards analytics={analytics} students={students} />}
               
               <div className="grid lg:grid-cols-2 gap-6">
                 <Card>
@@ -151,20 +151,39 @@ export default function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {students.slice(0, 3).map((student) => (
-                        <Link key={student.id} href={`/students/${student.id}`}>
-                          <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
-                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                              <GraduationCap className="w-5 h-5 text-primary" />
-                            </div>
+                      {isLoading ? (
+                        Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg animate-pulse">
+                            <div className="w-10 h-10 bg-gray-200 rounded-full" />
                             <div className="flex-1">
-                              <p className="font-medium">{student.studentName}</p>
-                              <p className="text-sm text-gray-600">{student.currentEducation}</p>
+                              <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
+                              <div className="h-3 bg-gray-200 rounded w-24" />
                             </div>
-                            <Badge variant="secondary">{student.village}</Badge>
+                            <div className="h-6 bg-gray-200 rounded w-16" />
                           </div>
-                        </Link>
-                      ))}
+                        ))
+                      ) : students.length > 0 ? (
+                        students.slice(0, 3).map((student) => (
+                          <Link key={student.id} href={`/students/${student.id}`}>
+                            <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                <GraduationCap className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium">{student.studentName}</p>
+                                <p className="text-sm text-gray-600">{student.currentEducation}</p>
+                              </div>
+                              <Badge variant="secondary">{student.village}</Badge>
+                            </div>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <GraduationCap className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                          <p>No students found</p>
+                          <p className="text-sm">Students will appear here once data is loaded</p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -179,7 +198,7 @@ export default function DashboardPage() {
                   <CardContent className="space-y-3">
                     <Button className="w-full justify-start" variant="outline" onClick={() => setActiveTab('students')}>
                       <Users className="w-4 h-4 mr-2" />
-                      View Students
+                      View Students ({analytics?.stats.totalStudents || 0})
                     </Button>
                     <Button className="w-full justify-start" variant="outline" onClick={exportTodaysSubmissions}>
                       <Download className="w-4 h-4 mr-2" />
@@ -187,7 +206,7 @@ export default function DashboardPage() {
                     </Button>
                     <Button className="w-full justify-start" variant="outline" onClick={exportAllSubmissions}>
                       <TrendingUp className="w-4 h-4 mr-2" />
-                      Export All Forms
+                      Export All Forms ({submissionCount})
                     </Button>
                   </CardContent>
                 </Card>
@@ -198,7 +217,7 @@ export default function DashboardPage() {
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid gap-6">
-              {analytics && <EnhancedStatsCards analytics={analytics} />}
+              {analytics && <EnhancedStatsCards analytics={analytics} students={students} />}
               {analytics && <ChartsGrid analytics={analytics} />}
             </div>
           </TabsContent>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,13 +15,13 @@ export default function FormPage() {
   const [formProgress, setFormProgress] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const languages = [
+  const languages = useMemo(() => [
     { code: 'en', name: 'English', nativeName: 'English' },
     { code: 'hi', name: 'Hindi', nativeName: 'हिंदी' },
     { code: 'mr', name: 'Marathi', nativeName: 'मराठी' }
-  ]
+  ], [])
 
-  const features = [
+  const features = useMemo(() => [
     "Comprehensive data collection for sponsorship evaluation",
     "Input validation to ensure data accuracy", 
     "Multi-language support (English, Hindi, Marathi)",
@@ -31,7 +31,7 @@ export default function FormPage() {
     "Email notifications for new applications",
     "Mobile-friendly responsive design",
     "Age restriction validation (up to 21 years)"
-  ]
+  ], [])
 
   if (isSubmitted) {
     return (

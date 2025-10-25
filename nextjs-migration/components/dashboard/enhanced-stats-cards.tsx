@@ -53,18 +53,19 @@ interface AnalyticsData {
 
 interface EnhancedStatsCardsProps {
   analytics: AnalyticsData
+  students?: Array<{ status?: string }>
 }
 
-export function EnhancedStatsCards({ analytics }: EnhancedStatsCardsProps) {
+export function EnhancedStatsCards({ analytics, students }: EnhancedStatsCardsProps) {
   // Handle null analytics
   if (!analytics) {
     return <div>Loading...</div>
   }
 
-  // All students from Google Sheets are considered approved
-  const approved = analytics.stats.totalStudents
-  const pending = 0
-  const rejected = 0
+  // Calculate status counts from students data
+  const approved = students?.filter(s => s.status === 'approved').length || 0
+  const pending = students?.filter(s => s.status === 'pending').length || 0
+  const rejected = students?.filter(s => s.status === 'rejected').length || 0
   const totalFunding = analytics.stats.totalExpenses
   const avgIncome = analytics.stats.medianIncome
 

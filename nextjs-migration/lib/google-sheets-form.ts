@@ -2,6 +2,10 @@
 
 export interface FormSubmissionData {
   studentName: string
+  firstName: string
+  middleName?: string
+  lastName: string
+  photo?: string
   age: number
   dateOfBirth: string
   villageName: string
@@ -37,16 +41,22 @@ export interface FormSubmissionData {
   educationExpenseBearer: string
   phoneNumber: string
   address: string
+  pincode: string
 }
 
 // Submit form data to Google Sheets via Apps Script Web App
 export const submitToGoogleSheets = async (formData: FormSubmissionData): Promise<boolean> => {
   try {
-    // Replace this URL with your Google Apps Script Web App URL
-    const GOOGLE_SCRIPT_URL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || ''
+    const GOOGLE_SCRIPT_URL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL
     
     if (!GOOGLE_SCRIPT_URL) {
       console.warn('Google Sheets URL not configured. Saving locally only.')
+      return false
+    }
+
+    // Validate URL format
+    if (!GOOGLE_SCRIPT_URL.startsWith('https://script.google.com/')) {
+      console.error('Invalid Google Script URL format')
       return false
     }
 
@@ -63,6 +73,10 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
     const payload = {
       timestamp: new Date().toISOString(),
       studentName: formData.studentName,
+      firstName: formData.firstName,
+      middleName: formData.middleName || '',
+      lastName: formData.lastName,
+      photo: formData.photo || '',
       age: formData.age,
       dateOfBirth: formData.dateOfBirth,
       villageName: formData.villageName,
@@ -98,19 +112,36 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       earningMembers: formData.earningMembers,
       educationExpenseBearer: formData.educationExpenseBearer,
       phoneNumber: formData.phoneNumber,
-      address: formData.address
+      address: formData.address,
+      pincode: formData.pincode
     }
 
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    })
+    // Add timeout and proper error handling
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-    return true
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      })
+      
+      clearTimeout(timeoutId)
+      return true
+    } catch (fetchError) {
+      clearTimeout(timeoutId)
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error('Google Sheets request timed out')
+      } else {
+        console.error('Google Sheets request failed:', fetchError)
+      }
+      return false
+    }
   } catch (error) {
     console.error('Error submitting to Google Sheets:', error)
     return false
