@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     const data = await request.json()
     
-    // Validate required fields
+    // Validate required fields including photo
     const requiredFields = ['firstName', 'lastName', 'photo', 'dateOfBirth', 'villageName', 'currentEducation', 'phoneNumber']
     const missingFields = requiredFields.filter(field => !data[field] || (typeof data[field] === 'string' && data[field].trim() === ''))
     
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     // Validate photo format
-    if (!data.photo.startsWith('data:image/')) {
+    if (data.photo && !data.photo.startsWith('data:image/')) {
       return NextResponse.json(
         { error: 'Invalid photo format' },
         { status: 400 }

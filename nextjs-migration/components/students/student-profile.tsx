@@ -5,42 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Student as PDFStudent, generateStudentProfilePDF } from '@/lib/pdf-utils'
-
-interface Student {
-  id: number
-  studentName: string
-  age: number
-  classStandard: string
-  village: string
-  schoolCollege: string
-  currentEducation: string
-  achievements: string
-  futurePlans: string
-  parentNames: string
-  parentAges: string
-  parentEducation: string
-  familySize: number
-  workingMembers: number
-  annualIncome: number
-  incomeSource: string
-  needsHelp: string
-  phone: string
-  address: string
-  status?: string
-  expenses: {
-    travel: number
-    schoolFees: number
-    books: number
-    stationery: number
-    uniform: number
-    tuition: number
-  }
-  yearsReview: Array<{
-    year: number
-    standard: string
-    marks: number
-  }>
-}
+import { Student } from '@/types'
 import { Download, DollarSign } from 'lucide-react'
 
 interface StudentProfileProps {
@@ -62,42 +27,42 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
       id: student.id.toString(),
       name: student.studentName,
       age: student.age,
-      class: student.classStandard,
+      class: student.currentYear,
       village: student.village,
-      school: student.schoolCollege,
+      school: student.schoolName,
       currentEducation: student.currentEducation,
       academicPerformance: {
-        year1: student.yearsReview[0] ? `${student.yearsReview[0].year}, ${student.yearsReview[0].standard}, ${student.yearsReview[0].marks}%` : '',
-        year2: student.yearsReview[1] ? `${student.yearsReview[1].year}, ${student.yearsReview[1].standard}, ${student.yearsReview[1].marks}%` : '',
-        year3: student.yearsReview[2] ? `${student.yearsReview[2].year}, ${student.yearsReview[2].standard}, ${student.yearsReview[2].marks}%` : ''
+        year1: student.year1Class && student.year1Marks ? `${student.year1Class}, ${student.year1Marks}%` : '',
+        year2: student.year2Class && student.year2Marks ? `${student.year2Class}, ${student.year2Marks}%` : '',
+        year3: student.year3Class && student.year3Marks ? `${student.year3Class}, ${student.year3Marks}%` : ''
       },
-      achievements: student.achievements,
+      achievements: student.achievements || '',
       futurePlans: student.futurePlans,
-      disability: 'None',
-      fatherName: student.parentNames.split('&')[0]?.trim() || '',
-      motherName: student.parentNames.split('&')[1]?.trim() || '',
-      parentAge: student.parentAges,
-      parentEducation: student.parentEducation || 'Not specified',
-      totalFamilyMembers: student.familySize,
-      earningMembers: student.workingMembers,
-      phone: student.phone,
+      disability: student.disability,
+      fatherName: student.fatherName,
+      motherName: student.motherName,
+      parentAge: student.fatherAge,
+      parentEducation: 'Not specified',
+      totalFamilyMembers: student.totalFamilyMembers,
+      earningMembers: student.earningMembers,
+      phone: student.phoneNumber,
       address: student.address,
-      status: (student.status as 'pending' | 'approved' | 'rejected') || 'pending',
+      status: student.status || 'pending',
       expenses: {
-        travel: student.expenses.travel,
-        fees: student.expenses.schoolFees,
-        books: student.expenses.books,
-        stationery: student.expenses.stationery,
-        uniform: student.expenses.uniform,
-        tuition: student.expenses.tuition,
-        other: 0
+        travel: student.travelCost,
+        fees: student.tuitionFees,
+        books: student.booksCost,
+        stationery: student.stationeryCost,
+        uniform: student.uniformCost,
+        tuition: student.tuitionFees,
+        other: student.otherExpenses
       },
-      totalExpenses: Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0),
-      familyIncome: student.annualIncome,
-      incomeSource: student.incomeSource,
-      expenseBearer: 'Parents',
-      needsHelp: student.needsHelp,
-      submissionDate: new Date().toISOString()
+      totalExpenses: student.totalExpenses,
+      familyIncome: student.familyYearlyIncome,
+      incomeSource: student.fatherOccupation,
+      expenseBearer: student.educationExpenseBearer,
+      needsHelp: 'Yes',
+      submissionDate: student.timestamp || new Date().toISOString()
     }
     generateStudentProfilePDF(pdfStudent)
   }
@@ -106,14 +71,37 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
     <div className="max-w-4xl mx-auto bg-white">
       {/* Header */}
       <div className="border-b border-gray-200 pb-6 mb-8">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{student.studentName}</h1>
-            <p className="text-gray-600 mt-1">{student.currentEducation} • {student.classStandard} • {student.village}</p>
+        <div className="flex justify-between items-start gap-6">
+          <div className="flex gap-6 flex-1">
+            {/* Student Photo */}
+            {student.photo && (
+              <div className="flex-shrink-0">
+                <img 
+                  src={student.photo} 
+                  alt={student.studentName} 
+                  className="w-40 h-40 rounded-xl object-cover border-4 border-primary/20 shadow-lg" 
+                />
+              </div>
+            )}
+            
+            {/* Student Info */}
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900">{student.studentName}</h1>
+              <p className="text-gray-600 mt-1">{student.currentEducation} • {student.currentYear} • {student.village}</p>
+              
+              {/* Quick Info Badges */}
+              <div className="flex flex-wrap gap-2 mt-3">
+                <Badge variant="outline" className="text-xs">Age: {student.age}</Badge>
+                <Badge variant="outline" className="text-xs">📍 {student.village}</Badge>
+                <Badge variant="outline" className="text-xs">🏫 {student.schoolName}</Badge>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge className={getStatusColor(student.status && typeof student.status === 'string' ? student.status : 'pending')}>
-              {(student.status && typeof student.status === 'string' ? student.status : 'pending').toUpperCase()}
+          
+          {/* Actions */}
+          <div className="flex flex-col items-end gap-3">
+            <Badge className={getStatusColor(student.status)}>
+              {student.status.toUpperCase()}
             </Badge>
             <Button variant="outline" onClick={handleExportPDF}>
               <Download className="h-4 w-4 mr-2" />
@@ -131,44 +119,83 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
           <h2 className="text-xl font-semibold mb-4">Student Information</h2>
           <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
             <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Full Name:</span>
+              <span className="font-medium">{student.firstName} {student.middleName} {student.lastName}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Age:</span>
               <span className="font-medium">{student.age} years</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Date of Birth:</span>
+              <span className="font-medium">{student.dateOfBirth}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Phone:</span>
-              <span className="font-medium">{student.phone}</span>
+              <span className="font-medium">{student.phoneNumber}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">School:</span>
-              <span className="font-medium">{student.schoolCollege}</span>
+              <span className="font-medium">{student.schoolName}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Current Year:</span>
+              <span className="font-medium">{student.currentYear}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Future Plans:</span>
               <span className="font-medium">{student.futurePlans}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
-              <span className="text-gray-600">Parents:</span>
-              <span className="font-medium">{student.parentNames}</span>
+              <span className="text-gray-600">Disability:</span>
+              <span className="font-medium">{student.disability}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
-              <span className="text-gray-600">Parent Ages:</span>
-              <span className="font-medium">{student.parentAges}</span>
+              <span className="text-gray-600">Village:</span>
+              <span className="font-medium">{student.village}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
-              <span className="text-gray-600">Parent Education:</span>
-              <span className="font-medium">{student.parentEducation || 'Not specified'}</span>
+              <span className="text-gray-600">Pincode:</span>
+              <span className="font-medium">{student.pincode}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Family Information */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Family Information</h2>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Father's Name:</span>
+              <span className="font-medium">{student.fatherName}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Mother's Name:</span>
+              <span className="font-medium">{student.motherName}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Father's Age:</span>
+              <span className="font-medium">{student.fatherAge}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Father's Occupation:</span>
+              <span className="font-medium">{student.fatherOccupation}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Father's Income:</span>
+              <span className="font-medium">₹{student.fatherIncome.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Family Yearly Income:</span>
+              <span className="font-medium">₹{student.familyYearlyIncome.toLocaleString()}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Family Members:</span>
-              <span className="font-medium">{student.familySize} ({student.workingMembers} earning)</span>
+              <span className="font-medium">{student.totalFamilyMembers} ({student.earningMembers} earning)</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
-              <span className="text-gray-600">Income Source:</span>
-              <span className="font-medium">{student.incomeSource}</span>
-            </div>
-            <div className="flex justify-between border-b border-gray-100 pb-2">
-              <span className="text-gray-600">Class/Year:</span>
-              <span className="font-medium">{student.classStandard}</span>
+              <span className="text-gray-600">Education Expense Bearer:</span>
+              <span className="font-medium">{student.educationExpenseBearer}</span>
             </div>
           </div>
         </div>
@@ -181,20 +208,33 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border border-gray-300 px-4 py-2 text-left">Year</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left">Standard</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">Class/Standard</th>
                   <th className="border border-gray-300 px-4 py-2 text-left">Marks/Grade</th>
-
                 </tr>
               </thead>
               <tbody>
-                {student.yearsReview.map((year, index) => (
-                  <tr key={index} className={index % 2 === 0 ? '' : 'bg-gray-50'}>
-                    <td className="border border-gray-300 px-4 py-2">{year.year}</td>
-                    <td className="border border-gray-300 px-4 py-2">{year.standard}</td>
-                    <td className="border border-gray-300 px-4 py-2 font-medium">{year.marks}%</td>
+                {student.year1Class && student.year1Marks && (
+                  <tr className="bg-gray-50">
+                    <td className="border border-gray-300 px-4 py-2">Year 1</td>
+                    <td className="border border-gray-300 px-4 py-2">{student.year1Class}</td>
+                    <td className="border border-gray-300 px-4 py-2 font-medium">{student.year1Marks}</td>
                   </tr>
-                ))}
-                {student.yearsReview.length === 0 && (
+                )}
+                {student.year2Class && student.year2Marks && (
+                  <tr>
+                    <td className="border border-gray-300 px-4 py-2">Year 2</td>
+                    <td className="border border-gray-300 px-4 py-2">{student.year2Class}</td>
+                    <td className="border border-gray-300 px-4 py-2 font-medium">{student.year2Marks}</td>
+                  </tr>
+                )}
+                {student.year3Class && student.year3Marks && (
+                  <tr className="bg-gray-50">
+                    <td className="border border-gray-300 px-4 py-2">Year 3</td>
+                    <td className="border border-gray-300 px-4 py-2">{student.year3Class}</td>
+                    <td className="border border-gray-300 px-4 py-2 font-medium">{student.year3Marks}</td>
+                  </tr>
+                )}
+                {!student.year1Class && !student.year2Class && !student.year3Class && (
                   <tr>
                     <td colSpan={3} className="border border-gray-300 px-4 py-2 text-center text-gray-500">
                       No academic records available
@@ -223,13 +263,13 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
             <Card className="bg-green-50 border-green-200">
               <CardContent className="p-4 text-center">
                 <div className="text-sm text-gray-600 mb-1">Annual Family Income</div>
-                <div className="text-2xl font-bold text-green-600">₹{student.annualIncome.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-green-600">₹{student.familyYearlyIncome.toLocaleString()}</div>
               </CardContent>
             </Card>
             <Card className="bg-red-50 border-red-200">
               <CardContent className="p-4 text-center">
                 <div className="text-sm text-gray-600 mb-1">Total Education Expenses</div>
-                <div className="text-2xl font-bold text-red-600">₹{Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0).toLocaleString()}</div>
+                <div className="text-2xl font-bold text-red-600">₹{student.totalExpenses.toLocaleString()}</div>
               </CardContent>
             </Card>
           </div>
@@ -238,12 +278,14 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
             <h3 className="font-semibold mb-3">Expense Breakdown</h3>
             <div className="space-y-2">
               {[
-                { label: 'Travel', amount: student.expenses.travel },
-                { label: 'School Fees', amount: student.expenses.schoolFees },
-                { label: 'Books', amount: student.expenses.books },
-                { label: 'Stationery', amount: student.expenses.stationery },
-                { label: 'Uniform', amount: student.expenses.uniform },
-                { label: 'Tuition', amount: student.expenses.tuition }
+                { label: 'Tuition Fees', amount: student.tuitionFees },
+                { label: 'Books Cost', amount: student.booksCost },
+                { label: 'Stationery Cost', amount: student.stationeryCost },
+                { label: 'Travel Cost', amount: student.travelCost },
+                { label: 'Uniform Cost', amount: student.uniformCost },
+                { label: 'Exam Fees', amount: student.examFees },
+                { label: 'Hostel Fees', amount: student.hostelFees },
+                { label: 'Other Expenses', amount: student.otherExpenses }
               ].map((expense) => (
                 <div key={expense.label} className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-700">{expense.label}</span>
@@ -252,7 +294,7 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
               ))}
               <div className="flex justify-between items-center py-2 font-semibold text-lg border-t-2 border-gray-300 mt-2">
                 <span>Total</span>
-                <span>₹{Object.values(student.expenses).reduce((sum, exp) => sum + exp, 0).toLocaleString()}</span>
+                <span>₹{student.totalExpenses.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -270,7 +312,7 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-2">Application Status</label>
               <Select
-                value={student.status && typeof student.status === 'string' ? student.status : 'pending'}
+                value={student.status}
                 onValueChange={(value: 'pending' | 'approved' | 'rejected') => 
                   onStatusChange(student.id.toString(), value)
                 }
@@ -286,7 +328,7 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
               </Select>
             </div>
             <div className="text-sm text-gray-500 text-right">
-              <div>Status: {student.needsHelp}</div>
+              <div>Submission Date: {new Date(student.timestamp).toLocaleDateString()}</div>
             </div>
           </div>
         </div>

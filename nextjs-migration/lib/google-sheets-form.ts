@@ -118,7 +118,7 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
 
     // Add timeout and proper error handling
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000)
+    const timeoutId = setTimeout(() => controller.abort(), 15000) // Increased to 15 seconds
 
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL, {

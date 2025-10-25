@@ -6,22 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Eye, Phone, MapPin, GraduationCap, Grid3X3, List, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
-
-interface Student {
-  id: number
-  studentName: string
-  age: number
-  classStandard: string
-  village: string
-  schoolCollege: string
-  currentEducation: string
-  annualIncome: number
-  phone: string
-  status?: string
-  expenses: {
-    [key: string]: number
-  }
-}
+import { Student } from '@/types'
 
 interface StudentsTableProps {
   students: Student[]
@@ -54,7 +39,7 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
       case 'age':
         return a.age - b.age
       case 'income':
-        return a.annualIncome - b.annualIncome
+        return a.familyYearlyIncome - b.familyYearlyIncome
       case 'village':
         return a.village.localeCompare(b.village)
       default:
@@ -81,10 +66,6 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
   
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)))
-  }
-
-  const calculateTotalExpenses = (expenses: { [key: string]: number }) => {
-    return Object.values(expenses).reduce((sum, exp) => sum + (exp || 0), 0)
   }
 
   return (
@@ -134,7 +115,7 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
       {/* Students Grid/List */}
       <div className={isCompactView ? "space-y-2" : "grid gap-4"}>
         {currentStudents.map((student) => {
-          const totalExpenses = calculateTotalExpenses(student.expenses)
+          const totalExpenses = student.totalExpenses
           
           if (isCompactView) {
             return (
@@ -199,7 +180,7 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">Class:</span>
-                        <span className="font-medium">{student.classStandard}</span>
+                        <span className="font-medium">{student.currentYear}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-gray-400" />
@@ -207,15 +188,15 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">School:</span>
-                        <span className="font-medium text-xs">{student.schoolCollege}</span>
+                        <span className="font-medium text-xs">{student.schoolName}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-400" />
-                        <span className="font-medium">{student.phone}</span>
+                        <span className="font-medium">{student.phoneNumber}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">Income:</span>
-                        <span className="font-medium">₹{student.annualIncome.toLocaleString()}</span>
+                        <span className="font-medium">₹{student.familyYearlyIncome.toLocaleString()}</span>
                       </div>
                     </div>
                     
@@ -228,8 +209,8 @@ export function StudentsTable({ students, sortBy, isLoading }: StudentsTableProp
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-500">Gap:</span>
-                        <Badge variant="secondary" className={totalExpenses > student.annualIncome ? 'text-red-700 bg-red-100' : 'text-green-700 bg-green-100'}>
-                          {totalExpenses > student.annualIncome ? '-' : '+'}₹{Math.abs(student.annualIncome - totalExpenses).toLocaleString()}
+                        <Badge variant="secondary" className={totalExpenses > student.familyYearlyIncome ? 'text-red-700 bg-red-100' : 'text-green-700 bg-green-100'}>
+                          {totalExpenses > student.familyYearlyIncome ? '-' : '+'}₹{Math.abs(student.familyYearlyIncome - totalExpenses).toLocaleString()}
                         </Badge>
                       </div>
                     </div>

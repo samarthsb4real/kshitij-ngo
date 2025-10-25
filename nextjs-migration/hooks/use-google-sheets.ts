@@ -1,84 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from 'react'
-
-interface Student {
-  id: number
-  studentName: string
-  age: number
-  classStandard: string
-  village: string
-  schoolCollege: string
-  currentEducation: string
-  achievements: string
-  futurePlans: string
-  parentNames: string
-  parentAges: string
-  parentEducation: string
-  familySize: number
-  workingMembers: number
-  annualIncome: number
-  incomeSource: string
-  needsHelp: string
-  phone: string
-  address: string
-  expenses: {
-    travel: number
-    schoolFees: number
-    books: number
-    stationery: number
-    uniform: number
-    tuition: number
-  }
-  yearsReview: Array<{
-    year: number
-    standard: string
-    marks: number
-  }>
-}
-
-interface AnalyticsData {
-  stats: {
-    totalStudents: number
-    averageAge: number
-    medianIncome: number
-    averageExpenses: number
-    totalExpenses: number
-    studentsNeedingHelp: number
-  }
-  ageDistribution: {
-    labels: string[]
-    data: number[]
-    colors: string[]
-  }
-  villageDistribution: {
-    labels: string[]
-    data: number[]
-    colors: string[]
-  }
-  incomeSourceDistribution: {
-    labels: string[]
-    data: number[]
-    colors: string[]
-  }
-  expenseBreakdown: {
-    labels: string[]
-    data: number[]
-    colors: string[]
-  }
-  performanceTrends: {
-    labels: string[]
-    data: number[]
-    colors: string[]
-  }
-}
-
-interface SyncStatus {
-  state: 'loading' | 'connected' | 'error' | 'offline'
-  message: string
-  lastSync?: string
-  autoSync?: boolean
-}
+import { Student, AnalyticsData, SyncStatus } from '@/types'
 
 export function useGoogleSheets() {
   const [students, setStudents] = useState<Student[]>([])
@@ -93,19 +16,36 @@ export function useGoogleSheets() {
 
 
   const calculateAnalytics = useCallback((studentsData: Student[]): AnalyticsData => {
+    if (studentsData.length === 0) {
+      return {
+        stats: {
+          totalStudents: 0,
+          averageAge: 0,
+          medianIncome: 0,
+          averageExpenses: 0,
+          totalExpenses: 0,
+          studentsNeedingHelp: 0
+        },
+        ageDistribution: { labels: [], data: [], colors: [] },
+        villageDistribution: { labels: [], data: [], colors: [] },
+        incomeSourceDistribution: { labels: [], data: [], colors: [] },
+        expenseBreakdown: { labels: [], data: [], colors: [] },
+        performanceTrends: { labels: [], data: [], colors: [] }
+      }
+    }
+
     const totalStudents = studentsData.length
     const totalAge = studentsData.reduce((sum, student) => sum + student.age, 0)
     const averageAge = Math.round(totalAge / totalStudents)
 
-    const incomes = studentsData.map(s => s.annualIncome).sort((a, b) => a - b)
+    const incomes = studentsData.map(s => s.familyYearlyIncome).sort((a, b) => a - b)
     const medianIncome = incomes[Math.floor(incomes.length / 2)]
 
-    const totalExpenses = studentsData.reduce((sum, student) => {
-      return sum + Object.values(student.expenses).reduce((expSum, exp) => expSum + exp, 0)
-    }, 0)
+    const totalExpenses = studentsData.reduce((sum, student) => sum + student.totalExpenses, 0)
     const averageExpenses = Math.round(totalExpenses / totalStudents)
 
-    const studentsNeedingHelp = studentsData.filter(s => s.needsHelp === 'Ho').length
+    // Count students with low income relative to expenses
+    const studentsNeedingHelp = studentsData.filter(s => s.familyYearlyIncome < s.totalExpenses * 12).length
 
     // Age distribution
     const ageGroups = { '15-17': 0, '18-20': 0, '21-23': 0, '24+': 0 }
@@ -123,37 +63,76 @@ export function useGoogleSheets() {
     })
     const sortedVillages = Object.entries(villages).sort(([,a], [,b]) => b - a).slice(0, 6)
 
-    // Income source distribution
+    // Income source distribution (based on father occupation)
     const incomeSources: { [key: string]: number } = {}
     studentsData.forEach(student => {
-      incomeSources[student.incomeSource] = (incomeSources[student.incomeSource] || 0) + 1
+      const occupation = student.fatherOccupation || 'Unknown'
+      incomeSources[occupation] = (incomeSources[occupation] || 0) + 1
     })
 
     // Expense breakdown
     const expenseCategories = {
-      travel: 0, schoolFees: 0, books: 0, stationery: 0, uniform: 0, tuition: 0
+      tuition: 0,
+      books: 0,
+      stationery: 0,
+      travel: 0,
+      uniform: 0,
+      examFees: 0,
+      hostel: 0,
+      other: 0
     }
     studentsData.forEach(student => {
-      Object.keys(expenseCategories).forEach(category => {
-        expenseCategories[category as keyof typeof expenseCategories] += student.expenses[category as keyof typeof student.expenses] || 0
-      })
+      expenseCategories.tuition += student.tuitionFees || 0
+      expenseCategories.books += student.booksCost || 0
+      expenseCategories.stationery += student.stationeryCost || 0
+      expenseCategories.travel += student.travelCost || 0
+      expenseCategories.uniform += student.uniformCost || 0
+      expenseCategories.examFees += student.examFees || 0
+      expenseCategories.hostel += student.hostelFees || 0
+      expenseCategories.other += student.otherExpenses || 0
     })
 
-    // Performance trends
-    const yearlyPerformance: { [key: number]: { totalMarks: number, count: number } } = {}
+    // Performance trends based on year marks
+    const yearlyPerformance: { [key: string]: { totalMarks: number, count: number } } = {}
     studentsData.forEach(student => {
-      student.yearsReview.forEach(yearData => {
-        if (!yearlyPerformance[yearData.year]) {
-          yearlyPerformance[yearData.year] = { totalMarks: 0, count: 0 }
+      if (student.year1Marks) {
+        const marks = parseFloat(student.year1Marks)
+        if (!isNaN(marks)) {
+          const label = student.year1Class || 'Year 1'
+          if (!yearlyPerformance[label]) {
+            yearlyPerformance[label] = { totalMarks: 0, count: 0 }
+          }
+          yearlyPerformance[label].totalMarks += marks
+          yearlyPerformance[label].count += 1
         }
-        yearlyPerformance[yearData.year].totalMarks += yearData.marks
-        yearlyPerformance[yearData.year].count += 1
-      })
+      }
+      if (student.year2Marks) {
+        const marks = parseFloat(student.year2Marks)
+        if (!isNaN(marks)) {
+          const label = student.year2Class || 'Year 2'
+          if (!yearlyPerformance[label]) {
+            yearlyPerformance[label] = { totalMarks: 0, count: 0 }
+          }
+          yearlyPerformance[label].totalMarks += marks
+          yearlyPerformance[label].count += 1
+        }
+      }
+      if (student.year3Marks) {
+        const marks = parseFloat(student.year3Marks)
+        if (!isNaN(marks)) {
+          const label = student.year3Class || 'Year 3'
+          if (!yearlyPerformance[label]) {
+            yearlyPerformance[label] = { totalMarks: 0, count: 0 }
+          }
+          yearlyPerformance[label].totalMarks += marks
+          yearlyPerformance[label].count += 1
+        }
+      }
     })
 
     const years = Object.keys(yearlyPerformance).sort()
     const averageMarks = years.map(year => {
-      const data = yearlyPerformance[parseInt(year)]
+      const data = yearlyPerformance[year]
       return Math.round(data.totalMarks / data.count)
     })
 
@@ -184,7 +163,7 @@ export function useGoogleSheets() {
         colors: colors.slice(0, Object.keys(incomeSources).length)
       },
       expenseBreakdown: {
-        labels: ['Travel', 'School Fees', 'Books', 'Stationery', 'Uniform', 'Tuition'],
+        labels: ['Tuition', 'Books', 'Stationery', 'Travel', 'Uniform', 'Exam Fees', 'Hostel', 'Other'],
         data: Object.values(expenseCategories),
         colors
       },
@@ -214,45 +193,69 @@ export function useGoogleSheets() {
       }
 
       // Convert Google Sheets data to student format
+      // Maps all 43 columns from Apps Script schema
       const studentsData = sheetsData.map((row: any[], index: number) => {
         if (index === 0) return null // Skip header row
         
         return {
           id: index,
+          // Column A (0) - Timestamp
+          timestamp: row[0] || '',
+          // Columns B-E (1-4) - Student Name Fields
           studentName: row[1] || '',
-          age: parseInt(row[2]) || 0,
-          classStandard: row[7] || '',
-          village: row[4] || '',
-          schoolCollege: row[8] || '',
-          currentEducation: row[6] || '',
-          achievements: row[17] || '',
-          futurePlans: row[10] || '',
-          parentNames: `${row[27] || ''} & ${row[28] || ''}`,
-          parentAges: row[29] || '',
-          parentEducation: '',
-          familySize: parseInt(row[32]) || 0,
-          workingMembers: parseInt(row[33]) || 0,
-          annualIncome: parseFloat(row[31]) || 0,
-          incomeSource: row[30] || '',
-          needsHelp: 'Yes',
-          phone: row[36] || '',
-          address: row[37] || '',
-          status: row[38] || 'pending',
-          expenses: {
-            travel: parseFloat(row[21]) || 0,
-            schoolFees: parseFloat(row[18]) || 0,
-            books: parseFloat(row[19]) || 0,
-            stationery: parseFloat(row[20]) || 0,
-            uniform: parseFloat(row[22]) || 0,
-            tuition: parseFloat(row[23]) || 0
-          },
-          yearsReview: [
-            { year: 2024, standard: row[11] || '', marks: parseFloat(row[12]) || 0 },
-            { year: 2023, standard: row[13] || '', marks: parseFloat(row[14]) || 0 },
-            { year: 2022, standard: row[15] || '', marks: parseFloat(row[16]) || 0 }
-          ].filter(yr => yr.standard && yr.marks)
+          firstName: row[2] || '',
+          middleName: row[3] || '',
+          lastName: row[4] || '',
+          // Column F (5) - Photo
+          photo: row[5] || '',
+          // Columns G-J (6-9) - Basic Info
+          age: parseInt(row[6]) || 0,
+          dateOfBirth: row[7] || '',
+          village: row[8] || '',
+          disability: row[9] || 'None',
+          // Columns K-O (10-14) - Education Info
+          currentEducation: row[10] || '',
+          currentYear: row[11] || '',
+          schoolName: row[12] || '',
+          otherEducation: row[13] || '',
+          futurePlans: row[14] || '',
+          // Columns P-U (15-20) - Academic Performance
+          year1Class: row[15] || '',
+          year1Marks: row[16] || '',
+          year2Class: row[17] || '',
+          year2Marks: row[18] || '',
+          year3Class: row[19] || '',
+          year3Marks: row[20] || '',
+          // Column V (21) - Achievements
+          achievements: row[21] || '',
+          // Columns W-AE (22-30) - Financial Info (Expenses)
+          tuitionFees: parseFloat(row[22]) || 0,
+          booksCost: parseFloat(row[23]) || 0,
+          stationeryCost: parseFloat(row[24]) || 0,
+          travelCost: parseFloat(row[25]) || 0,
+          uniformCost: parseFloat(row[26]) || 0,
+          examFees: parseFloat(row[27]) || 0,
+          hostelFees: parseFloat(row[28]) || 0,
+          otherExpenses: parseFloat(row[29]) || 0,
+          totalExpenses: parseFloat(row[30]) || 0,
+          // Columns AF-AN (31-39) - Family Info
+          fatherName: row[31] || '',
+          motherName: row[32] || '',
+          fatherAge: row[33] || '',
+          fatherOccupation: row[34] || '',
+          fatherIncome: parseFloat(row[35]) || 0,
+          familyYearlyIncome: parseFloat(row[36]) || 0,
+          totalFamilyMembers: parseInt(row[37]) || 0,
+          earningMembers: parseInt(row[38]) || 0,
+          educationExpenseBearer: row[39] || '',
+          // Columns AO-AQ (40-42) - Contact Info
+          phoneNumber: row[40] || '',
+          address: row[41] || '',
+          pincode: row[42] || '',
+          // Column AR (43) - Application Status
+          status: (row[43] || 'pending') as 'pending' | 'approved' | 'rejected'
         }
-      }).filter(Boolean)
+      }).filter(Boolean) as Student[]
       
       if (studentsData.length === 0) {
         throw new Error('No data available from Google Sheets')

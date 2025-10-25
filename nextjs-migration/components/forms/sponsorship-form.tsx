@@ -469,9 +469,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
       // Submit to Google Sheets with timeout
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 20000) // 20 seconds for photo upload
       
-      // Sanitize data before submission
+      // Sanitize data before submission - include photo
       const sanitizedData = {
         ...data,
         studentName: `${data.firstName.trim()} ${(data.middleName || '').trim()} ${data.lastName.trim()}`.replace(/\s+/g, ' ').trim(),
@@ -484,7 +484,9 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         fatherName: data.fatherName.trim(),
         motherName: data.motherName.trim(),
         fatherOccupation: data.fatherOccupation.trim(),
-        educationExpenseBearer: data.educationExpenseBearer.trim()
+        educationExpenseBearer: data.educationExpenseBearer.trim(),
+        // Include the compressed photo
+        photo: data.photo
       }
       
       const response = await fetch('/api/submit-form', {
@@ -520,8 +522,10 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
       
       const errorMessage = error instanceof Error 
         ? error.name === 'AbortError' 
-          ? 'Request timed out. Please try again.'
-          : error.message
+          ? 'Request timed out. Your application has been saved locally and will be synced later.'
+          : error.message.includes('fetch') 
+            ? 'Network error. Your application has been saved locally and will be synced when connection is restored.'
+            : error.message
         : 'There was an error submitting your application. Please try again.'
       
       toast({
@@ -571,7 +575,30 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     }
   }
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.8): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      const img = new Image()
+      
+      img.onload = () => {
+        // Calculate new dimensions
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height)
+        canvas.width = img.width * ratio
+        canvas.height = img.height * ratio
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality)
+        resolve(compressedDataUrl)
+      }
+      
+      img.onerror = reject
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     
@@ -595,22 +622,24 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
       return
     }
     
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      if (result && result.startsWith('data:image/')) {
-        setPhotoPreview(result)
-        setValue('photo', result, { shouldValidate: true })
-      }
-    }
-    reader.onerror = () => {
+    try {
+      // Compress image for better performance
+      const compressedImage = await compressImage(file, 600, 0.7)
+      setPhotoPreview(compressedImage)
+      setValue('photo', compressedImage, { shouldValidate: true })
+      
+      toast({
+        title: "Photo uploaded successfully",
+        description: "Image has been compressed and optimized for submission",
+      })
+    } catch (error) {
+      console.error('Image compression failed:', error)
       toast({
         title: "Upload failed",
-        description: "Failed to read the image file",
+        description: "Failed to process the image file",
         variant: "destructive"
       })
     }
-    reader.readAsDataURL(file)
   }
 
   const renderPersonalInfo = () => (
@@ -622,6 +651,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="firstName"
             {...register('firstName')}
             placeholder="First name"
+            autoComplete="off"
           />
           {errors.firstName && (
             <p className="text-sm text-red-600 mt-1">{errors.firstName.message}</p>
@@ -634,6 +664,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="middleName"
             {...register('middleName')}
             placeholder="Middle name (optional)"
+            autoComplete="off"
           />
           {errors.middleName && (
             <p className="text-sm text-red-600 mt-1">{errors.middleName.message}</p>
@@ -646,6 +677,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="lastName"
             {...register('lastName')}
             placeholder="Last name"
+            autoComplete="off"
           />
           {errors.lastName && (
             <p className="text-sm text-red-600 mt-1">{errors.lastName.message}</p>
@@ -797,6 +829,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="currentYear"
             {...register('currentYear')}
             placeholder="e.g., 12th, 2nd Year B.A."
+            autoComplete="off"
           />
           {errors.currentYear && (
             <p className="text-sm text-red-600 mt-1">{errors.currentYear.message}</p>
@@ -809,6 +842,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="schoolName"
             {...register('schoolName')}
             placeholder="Enter institution name"
+            autoComplete="off"
           />
           {errors.schoolName && (
             <p className="text-sm text-red-600 mt-1">{errors.schoolName.message}</p>
@@ -977,6 +1011,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="fatherName"
             {...register('fatherName')}
             placeholder="Enter father's full name"
+            autoComplete="off"
           />
           {errors.fatherName && (
             <p className="text-sm text-red-600 mt-1">{errors.fatherName.message}</p>
@@ -984,11 +1019,12 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         </div>
         
         <div>
-          <Label htmlFor="motherName">Mother's Name *</Label>
+          <Label htmlFor="motherName">{t('mother-name-label')}</Label>
           <Input
             id="motherName"
             {...register('motherName')}
             placeholder="Enter mother's full name"
+            autoComplete="off"
           />
           {errors.motherName && (
             <p className="text-sm text-red-600 mt-1">{errors.motherName.message}</p>
@@ -1007,6 +1043,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             step="1"
             {...register('fatherAge', { valueAsNumber: true })}
             placeholder="Age"
+            autoComplete="off"
           />
           {errors.fatherAge && (
             <p className="text-sm text-red-600 mt-1">{errors.fatherAge.message}</p>
@@ -1019,6 +1056,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             id="fatherOccupation"
             {...register('fatherOccupation')}
             placeholder="e.g., Farmer, Teacher, Business"
+            autoComplete="off"
           />
           {errors.fatherOccupation && (
             <p className="text-sm text-red-600 mt-1">{errors.fatherOccupation.message}</p>
@@ -1036,6 +1074,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             step="1000"
             {...register('fatherIncome', { valueAsNumber: true })}
             placeholder="Annual income"
+            autoComplete="off"
           />
           {errors.fatherIncome && (
             <p className="text-sm text-red-600 mt-1">{errors.fatherIncome.message}</p>
@@ -1051,6 +1090,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             step="1000"
             {...register('familyYearlyIncome', { valueAsNumber: true })}
             placeholder="Total family income"
+            autoComplete="off"
           />
           {errors.familyYearlyIncome && (
             <p className="text-sm text-red-600 mt-1">{errors.familyYearlyIncome.message}</p>
@@ -1069,6 +1109,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             step="1"
             {...register('totalFamilyMembers', { valueAsNumber: true })}
             placeholder="Number of members"
+            autoComplete="off"
           />
           {errors.totalFamilyMembers && (
             <p className="text-sm text-red-600 mt-1">{errors.totalFamilyMembers.message}</p>
@@ -1085,6 +1126,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             step="1"
             {...register('earningMembers', { valueAsNumber: true })}
             placeholder="Number of earning members"
+            autoComplete="off"
           />
           {errors.earningMembers && (
             <p className="text-sm text-red-600 mt-1">{errors.earningMembers.message}</p>
@@ -1098,6 +1140,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           id="educationExpenseBearer"
           {...register('educationExpenseBearer')}
           placeholder="e.g., Father, Mother, Self, Relative"
+          autoComplete="off"
         />
         {errors.educationExpenseBearer && (
           <p className="text-sm text-red-600 mt-1">{errors.educationExpenseBearer.message}</p>
@@ -1118,7 +1161,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           {...register('phoneNumber')}
           placeholder="10-digit mobile number"
           maxLength={10}
-          autoComplete="tel"
+          autoComplete="off"
           onInput={(e) => {
             const target = e.target as HTMLInputElement
             target.value = target.value.replace(/[^0-9]/g, '')
@@ -1136,6 +1179,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           {...register('address')}
           placeholder="Complete postal address"
           rows={3}
+          autoComplete="off"
         />
         {errors.address && (
           <p className="text-sm text-red-600 mt-1">{errors.address.message}</p>
@@ -1278,7 +1322,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   }
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8" autoComplete="off">
       {/* Section Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
