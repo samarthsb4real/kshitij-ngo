@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -9,11 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Languages, FileText, CheckCircle, Clock } from 'lucide-react'
 import { SponsorshipForm } from '@/components/forms/sponsorship-form'
 import { LanguageProvider } from '@/components/forms/language-provider'
+import { clearOldSubmissions } from '@/lib/excel-utils'
 
 export default function FormPage() {
   const [currentLanguage, setCurrentLanguage] = useState('en')
   const [formProgress, setFormProgress] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [formKey, setFormKey] = useState(0) // Add key to force remount
+
+  // Clean up old submissions on component mount
+  useEffect(() => {
+    const removedCount = clearOldSubmissions()
+    if (removedCount > 0) {
+      console.log(`Removed ${removedCount} old submissions from localStorage`)
+    }
+  }, [])
 
   const languages = useMemo(() => [
     { code: 'en', name: 'English', nativeName: 'English' },
@@ -47,10 +57,17 @@ export default function FormPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button onClick={() => setIsSubmitted(false)} className="w-full">
+            <Button onClick={() => {
+              setIsSubmitted(false)
+              setFormProgress(0)
+            }} className="w-full">
               Submit Another Application
             </Button>
-            <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+            <Button onClick={() => {
+              setFormKey(prev => prev + 1) // Force complete remount
+              setIsSubmitted(false)
+              setFormProgress(0)
+            }} variant="outline" className="w-full">
               Clear Form
             </Button>
           </CardContent>
@@ -176,6 +193,7 @@ export default function FormPage() {
               <Card>
                 <CardContent className="p-8">
                   <SponsorshipForm 
+                    key={formKey}
                     language={currentLanguage}
                     onProgressChange={setFormProgress}
                     onSubmit={() => setIsSubmitted(true)}

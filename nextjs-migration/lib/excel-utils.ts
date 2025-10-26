@@ -1,5 +1,8 @@
 // Excel/CSV export utilities for form submissions
 
+// Data retention policy: 90 days
+const DATA_RETENTION_DAYS = 90
+
 export interface FormSubmission {
   id: string
   timestamp: string
@@ -53,7 +56,24 @@ export const getStoredSubmissions = (): FormSubmission[] => {
   if (typeof window === 'undefined') return []
   
   const stored = localStorage.getItem('ngo_form_submissions')
-  return stored ? JSON.parse(stored) : []
+  const submissions = stored ? JSON.parse(stored) : []
+  
+  // Clean up old submissions based on retention policy
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - DATA_RETENTION_DAYS)
+  
+  const validSubmissions = submissions.filter((submission: FormSubmission) => {
+    const submissionDate = new Date(submission.timestamp)
+    return submissionDate >= cutoffDate
+  })
+  
+  // Update localStorage if we removed any old submissions
+  if (validSubmissions.length !== submissions.length) {
+    localStorage.setItem('ngo_form_submissions', JSON.stringify(validSubmissions))
+    console.log(`Cleaned up ${submissions.length - validSubmissions.length} old submissions`)
+  }
+  
+  return validSubmissions
 }
 
 // Get submissions for a specific date
@@ -146,11 +166,35 @@ export const exportAllSubmissions = () => {
   exportSubmissionsToExcel(allSubmissions, `Kshitij_NGO_All_Submissions_${new Date().toISOString().split('T')[0]}.csv`)
 }
 
-// Clear all stored submissions
-export const clearAllSubmissions = () => {
+// Clear all stored submissions (enhanced with count return)
+export const clearAllSubmissions = (): boolean => {
+  if (typeof window === 'undefined') return false
+  
   if (confirm('Are you sure you want to clear all stored form submissions?')) {
     localStorage.removeItem('ngo_form_submissions')
     return true
   }
   return false
+}
+
+// Clear old submissions beyond retention period
+export const clearOldSubmissions = (): number => {
+  if (typeof window === 'undefined') return 0
+  
+  const allSubmissions = JSON.parse(localStorage.getItem('ngo_form_submissions') || '[]')
+  const cutoffDate = new Date()
+  cutoffDate.setDate(cutoffDate.getDate() - DATA_RETENTION_DAYS)
+  
+  const validSubmissions = allSubmissions.filter((submission: FormSubmission) => {
+    const submissionDate = new Date(submission.timestamp)
+    return submissionDate >= cutoffDate
+  })
+  
+  const removedCount = allSubmissions.length - validSubmissions.length
+  
+  if (removedCount > 0) {
+    localStorage.setItem('ngo_form_submissions', JSON.stringify(validSubmissions))
+  }
+  
+  return removedCount
 }

@@ -61,6 +61,7 @@ const translations = {
     // Family Information
     'family-info-title': 'Family Information',
     'father-name-label': "Father's Name *",
+    'mother-name-label': "Mother's Name *",
     'father-age-label': "Father's Age *",
     'father-occupation-label': "Father's Occupation *",
     'father-income-label': "Father's Annual Income (₹) *",
@@ -132,6 +133,7 @@ const translations = {
     // Family Information
     'family-info-title': 'पारिवारिक जानकारी',
     'father-name-label': 'पिता का नाम *',
+    'mother-name-label': 'माता का नाम *',
     'father-age-label': 'पिता की आयु *',
     'father-occupation-label': 'पिता का व्यवसाय *',
     'father-income-label': 'पिता की वार्षिक आय (₹) *',
@@ -203,6 +205,7 @@ const translations = {
     // Family Information
     'family-info-title': 'कौटुंबिक माहिती',
     'father-name-label': 'वडिलांचे नाव *',
+    'mother-name-label': 'आईचे नाव *',
     'father-age-label': 'वडिलांचे वय *',
     'father-occupation-label': 'वडिलांचा व्यवसाय *',
     'father-income-label': 'वडिलांचे वार्षिक उत्पन्न (₹) *',

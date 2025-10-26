@@ -5,9 +5,11 @@ export interface FormSubmissionData {
   firstName: string
   middleName?: string
   lastName: string
+  gender: string
   photo?: string
   age: number
   dateOfBirth: string
+  aadharNumber: string
   villageName: string
   disability?: string
   currentEducation: string
@@ -40,6 +42,8 @@ export interface FormSubmissionData {
   earningMembers: number
   educationExpenseBearer: string
   phoneNumber: string
+  alternatePhone?: string
+  email?: string
   address: string
   pincode: string
 }
@@ -76,9 +80,11 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       firstName: formData.firstName,
       middleName: formData.middleName || '',
       lastName: formData.lastName,
+      gender: formData.gender,
       photo: formData.photo || '',
       age: formData.age,
       dateOfBirth: formData.dateOfBirth,
+      aadharNumber: formData.aadharNumber,
       villageName: formData.villageName,
       disability: formData.disability || 'None',
       currentEducation: formData.currentEducation,
@@ -112,6 +118,8 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       earningMembers: formData.earningMembers,
       educationExpenseBearer: formData.educationExpenseBearer,
       phoneNumber: formData.phoneNumber,
+      alternatePhone: formData.alternatePhone || '',
+      email: formData.email || '',
       address: formData.address,
       pincode: formData.pincode
     }
