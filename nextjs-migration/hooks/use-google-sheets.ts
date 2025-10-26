@@ -193,7 +193,7 @@ export function useGoogleSheets() {
       }
 
       // Convert Google Sheets data to student format
-      // Maps all 43 columns from Apps Script schema
+      // Maps all 47 columns from Apps Script schema (updated with gender, aadharNumber, alternatePhone, email)
       const studentsData = sheetsData.map((row: any[], index: number) => {
         if (index === 0) return null // Skip header row
         
@@ -206,54 +206,59 @@ export function useGoogleSheets() {
           firstName: row[2] || '',
           middleName: row[3] || '',
           lastName: row[4] || '',
-          // Column F (5) - Photo
-          photo: row[5] || '',
-          // Columns G-J (6-9) - Basic Info
-          age: parseInt(row[6]) || 0,
-          dateOfBirth: row[7] || '',
-          village: row[8] || '',
-          disability: row[9] || 'None',
-          // Columns K-O (10-14) - Education Info
-          currentEducation: row[10] || '',
-          currentYear: row[11] || '',
-          schoolName: row[12] || '',
-          otherEducation: row[13] || '',
-          futurePlans: row[14] || '',
-          // Columns P-U (15-20) - Academic Performance
-          year1Class: row[15] || '',
-          year1Marks: row[16] || '',
-          year2Class: row[17] || '',
-          year2Marks: row[18] || '',
-          year3Class: row[19] || '',
-          year3Marks: row[20] || '',
-          // Column V (21) - Achievements
-          achievements: row[21] || '',
-          // Columns W-AE (22-30) - Financial Info (Expenses)
-          tuitionFees: parseFloat(row[22]) || 0,
-          booksCost: parseFloat(row[23]) || 0,
-          stationeryCost: parseFloat(row[24]) || 0,
-          travelCost: parseFloat(row[25]) || 0,
-          uniformCost: parseFloat(row[26]) || 0,
-          examFees: parseFloat(row[27]) || 0,
-          hostelFees: parseFloat(row[28]) || 0,
-          otherExpenses: parseFloat(row[29]) || 0,
-          totalExpenses: parseFloat(row[30]) || 0,
-          // Columns AF-AN (31-39) - Family Info
-          fatherName: row[31] || '',
-          motherName: row[32] || '',
-          fatherAge: row[33] || '',
-          fatherOccupation: row[34] || '',
-          fatherIncome: parseFloat(row[35]) || 0,
-          familyYearlyIncome: parseFloat(row[36]) || 0,
-          totalFamilyMembers: parseInt(row[37]) || 0,
-          earningMembers: parseInt(row[38]) || 0,
-          educationExpenseBearer: row[39] || '',
-          // Columns AO-AQ (40-42) - Contact Info
-          phoneNumber: row[40] || '',
-          address: row[41] || '',
-          pincode: row[42] || '',
-          // Column AR (43) - Application Status
-          status: (row[43] || 'pending') as 'pending' | 'approved' | 'rejected'
+          // Column F (5) - Gender
+          gender: row[5] || '',
+          // Column G (6) - Photo
+          photo: row[6] || '',
+          // Columns H-L (7-11) - Basic Info
+          age: parseInt(row[7]) || 0,
+          dateOfBirth: row[8] || '',
+          aadharNumber: row[9] || '',
+          village: row[10] || '',
+          disability: row[11] || 'None',
+          // Columns M-Q (12-16) - Education Info
+          currentEducation: row[12] || '',
+          currentYear: row[13] || '',
+          schoolName: row[14] || '',
+          otherEducation: row[15] || '',
+          futurePlans: row[16] || '',
+          // Columns R-W (17-22) - Academic Performance
+          year1Class: row[17] || '',
+          year1Marks: row[18] || '',
+          year2Class: row[19] || '',
+          year2Marks: row[20] || '',
+          year3Class: row[21] || '',
+          year3Marks: row[22] || '',
+          // Column X (23) - Achievements
+          achievements: row[23] || '',
+          // Columns Y-AG (24-32) - Financial Info (Expenses)
+          tuitionFees: parseFloat(row[24]) || 0,
+          booksCost: parseFloat(row[25]) || 0,
+          stationeryCost: parseFloat(row[26]) || 0,
+          travelCost: parseFloat(row[27]) || 0,
+          uniformCost: parseFloat(row[28]) || 0,
+          examFees: parseFloat(row[29]) || 0,
+          hostelFees: parseFloat(row[30]) || 0,
+          otherExpenses: parseFloat(row[31]) || 0,
+          totalExpenses: parseFloat(row[32]) || 0,
+          // Columns AH-AP (33-41) - Family Info
+          fatherName: row[33] || '',
+          motherName: row[34] || '',
+          fatherAge: row[35] || '',
+          fatherOccupation: row[36] || '',
+          fatherIncome: parseFloat(row[37]) || 0,
+          familyYearlyIncome: parseFloat(row[38]) || 0,
+          totalFamilyMembers: parseInt(row[39]) || 0,
+          earningMembers: parseInt(row[40]) || 0,
+          educationExpenseBearer: row[41] || '',
+          // Columns AQ-AU (42-46) - Contact Info
+          phoneNumber: row[42] || '',
+          alternatePhone: row[43] || '',
+          email: row[44] || '',
+          address: row[45] || '',
+          pincode: row[46] || '',
+          // Column AV (47) - Application Status
+          status: (row[47] || 'pending') as 'pending' | 'approved' | 'rejected'
         }
       }).filter(Boolean) as Student[]
       

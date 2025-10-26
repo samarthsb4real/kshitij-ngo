@@ -123,6 +123,10 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
               <span className="font-medium">{student.firstName} {student.middleName} {student.lastName}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Gender:</span>
+              <span className="font-medium capitalize">{student.gender}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Age:</span>
               <span className="font-medium">{student.age} years</span>
             </div>
@@ -131,9 +135,25 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
               <span className="font-medium">{student.dateOfBirth}</span>
             </div>
             <div className="flex justify-between border-b border-gray-100 pb-2">
+              <span className="text-gray-600">Aadhar Number:</span>
+              <span className="font-medium">{student.aadharNumber}</span>
+            </div>
+            <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">Phone:</span>
               <span className="font-medium">{student.phoneNumber}</span>
             </div>
+            {student.alternatePhone && (
+              <div className="flex justify-between border-b border-gray-100 pb-2">
+                <span className="text-gray-600">Alternate Phone:</span>
+                <span className="font-medium">{student.alternatePhone}</span>
+              </div>
+            )}
+            {student.email && (
+              <div className="flex justify-between border-b border-gray-100 pb-2">
+                <span className="text-gray-600">Email:</span>
+                <span className="font-medium">{student.email}</span>
+              </div>
+            )}
             <div className="flex justify-between border-b border-gray-100 pb-2">
               <span className="text-gray-600">School:</span>
               <span className="font-medium">{student.schoolName}</span>
