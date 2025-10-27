@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Student as PDFStudent, generateStudentProfilePDF } from '@/lib/pdf-utils'
 import { Student } from '@/types'
 import { Download, DollarSign } from 'lucide-react'
+import { usePermissions } from '@/hooks/use-permissions'
 
 interface StudentProfileProps {
   student: Student
@@ -14,6 +15,8 @@ interface StudentProfileProps {
 }
 
 export function StudentProfile({ student, onStatusChange }: StudentProfileProps) {
+  const { canUpdateStatus } = usePermissions()
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved': return 'bg-green-100 text-green-800'
@@ -331,21 +334,27 @@ export function StudentProfile({ student, onStatusChange }: StudentProfileProps)
           <div className="flex justify-between items-center">
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-2">Application Status</label>
-              <Select
-                value={student.status}
-                onValueChange={(value: 'pending' | 'approved' | 'rejected') => 
-                  onStatusChange(student.id.toString(), value)
-                }
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
+              {canUpdateStatus ? (
+                <Select
+                  value={student.status}
+                  onValueChange={(value: 'pending' | 'approved' | 'rejected') => 
+                    onStatusChange(student.id.toString(), value)
+                  }
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Badge className={getStatusColor(student.status)}>
+                  {student.status.toUpperCase()}
+                </Badge>
+              )}
             </div>
             <div className="text-sm text-gray-500 text-right">
               <div>Submission Date: {new Date(student.timestamp).toLocaleDateString()}</div>

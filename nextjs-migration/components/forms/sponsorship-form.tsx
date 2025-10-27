@@ -14,7 +14,6 @@ import { RefreshCw } from 'lucide-react'
 import { useLanguage } from './language-provider'
 import { useToast } from '@/hooks/use-toast'
 import { saveFormSubmission } from '@/lib/excel-utils'
-import { canSubmitForm, recordFormSubmission } from '@/lib/data-security'
 
 const formSchema = z.object({
   // Personal Information
@@ -30,9 +29,6 @@ const formSchema = z.object({
     .min(2, 'Last name must be at least 2 characters')
     .max(50, 'Last name is too long')
     .regex(/^[a-zA-Z\s]+$/, 'Name should only contain letters and spaces'),
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: 'Please select gender',
-  }),
   photo: z.string()
     .min(1, 'Photo is required')
     .refine((data) => {
@@ -52,17 +48,14 @@ const formSchema = z.object({
     .int('Age must be a whole number')
     .min(10, 'Student must be at least 10 years old')
     .max(21, 'Student must be 21 years or younger'),
-  aadharNumber: z.string()
-    .regex(/^[0-9]{12}$/, 'Aadhar number must be exactly 12 digits')
-    .length(12, 'Aadhar number must be exactly 12 digits'),
   villageName: z.string().min(1, 'Village selection is required'),
   disability: z.string().optional(),
   
   // Education Information
   currentEducation: z.string().min(1, 'Current education level is required'),
   currentYear: z.string()
-    .min(1, 'This field is required')
-    .max(100, 'Input is too long')
+    .min(1, 'Current year/class is required')
+    .max(50, 'Class/year is too long')
     .trim(),
   schoolName: z.string()
     .min(3, 'School/college name must be at least 3 characters')
@@ -174,15 +167,6 @@ const formSchema = z.object({
   phoneNumber: z.string()
     .regex(/^[6-9][0-9]{9}$/, 'Enter valid 10-digit Indian mobile number')
     .length(10, 'Phone number must be exactly 10 digits'),
-  alternatePhone: z.string()
-    .regex(/^[6-9][0-9]{9}$/, 'Enter valid 10-digit Indian mobile number')
-    .length(10, 'Phone number must be exactly 10 digits')
-    .optional()
-    .or(z.literal('')),
-  email: z.string()
-    .email('Enter valid email address')
-    .optional()
-    .or(z.literal('')),
   address: z.string()
     .min(10, 'Please provide complete address (at least 10 characters)')
     .max(500, 'Address is too long')
@@ -240,8 +224,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     { value: 'ma', label: 'M.A. (Master of Arts)' },
     { value: 'msc', label: 'M.Sc. (Master of Science)' },
     { value: 'mcom', label: 'M.Com. (Master of Commerce)' },
-    { value: 'mba', label: 'MBA (Master of Business Administration)' },
-    { value: 'other', label: 'Other (Please Specify)' }
+    { value: 'mba', label: 'MBA (Master of Business Administration)' }
   ]
 
   const {
@@ -256,35 +239,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     resolver: zodResolver(formSchema),
     mode: 'onChange',
     defaultValues: {
-      // Personal Information
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      gender: undefined,
-      photo: '',
-      dateOfBirth: '',
-      age: 0,
-      aadharNumber: '',
-      villageName: '',
-      disability: '',
-      
-      // Education Information
-      currentEducation: '',
-      currentYear: '',
-      schoolName: '',
-      otherEducation: '',
-      futurePlans: '',
-      
-      // Academic Performance
-      year1Class: '',
-      year1Marks: undefined,
-      year2Class: '',
-      year2Marks: undefined,
-      year3Class: '',
-      year3Marks: undefined,
-      achievements: '',
-      
-      // Expenses
       tuitionFees: 0,
       booksCost: 0,
       stationeryCost: 0,
@@ -292,24 +246,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
       uniformCost: 0,
       examFees: 0,
       hostelFees: 0,
-      otherExpenses: 0,
-      
-      // Family Information
-      fatherName: '',
-      motherName: '',
-      // fatherAge and totalFamilyMembers use setValueAs, no default needed
-      fatherOccupation: '',
-      fatherIncome: 0,
-      familyYearlyIncome: 0,
-      earningMembers: 0,
-      educationExpenseBearer: '',
-      
-      // Contact Information
-      phoneNumber: '',
-      alternatePhone: '',
-      email: '',
-      address: '',
-      pincode: ''
+      otherExpenses: 0
     }
   })
 
@@ -419,7 +356,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
   // Calculate progress
   const requiredFields = useMemo(() => [
-    'firstName', 'lastName', 'gender', 'photo', 'dateOfBirth', 'age', 'aadharNumber', 'villageName',
+    'firstName', 'lastName', 'photo', 'dateOfBirth', 'age', 'villageName',
     'currentEducation', 'currentYear', 'schoolName', 'futurePlans',
     'tuitionFees', 'booksCost', 'stationeryCost', 'travelCost',
     'fatherName', 'motherName', 'fatherAge', 'fatherOccupation', 'fatherIncome',
@@ -443,7 +380,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
   const sections = [
     {
       title: t('personal-info-title'),
-      fields: ['firstName', 'middleName', 'lastName', 'gender', 'aadharNumber', 'photo', 'dateOfBirth', 'age', 'villageName', 'disability']
+      fields: ['firstName', 'middleName', 'lastName', 'photo', 'dateOfBirth', 'age', 'villageName', 'disability']
     },
     {
       title: t('education-info-title'),
@@ -471,12 +408,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     setIsSubmittingForm(true)
     
     try {
-      // Check rate limiting
-      const rateLimitCheck = canSubmitForm()
-      if (!rateLimitCheck.allowed) {
-        throw new Error(`Please wait ${rateLimitCheck.waitTime} seconds before submitting again`)
-      }
-      
       // Validate all required fields are present
       const requiredFields = ['firstName', 'lastName', 'photo', 'dateOfBirth', 'villageName', 'currentEducation', 'currentYear', 'schoolName', 'futurePlans', 'fatherName', 'motherName', 'fatherOccupation', 'phoneNumber', 'address', 'pincode']
       const missingFields = requiredFields.filter(field => {
@@ -575,9 +506,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
         throw new Error(result.error || 'Submission failed')
       }
       
-      // Record submission timestamp for rate limiting
-      recordFormSubmission()
-      
       toast({
         title: "Application Submitted Successfully!",
         description: result.googleSheetsSuccess 
@@ -586,7 +514,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
       })
       
       reset()
-      setPhotoPreview(null)
       setCurrentSection(0)
       onSubmit()
       
@@ -616,7 +543,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
     const hasErrors = currentFields.some(field => errors[field as keyof FormData])
     
     const sectionRequiredFields = {
-      0: ['firstName', 'lastName', 'gender', 'aadharNumber', 'photo', 'dateOfBirth', 'villageName'],
+      0: ['firstName', 'lastName', 'photo', 'dateOfBirth', 'villageName'],
       1: ['currentEducation', 'currentYear', 'schoolName', 'futurePlans'],
       2: [], // Academic performance is optional
       3: ['tuitionFees', 'booksCost', 'stationeryCost', 'travelCost'],
@@ -754,45 +681,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
           />
           {errors.lastName && (
             <p className="text-sm text-red-600 mt-1">{errors.lastName.message}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="gender">Gender *</Label>
-          <Controller
-            name="gender"
-            control={control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.gender && (
-            <p className="text-sm text-red-600 mt-1">{errors.gender.message}</p>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="aadharNumber">Aadhar Number *</Label>
-          <Input
-            id="aadharNumber"
-            {...register('aadharNumber')}
-            placeholder="12-digit Aadhar number"
-            maxLength={12}
-            autoComplete="off"
-          />
-          {errors.aadharNumber && (
-            <p className="text-sm text-red-600 mt-1">{errors.aadharNumber.message}</p>
           )}
         </div>
       </div>
@@ -936,13 +824,11 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="currentYear">
-            {watchedFields.currentEducation === 'other' ? 'Please Specify *' : t('year-label')}
-          </Label>
+          <Label htmlFor="currentYear">{t('year-label')}</Label>
           <Input
             id="currentYear"
             {...register('currentYear')}
-            placeholder={watchedFields.currentEducation === 'other' ? 'Specify your education level' : 'e.g., 12th, 2nd Year B.A.'}
+            placeholder="e.g., 12th, 2nd Year B.A."
             autoComplete="off"
           />
           {errors.currentYear && (
@@ -1155,9 +1041,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             min="25"
             max="100"
             step="1"
-            {...register('fatherAge', { 
-              setValueAs: (v) => v === '' ? undefined : parseInt(v, 10)
-            })}
+            {...register('fatherAge', { valueAsNumber: true })}
             placeholder="Age"
             autoComplete="off"
           />
@@ -1223,9 +1107,7 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
             min="1"
             max="50"
             step="1"
-            {...register('totalFamilyMembers', { 
-              setValueAs: (v) => v === '' ? undefined : parseInt(v, 10)
-            })}
+            {...register('totalFamilyMembers', { valueAsNumber: true })}
             placeholder="Number of members"
             autoComplete="off"
           />
@@ -1269,61 +1151,24 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
 
   const renderContactInfo = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="phoneNumber">{t('phone-label')}</Label>
-          <Input
-            id="phoneNumber"
-            type="tel"
-            inputMode="numeric"
-            pattern="[6-9][0-9]{9}"
-            {...register('phoneNumber')}
-            placeholder="10-digit mobile number"
-            maxLength={10}
-            autoComplete="off"
-            onInput={(e) => {
-              const target = e.target as HTMLInputElement
-              target.value = target.value.replace(/[^0-9]/g, '')
-            }}
-          />
-          {errors.phoneNumber && (
-            <p className="text-sm text-red-600 mt-1">{errors.phoneNumber.message}</p>
-          )}
-        </div>
-
-        <div>
-          <Label htmlFor="alternatePhone">Alternate Phone Number</Label>
-          <Input
-            id="alternatePhone"
-            type="tel"
-            inputMode="numeric"
-            pattern="[6-9][0-9]{9}"
-            {...register('alternatePhone')}
-            placeholder="10-digit mobile number (optional)"
-            maxLength={10}
-            autoComplete="off"
-            onInput={(e) => {
-              const target = e.target as HTMLInputElement
-              target.value = target.value.replace(/[^0-9]/g, '')
-            }}
-          />
-          {errors.alternatePhone && (
-            <p className="text-sm text-red-600 mt-1">{errors.alternatePhone.message}</p>
-          )}
-        </div>
-      </div>
-
       <div>
-        <Label htmlFor="email">Email Address (Optional)</Label>
+        <Label htmlFor="phoneNumber">{t('phone-label')}</Label>
         <Input
-          id="email"
-          type="email"
-          {...register('email')}
-          placeholder="example@email.com"
+          id="phoneNumber"
+          type="tel"
+          inputMode="numeric"
+          pattern="[6-9][0-9]{9}"
+          {...register('phoneNumber')}
+          placeholder="10-digit mobile number"
+          maxLength={10}
           autoComplete="off"
+          onInput={(e) => {
+            const target = e.target as HTMLInputElement
+            target.value = target.value.replace(/[^0-9]/g, '')
+          }}
         />
-        {errors.email && (
-          <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+        {errors.phoneNumber && (
+          <p className="text-sm text-red-600 mt-1">{errors.phoneNumber.message}</p>
         )}
       </div>
 
@@ -1548,7 +1393,6 @@ export function SponsorshipForm({ language, onProgressChange, onSubmit }: Sponso
               onClick={() => {
                 if (confirm('Are you sure you want to clear all form data?')) {
                   reset()
-                  setPhotoPreview(null)
                   setCurrentSection(0)
                   toast({ title: "Form Cleared", description: "All fields have been reset" })
                 }

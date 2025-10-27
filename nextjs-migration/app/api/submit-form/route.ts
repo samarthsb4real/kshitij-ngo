@@ -1,42 +1,18 @@
 import { NextResponse } from 'next/server'
 import { submitToGoogleSheets } from '@/lib/google-sheets-form'
-import { headers } from 'next/headers'
-
-// Simple CSRF token validation
-function generateCSRFToken(): string {
-  return Math.random().toString(36).substring(2) + Date.now().toString(36)
-}
-
-function validateCSRFToken(request: Request): boolean {
-  // Check for custom header to prevent simple CSRF attacks
-  const requestedWith = request.headers.get('X-Requested-With')
-  if (requestedWith !== 'XMLHttpRequest') {
-    return false
-  }
-  
-  // Validate origin/referer to prevent cross-origin requests
-  const origin = request.headers.get('origin')
-  const referer = request.headers.get('referer')
-  
-  if (!origin && !referer) {
-    return false
-  }
-  
-  // In production, validate against allowed origins
-  // For now, just ensure it's from the same origin
-  return true
-}
+import { getCurrentUser, requirePermission } from '@/lib/auth'
 
 export async function POST(request: Request) {
   try {
-    // Validate CSRF protection
-    if (!validateCSRFToken(request)) {
+    // Check authentication and permissions
+    const user = await getCurrentUser()
+    if (!requirePermission(user, 'canSubmitForm')) {
       return NextResponse.json(
-        { error: 'Invalid request origin' },
+        { error: 'Unauthorized. You do not have permission to submit forms.' },
         { status: 403 }
       )
     }
-    
+
     // Validate request headers
     const contentType = request.headers.get('content-type')
     if (!contentType?.includes('application/json')) {
@@ -94,12 +70,6 @@ export async function POST(request: Request) {
       message: googleSheetsSuccess 
         ? 'Form submitted to Google Sheets successfully'
         : 'Form submission processed (Google Sheets may be unavailable)'
-    }, {
-      headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-      }
     })
   } catch (error) {
     console.error('API Error:', error)

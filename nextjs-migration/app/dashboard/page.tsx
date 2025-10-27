@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { usePermissions } from '@/hooks/use-permissions'
 import { 
   Users, 
   TrendingUp, 
@@ -18,7 +20,9 @@ import {
   Filter,
   Home,
   FileText,
-  Download
+  Download,
+  LogOut,
+  User as UserIcon
 } from 'lucide-react'
 import { EnhancedStatsCards } from '@/components/dashboard/enhanced-stats-cards'
 import { ChartsGrid } from '@/components/dashboard/charts-grid'
@@ -31,11 +35,14 @@ import { exportTodaysSubmissions, exportAllSubmissions, getStoredSubmissions, cl
 import Link from 'next/link'
 
 export default function DashboardPage() {
+  const { canSubmitForm } = usePermissions()
   const [activeTab, setActiveTab] = useState('overview')
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('name')
   const [villageFilter, setVillageFilter] = useState('all')
   const [submissionCount, setSubmissionCount] = useState(0)
+  const [currentUser, setCurrentUser] = useState<{ name: string; role: string } | null>(null)
+  const router = useRouter()
   const { 
     students, 
     analytics, 
@@ -45,6 +52,18 @@ export default function DashboardPage() {
     refreshData 
   } = useGoogleSheets()
   const { toast } = useToast()
+
+  useEffect(() => {
+    // Fetch current user info
+    fetch('/api/auth/me')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setCurrentUser(data.user)
+        }
+      })
+      .catch(err => console.error('Failed to fetch user:', err))
+  }, [])
 
   useEffect(() => {
     // Update submission count
@@ -78,6 +97,31 @@ export default function DashboardPage() {
     return matchesSearch && matchesVillage
   })
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Logged out",
+          description: "You have been successfully logged out",
+        })
+        router.push('/login')
+        router.refresh()
+      } else {
+        throw new Error('Logout failed')
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -93,18 +137,27 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
+              {currentUser && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
+                  <UserIcon className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">{currentUser.name}</span>
+                  <Badge variant="outline" className="text-xs">{currentUser.role}</Badge>
+                </div>
+              )}
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/">
                   <Home className="w-4 h-4 mr-2" />
                   Home
                 </Link>
               </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/form">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Apply
-                </Link>
-              </Button>
+              {canSubmitForm && (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/form">
+                    <FileText className="w-4 h-4 mr-2" />
+                    Apply
+                  </Link>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -117,6 +170,14 @@ export default function DashboardPage() {
               <Button variant="outline" size="sm">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
+              </Button>
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </Button>
             </div>
           </div>

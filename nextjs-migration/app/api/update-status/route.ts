@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getCurrentUser, requirePermission } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication and permissions
+    const user = await getCurrentUser()
+    if (!requirePermission(user, 'canUpdateStatus')) {
+      return NextResponse.json(
+        { error: 'Unauthorized. You do not have permission to update status.' },
+        { status: 403 }
+      )
+    }
+
     const { studentId, status } = await request.json()
 
     // Update status in Google Sheets via Apps Script

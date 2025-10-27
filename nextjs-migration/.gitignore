@@ -25,6 +25,9 @@ yarn-error.log*
 # Local env files
 .env*.local
 
+# Authentication config (contains password hashes)
+lib/auth-config.ts
+
 # Vercel
 .vercel
 
