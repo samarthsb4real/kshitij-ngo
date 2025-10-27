@@ -1,7 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
-import { JWT_SECRET } from './lib/auth-config'
+
+// Import JWT_SECRET with fallback for production
+let JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-to-random-string-min-32-chars'
+
+try {
+  const authConfig = require('./lib/auth-config')
+  JWT_SECRET = authConfig.JWT_SECRET
+} catch (error) {
+  // In production, use environment variable
+  console.log('Using JWT_SECRET from environment variable')
+}
 
 const SECRET_KEY = new TextEncoder().encode(JWT_SECRET)
 

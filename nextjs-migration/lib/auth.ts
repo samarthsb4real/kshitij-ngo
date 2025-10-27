@@ -1,7 +1,39 @@
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import bcrypt from 'bcryptjs'
-import { AUTH_USERS, JWT_SECRET as CONFIG_JWT_SECRET } from './auth-config'
+
+// Import from auth-config if available (development), otherwise use env vars (production)
+let AUTH_USERS: any[] = []
+let JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-to-random-string-min-32-chars'
+
+try {
+  const authConfig = require('./auth-config')
+  AUTH_USERS = authConfig.AUTH_USERS
+  JWT_SECRET = authConfig.JWT_SECRET
+} catch (error) {
+  // In production, use environment variables
+  console.log('Using environment variables for auth configuration')
+  
+  // Parse AUTH_USERS from environment variable
+  if (process.env.AUTH_USERS) {
+    try {
+      AUTH_USERS = JSON.parse(process.env.AUTH_USERS)
+    } catch (e) {
+      console.error('Failed to parse AUTH_USERS environment variable')
+    }
+  }
+  
+  // Fallback to old single-user config if AUTH_USERS not provided
+  if (AUTH_USERS.length === 0 && process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD_HASH) {
+    AUTH_USERS = [{
+      id: '1',
+      username: process.env.ADMIN_USERNAME,
+      passwordHash: process.env.ADMIN_PASSWORD_HASH,
+      role: 'admin',
+      name: 'Administrator'
+    }]
+  }
+}
 
 // Types
 export type UserRole = 'admin' | 'umamane' | 'ajaymane' | 'avdhutkulkarni' | 'viewer'
@@ -22,7 +54,7 @@ const getAuthorizedUsers = (): AuthUser[] => {
   return AUTH_USERS
 }
 
-const SECRET_KEY = new TextEncoder().encode(CONFIG_JWT_SECRET)
+const SECRET_KEY = new TextEncoder().encode(JWT_SECRET)
 
 const TOKEN_NAME = 'ngo-auth-token'
 const TOKEN_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
