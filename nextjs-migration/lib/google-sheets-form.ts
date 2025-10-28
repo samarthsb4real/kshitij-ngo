@@ -15,6 +15,10 @@ export interface FormSubmissionData {
   schoolName: string
   otherEducation?: string
   futurePlans: string
+  aadharNumber?: string
+  gender?: string
+  alternatePhone?: string
+  email?: string
   year1Class?: string
   year1Marks?: string
   year2Class?: string
@@ -45,19 +49,25 @@ export interface FormSubmissionData {
 }
 
 // Submit form data to Google Sheets via Apps Script Web App
-export const submitToGoogleSheets = async (formData: FormSubmissionData): Promise<boolean> => {
+export type GoogleSheetsResult = {
+  success: boolean
+  status?: number
+  error?: string
+}
+
+export const submitToGoogleSheets = async (formData: FormSubmissionData): Promise<GoogleSheetsResult> => {
   try {
     const GOOGLE_SCRIPT_URL = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL
     
     if (!GOOGLE_SCRIPT_URL) {
       console.warn('Google Sheets URL not configured. Saving locally only.')
-      return false
+      return { success: false, error: 'Google script URL not configured' }
     }
 
     // Validate URL format
     if (!GOOGLE_SCRIPT_URL.startsWith('https://script.google.com/')) {
       console.error('Invalid Google Script URL format')
-      return false
+      return { success: false, error: 'Invalid Google script URL format' }
     }
 
     const totalExpenses = 
@@ -80,6 +90,8 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       age: formData.age,
       dateOfBirth: formData.dateOfBirth,
       villageName: formData.villageName,
+  aadharNumber: formData.aadharNumber || '',
+  gender: formData.gender || '',
       disability: formData.disability || 'None',
       currentEducation: formData.currentEducation,
       currentYear: formData.currentYear,
@@ -102,6 +114,9 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       hostelFees: formData.hostelFees || 0,
       otherExpenses: formData.otherExpenses || 0,
       totalExpenses: totalExpenses,
+  // Contact extras
+  alternatePhone: formData.alternatePhone || '',
+  email: formData.email || '',
       fatherName: formData.fatherName,
       motherName: formData.motherName,
       fatherAge: formData.fatherAge,
@@ -116,34 +131,64 @@ export const submitToGoogleSheets = async (formData: FormSubmissionData): Promis
       pincode: formData.pincode
     }
 
-    // Add timeout and proper error handling
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000) // Increased to 15 seconds
+    // Retry logic with exponential backoff
+    const maxRetries = 2
+    let lastError: Error | null = null
 
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal
-      })
-      
-      clearTimeout(timeoutId)
-      return true
-    } catch (fetchError) {
-      clearTimeout(timeoutId)
-      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-        console.error('Google Sheets request timed out')
-      } else {
-        console.error('Google Sheets request failed:', fetchError)
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        // Add timeout and proper error handling
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 seconds
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+          // @ts-ignore - These options are for Node.js fetch (undici)
+          keepalive: true,
+          // @ts-ignore
+          connectTimeout: 20000, // 20 second connection timeout
+          // @ts-ignore
+          bodyTimeout: 30000, // 30 second body timeout
+        })
+        
+        clearTimeout(timeoutId)
+        // Check response status
+        const text = await response.text().catch(() => '')
+        if (!response.ok) {
+          const msg = `Google script returned ${response.status} ${response.statusText} - ${text}`
+          console.error(msg)
+          return { success: false, status: response.status, error: msg }
+        }
+
+        console.log(`Google Sheets submission successful on attempt ${attempt + 1}`)
+        return { success: true }
+      } catch (fetchError) {
+        lastError = fetchError as Error
+        
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          console.error(`Google Sheets request timed out on attempt ${attempt + 1}`)
+        } else {
+          console.error(`Google Sheets request failed on attempt ${attempt + 1}:`, fetchError)
+        }
+        
+        // If not the last attempt, wait before retrying
+        if (attempt < maxRetries) {
+          const delayMs = Math.min(1000 * Math.pow(2, attempt), 5000) // Exponential backoff, max 5s
+          console.log(`Retrying in ${delayMs}ms...`)
+          await new Promise(resolve => setTimeout(resolve, delayMs))
+        }
       }
-      return false
     }
+
+    console.error('All retry attempts failed:', lastError)
+    return { success: false, error: lastError?.message || 'Unknown error' }
   } catch (error) {
     console.error('Error submitting to Google Sheets:', error)
-    return false
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
   }
 }

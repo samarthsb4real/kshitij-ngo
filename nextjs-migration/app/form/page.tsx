@@ -6,16 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Languages, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { Languages, FileText, CheckCircle, Clock } from 'lucide-react'
 import { SponsorshipForm } from '@/components/forms/sponsorship-form'
 import { LanguageProvider } from '@/components/forms/language-provider'
 import { clearOldSubmissions } from '@/lib/excel-utils'
-import { usePermissions } from '@/hooks/use-permissions'
-import { useRouter } from 'next/navigation'
-
 export default function FormPage() {
-  const { canSubmitForm, loading, user } = usePermissions()
-  const router = useRouter()
   const [currentLanguage, setCurrentLanguage] = useState('en')
   const [formProgress, setFormProgress] = useState(0)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -47,42 +42,7 @@ export default function FormPage() {
     "Age restriction validation (up to 21 years)"
   ], [])
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardHeader>
-            <CardTitle>Loading...</CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-    )
-  }
 
-  // Show unauthorized message if user doesn't have permission
-  if (!canSubmitForm) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full text-center">
-          <CardHeader>
-            <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-              <AlertCircle className="w-8 h-8 text-red-600" />
-            </div>
-            <CardTitle className="text-2xl text-red-800">Access Denied</CardTitle>
-            <CardDescription className="mt-2">
-              You don't have permission to submit forms. This page is only accessible to authorized users.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => router.push('/dashboard')} variant="outline" className="w-full">
-              Go to Dashboard
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   if (isSubmitted) {
     return (
